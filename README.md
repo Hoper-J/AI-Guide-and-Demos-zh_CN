@@ -12,13 +12,13 @@
 简要介绍目录的内容：
 
 - **Demos**
-  
+
   所有的代码文件都将存放在其中，对应于序号。
-  
+
 - **assets**
-  
+
   不需要关注这个文件夹，这里是 .md 文件用到的图片。
-  
+
 - [0. 阿里大模型API获取步骤](https://github.com/Hoper-J/LLM-Guide-and-Demos/blob/master/0.%20阿里大模型API获取步骤.md)
 
   将带你一步步的获取 API，如果是第一次注册，你需要进行一次身份验证（人脸识别）。
@@ -34,6 +34,18 @@
 - [3. 进阶指南：自定义 Prompt 提升大模型解题能力](https://github.com/Hoper-J/LLM-Guide-and-Demos/blob/master/3.%20进阶指南：自定义%20Prompt%20提升大模型解题能力.md)
 
   你将学习自定义一个 Prompt 来提升大模型解数学题的能力，其中一样会提供 Gradio 和非 Gradio 两个版本，并展示代码细节。对应课程镜像【HW4：Become an AI Hypnosis Master】。
+
+- [4. 认识 LoRA：从线性层到注意力机制](https://github.com/Hoper-J/LLM-Guide-and-Demos-zh_CN/blob/master/4.%20认识%20LoRA：从线性层到注意力机制.md)
+
+  在正式进入实践之前，你需要知道LoRA的基础概念，这篇文章会带你从线性层的LoRA实现到注意力机制。
+
+- [5. 理解 Hugging Face 的 `AutoModel` 系列：不同任务的自动模型加载类](https://github.com/Hoper-J/LLM-Guide-and-Demos-zh_CN/blob/master/5.%20理解%20Hugging%20Face%20的%20%60AutoModel%60%20系列：不同任务的自动模型加载类.md)
+
+  我们即将用到的模块是 Hugging Face 中的 AutoModel，这篇文章一样是一个前置知识。（当然你可以跳过，等后续产生疑惑时再看）
+
+- [6. 开始实践：部署你的第一个LLM大语言模型](https://github.com/Hoper-J/LLM-Guide-and-Demos-zh_CN/blob/master/6.%20开始实践：部署你的第一个LLM大语言模型.md)
+
+  在这里会带你实现LLM大语言模型的部署，项目到现在为止都不会有GPU的硬性要求，你可以继续学习。
 
   
 
