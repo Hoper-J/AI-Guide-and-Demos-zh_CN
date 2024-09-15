@@ -13,7 +13,7 @@
 
 - **Demos**
 
-  所有的代码文件都将存放在其中，对应于序号。
+  所有的代码文件都将存放在其中。
 
 - **assets**
 
@@ -29,11 +29,13 @@
 
 - [2. 简单入门：通过API与Gradio构建AI应用](https://github.com/Hoper-J/LLM-Guide-and-Demos/blob/master/2.%20简单入门：通过API与Gradio构建AI应用.md)
 
-  指导如何去使用 Gradio 搭建一个简单的 AI 应用。对应课程镜像【HW3：以 AI 搭建自己的應用】。
+  指导如何去使用 Gradio 搭建一个简单的 AI 应用。
+  对应课程镜像【HW3：以 AI 搭建自己的應用】。
 
 - [3. 进阶指南：自定义 Prompt 提升大模型解题能力](https://github.com/Hoper-J/LLM-Guide-and-Demos/blob/master/3.%20进阶指南：自定义%20Prompt%20提升大模型解题能力.md)
 
-  你将学习自定义一个 Prompt 来提升大模型解数学题的能力，其中一样会提供 Gradio 和非 Gradio 两个版本，并展示代码细节。对应课程镜像【HW4：Become an AI Hypnosis Master】。
+  你将学习自定义一个 Prompt 来提升大模型解数学题的能力，其中一样会提供 Gradio 和非 Gradio 两个版本，并展示代码细节。
+  对应课程镜像【HW4：Become an AI Hypnosis Master】。
 
 - [4. 认识 LoRA：从线性层到注意力机制](https://github.com/Hoper-J/LLM-Guide-and-Demos-zh_CN/blob/master/4.%20认识%20LoRA：从线性层到注意力机制.md)
 
@@ -47,6 +49,14 @@
 
   在这里会带你实现LLM大语言模型的部署，项目到现在为止都不会有GPU的硬性要求，你可以继续学习。
 
+- [7. 探究模型参数与显存的关系以及不同精度造成的影响](https://github.com/Hoper-J/LLM-Guide-and-Demos-zh_CN/blob/master/7.%20探究模型参数与显存的关系以及不同精度造成的影响.md)
+  
+  了解模型参数和显存的对应关系并掌握不同精度的导入方式会使得你对模型的选择更加称心。
+  
+- [8. 尝试微调LLM：让它会写唐诗]()
+  
+  这篇文章与[3. 进阶指南：自定义 Prompt 提升大模型解题能力](https://github.com/Hoper-J/LLM-Guide-and-Demos-zh_CN/blob/master/3.%20进阶指南：自定义%20Prompt%20提升大模型解题能力.md)一样，本质上是专注于“用”而非“写”，你可以像之前一样，对整体的流程有了一个了解，尝试调整超参数部分来查看对微调的影响。
+  
   
 
 目前的规划：
@@ -57,6 +67,6 @@
    - 使用 ipywidgets 模拟 Colab 的交互
    - 以中文进行作业引导
 
-   下一节预告：LLM微调。
+   下一节预告：...（回去改论文了，鸽会）。
 
 2. ...
