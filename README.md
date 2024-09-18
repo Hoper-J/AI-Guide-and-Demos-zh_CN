@@ -81,6 +81,14 @@
 - [10. Top-K vs Top-P：生成式模型中的采样策略与 Temperature 的影响 ](https://github.com/Hoper-J/LLM-Guide-and-Demos-zh_CN/blob/master/10.%20Top-K%20vs%20Top-P：生成式模型中的采样策略与%20Temperature%20的影响.md)
 
   进一步向你展示其他的生成策略。
+  
+- **可选拓展阅读：**
+
+  - [a. 使用 HFD 加快 Hugging Face 模型和数据集的下载](https://github.com/Hoper-J/LLM-Guide-and-Demos-zh_CN/blob/master/a.%20使用%20HFD%20加快%20Hugging%20Face%20模型和数据集的下载.md)
+  
+    如果你觉得模型下载实在是太慢了，可以参考这篇文章进行配置。
+  
+  
 
 ## 后续规划
 
@@ -90,7 +98,7 @@
    - 使用 ipywidgets 模拟 Colab 的交互
    - 以中文进行作业引导
 
-   下一节预告：...。
+   下一节预告：...
 
 2. ...
 
