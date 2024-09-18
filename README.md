@@ -9,7 +9,19 @@
 > - [视频 - Bilibili](https://www.bilibili.com/video/BV1BJ4m1e7g8)
 >
 
-简要介绍目录的内容：
+## 快速访问
+
+如果你只是加深【生成式人工智能导论】这门课的理解，可以从下面的链接快速访问：
+
+- HW1，2不涉及代码相关知识，你可以通过访问对应的作业PDF来了解其中的内容：[HW1](https://docs.google.com/presentation/d/12vEaqmn0jVYgAuetemGZ-uy_irUHlnZO1cggUYQNRb4/edit#slide=id.g269cf33dbdc_0_0) | [HW2](https://docs.google.com/presentation/d/1kg7K1_kc77X1gQ26i49YVr4nXnXB7xcE-uus6POjNXU/edit?fbclid=IwAR049aGcPMDuYfODDMz6btTF6u92cM3eXVul_0urB6yc5TgIDVonYrJfoLk#slide=id.g265c9eec45a_0_115)。
+- HW3: [引导文章](https://github.com/Hoper-J/LLM-Guide-and-Demos/blob/master/2.%20简单入门：通过API与Gradio构建AI应用.md) | [代码中文镜像](https://github.com/Hoper-J/LLM-Guide-and-Demos-zh_CN/blob/master/Demos/1.%20LLM%20API%20使用演示——从环境配置到多轮对话.ipynb)
+- HW4: [引导文章](https://github.com/Hoper-J/LLM-Guide-and-Demos/blob/master/3.%20进阶指南：自定义%20Prompt%20提升大模型解题能力.md) | [代码中文镜像](https://github.com/Hoper-J/LLM-Guide-and-Demos-zh_CN/blob/master/Demos/3.%20自定义%20Prompt%20提升大模型解题能力——Gradio%20与%20ipywidgets版.ipynb)
+- HW5: [引导文章](https://github.com/Hoper-J/LLM-Guide-and-Demos-zh_CN/blob/master/8.%20尝试微调LLM：让它会写唐诗.md) | [代码中文镜像](https://github.com/Hoper-J/LLM-Guide-and-Demos-zh_CN/blob/master/Demos/6.%20尝试微调LLM：让它会写唐诗.ipynb)
+- 
+
+## 目录
+
+简要介绍目录完整的内容：
 
 - **Demos**
 
@@ -30,12 +42,12 @@
 - [2. 简单入门：通过API与Gradio构建AI应用](https://github.com/Hoper-J/LLM-Guide-and-Demos/blob/master/2.%20简单入门：通过API与Gradio构建AI应用.md)
 
   指导如何去使用 Gradio 搭建一个简单的 AI 应用。
-  对应课程镜像【HW3：以 AI 搭建自己的應用】。
+  对应课程镜像【[HW3：以 AI 搭建自己的應用](https://colab.research.google.com/drive/15jh4v_TBPsTyIBhi0Fz46gEkjvhzGaBR?usp=sharing)】。
 
 - [3. 进阶指南：自定义 Prompt 提升大模型解题能力](https://github.com/Hoper-J/LLM-Guide-and-Demos/blob/master/3.%20进阶指南：自定义%20Prompt%20提升大模型解题能力.md)
 
   你将学习自定义一个 Prompt 来提升大模型解数学题的能力，其中一样会提供 Gradio 和非 Gradio 两个版本，并展示代码细节。
-  对应课程镜像【HW4：Become an AI Hypnosis Master】。
+  对应课程镜像【[HW4：Become an AI Hypnosis Master](https://colab.research.google.com/drive/16JzVN_Mu4mJfyHQpQEuDx1q6jI-cAnEl?hl=zh-tw#scrollTo=RI0hC7SFT3Sr&uniqifier=1)】。
 
 - [4. 认识 LoRA：从线性层到注意力机制](https://github.com/Hoper-J/LLM-Guide-and-Demos-zh_CN/blob/master/4.%20认识%20LoRA：从线性层到注意力机制.md)
 
@@ -53,20 +65,26 @@
   
   了解模型参数和显存的对应关系并掌握不同精度的导入方式会使得你对模型的选择更加称心。
   
-- [8. 尝试微调LLM：让它会写唐诗]()
+- [8. 尝试微调LLM：让它会写唐诗](https://github.com/Hoper-J/LLM-Guide-and-Demos-zh_CN/blob/master/8.%20尝试微调LLM：让它会写唐诗.md)
   
   这篇文章与[3. 进阶指南：自定义 Prompt 提升大模型解题能力](https://github.com/Hoper-J/LLM-Guide-and-Demos-zh_CN/blob/master/3.%20进阶指南：自定义%20Prompt%20提升大模型解题能力.md)一样，本质上是专注于“用”而非“写”，你可以像之前一样，对整体的流程有了一个了解，尝试调整超参数部分来查看对微调的影响。
+  对应课程镜像【[HW5: LLM Fine-tuning](https://colab.research.google.com/drive/1nB3jwRJVKXSDDNO-pbURrao0N2MpqHl8?usp=sharing#scrollTo=uh5rwbr4q5Nw)】。
   
+- [9. 深入理解 Beam Search：原理, 示例与代码实现](https://github.com/Hoper-J/LLM-Guide-and-Demos-zh_CN/blob/master/9.%20深入理解%20Beam%20Search：原理%2C%20示例与代码实现.md)
   
+  将从示例到代码演示，并讲解 Beam Search 的数学原理，这应该能解决一些之前阅读的困惑，最终提供一个简单的使用 Hugging Face Transformers 库的示例（如果跳过了之前的文章的话可以尝试这个示例）。
 
-目前的规划：
+## 后续规划
 
-1. 将完全复现【生成式人工智能导论】这门课程的所有代码（画饼ing）具体：
+1. 将优先完全复现【生成式人工智能导论】这门课程的所有代码以供学习，具体：
 
    - 将其中的行为使用 OpenAI 库进行替换
    - 使用 ipywidgets 模拟 Colab 的交互
    - 以中文进行作业引导
 
-   下一节预告：...（回去改论文了，鸽会）。
+   下一节预告：...。
 
 2. ...
+
+
+
