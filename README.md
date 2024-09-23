@@ -25,15 +25,15 @@
 | [11. DPO 微调示例：根据人类偏好优化LLM大语言模型](https://github.com/Hoper-J/LLM-Guide-and-Demos-zh_CN/blob/master/Guide/11.%20DPO%20微调示例：根据人类偏好优化LLM大语言模型.md) | 这里是一个使用 DPO 微调的示例。                              | [Code](https://github.com/Hoper-J/LLM-Guide-and-Demos-zh_CN/blob/master/Demos/9.%20DPO%20微调：根据偏好引导LLM的输出.ipynb) |
 | [12. Inseq 特征归因：可视化解释 LLM 的输出](https://github.com/Hoper-J/LLM-Guide-and-Demos-zh_CN/blob/master/Guide/12.%20Inseq%20特征归因：可视化解释%20LLM%20的输出.md) | 翻译和文本生成（填空）任务的可视化示例。                     | [Code](https://github.com/Hoper-J/LLM-Guide-and-Demos-zh_CN/blob/master/Demos/10.%20Inseq：可视化解释LLM的输出.ipynb) |
 | [13. 了解人工智能可能存在的偏见](https://github.com/Hoper-J/LLM-Guide-and-Demos-zh_CN/blob/master/Guide/13.%20了解人工智能可能存在的偏见.md) | 这里不需要理解代码，可以当作休闲时的一次有趣探索。           | [Code](https://github.com/Hoper-J/LLM-Guide-and-Demos-zh_CN/blob/master/Demos/11.%20了解人工智能可能存在的偏见.ipynb) |
-| [14. PEFT：在大模型中快速应用 LoRA](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/14.%20PEFT：在大模型中快速应用%20LoRA.md) | 学习如何在导入大模型后增加 LoRA 层。                         | [Code](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Demos/12.%20%20应用%20LoRA%20到大模型的简单示例（PEFT）.ipynb) |
+| [14. PEFT：在大模型中快速应用 LoRA](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/14.%20PEFT：在大模型中快速应用%20LoRA.md) | 学习如何在导入大模型后增加 LoRA 层。                         | [Code](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Demos/12.%20应用%20LoRA%20到大模型的简单示例（PEFT）.ipynb) |
 
 ---
 
 **拓展阅读：**
 
-| Guide                                                        | Describe                                                   |
-| ------------------------------------------------------------ | ---------------------------------------------------------- |
-| [a. 使用 HFD 加快 Hugging Face 模型和数据集的下载](https://github.com/Hoper-J/LLM-Guide-and-Demos-zh_CN/blob/master/Guide/a.%20使用%20HFD%20加快%20Hugging%20Face%20模型和数据集的下载.md) | 如果你觉得模型下载实在是太慢了，可以参考这篇文章进行配置。 |
+| Guide                                                        | Describe                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| [a. 使用 HFD 加快 Hugging Face 模型和数据集的下载](https://github.com/Hoper-J/LLM-Guide-and-Demos-zh_CN/blob/master/Guide/a.%20使用%20HFD%20加快%20Hugging%20Face%20模型和数据集的下载.md) | 如果你觉得模型下载实在是太慢了，可以参考这篇文章进行配置。<br />遇到代理相关的 443 错误，也可以试着查看这篇文章。 |
 
 **文件夹解释：**
 

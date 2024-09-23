@@ -3,34 +3,36 @@
 > Hugging Face 提供了丰富的预训练模型和数据集，而且使用 Hugging Face 提供的 `from_pretrained()` 方法可以轻松加载它们，但是，模型和数据集文件通常体积庞大，用默认方法下载起来非常花时间。
 >
 > 本文将指导你如何使用 **HFD（Hugging Face Downloader）** 来高效地下载 Hugging Face 上的模型和数据集。HFD 是一个轻量级的下载工具，支持多线程下载和镜像加速。
+>
+> 如果你遇到了代理相关的 443 报错，可以滑到章末查看。
 
 ## 目录
 
 - [准备工作](#准备工作)
-   - [所需工具安装](#所需工具安装)
-     - [安装 Git](#安装-git)
-     - [安装 Wget 或 Curl](#安装-wget-或-curl)
-     - [安装 Aria2c](#安装-aria2c)
-   - [安装 Git LFS](#安装-git-lfs)
-     - [Linux](#linux)
-     - [macOS](#macos)
-     - [Windows](#windows)
-   - [安装 HFD](#安装-hfd)
-     - [下载 HFD](#下载-hfd)
-     - [执行权限](#执行权限)
-   
+  - [所需工具安装](#所需工具安装)
+    - [安装 Git](#安装-git)
+    - [安装 Wget 或 Curl](#安装-wget-或-curl)
+    - [安装 Aria2c](#安装-aria2c)
+  - [安装 Git LFS](#安装-git-lfs)
+    - [Linux](#linux)
+    - [macOS](#macos)
+    - [Windows](#windows)
+  - [安装 HFD](#安装-hfd)
+    - [下载 HFD](#下载-hfd)
+    - [执行权限](#执行权限)
 - [配置环境变量](#配置环境变量)
-   - [Linux](#linux-1)
-   - [Windows PowerShell](#windows-powershell)
-
+  - [Linux](#linux-1)
+  - [Windows PowerShell](#windows-powershell)
 - [使用 HFD 下载模型](#使用-hfd-下载模型)
-   - [下载 GPT-2 模型](#下载-gpt-2-模型)
-     - [参数说明](#参数说明)
-     - [导入模型](#导入模型)
-   
+  - [下载 GPT-2 模型](#下载-gpt-2-模型)
+    - [参数说明](#参数说明)
+    - [导入模型](#导入模型)
 - [使用 HFD 下载数据集](#使用-hfd-下载数据集)
-   - [下载 WikiText 数据集](#下载-wikitext-数据集)
-   - [参数说明](#参数说明-1)
+  - [下载 WikiText 数据集](#下载-wikitext-数据集)
+  - [参数说明](#参数说明-1)
+- [可能存在的问题（443 和 git clone failed）](#可能存在的问题443-和-git-clone-failed)
+  - [取消代理](#取消代理)
+  - [重新设置代理](#重新设置代理)
 
 - [参考链接](#参考链接)
 
@@ -300,6 +302,76 @@ print(output_text)
 - `--dataset`：指定下载数据集。
 - `--tool aria2c` 和 `-x 4`：同上，使用 `aria2c` 进行多线程下载。
 
-# 参考链接
+## 可能存在的问题（443 和 git clone failed）
+
+### 取消代理
+
+443 报错一般是因为之前配置了代理，然后现在过期不可用了。
+
+在命令行查看是否设置代理：
+
+```bash
+env | grep -i proxy
+```
+
+可能的输出：
+
+```bash
+http_proxy=http://127.0.0.1:7890
+https_proxy=http://127.0.0.1:7890
+all_proxy=socks5://127.0.0.1:7891
+```
+
+使用以下命令取消：
+
+```bash
+unset http_proxy                                 
+unset https_proxy
+unset all_proxy
+```
+
+取消代理之后仍然可能报对应端口的错误，然后`Git clone failed.`这有可能是因为你的 Git 之前配置了代理。
+
+查看配置（如果是当前项目配置，去掉 --global）：
+
+```bash
+git config --global --list
+```
+
+可能的输出：
+
+```bash
+http.proxy=http://127.0.0.1:7890
+https.proxy=http://127.0.0.1:7890
+```
+
+如果存在代理，对应取消：
+
+```bash
+git config --global --unset http.proxy
+git config --global --unset https.proxy
+```
+
+现在应该可以正常下载。
+
+### 重新设置代理
+
+如果你想重新设置代理，下面也给出对应的命令，假设 HTTP/HTTPS 端口号为 7890， SOCKS5 为 7891。
+
+- 终端代理：
+
+    ```bash
+    export http_proxy=http://127.0.0.1:7890
+    export https_proxy=http://127.0.0.1:7890
+    export all_proxy=socks5://127.0.0.1:7891
+    ```
+    
+- Git 代理：
+    ```bash
+    git config --global http.proxy http://127.0.0.1:7890
+    git config --global https.proxy http://127.0.0.1:7890
+    ```
+
+## 参考链接
 
 [HF-Mirror](https://hf-mirror.com)
