@@ -1,0 +1,8 @@
+summarizer:
+  api_base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
+  api_key: 
+  language: zh
+  model_name: medium
+  output_dir: ./output
+  temperature: 0.2
+  timestamped: false
