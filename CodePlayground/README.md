@@ -47,7 +47,7 @@
 
 ## 当前的玩具
 
-### 1. Summarizer
+### 1. AI Summarizer
 
 > [15. 0 基础也能轻松实现 AI 视频摘要](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/15.%200%20基础也能轻松实现%20AI%20视频摘要.md)
 
@@ -70,27 +70,31 @@ python summarizer.py file_path [--api_key YOUR_API_KEY] [--output_dir OUTPUT_DIR
    ```
 
    - `file_path`：你要处理的文件路径，可以是视频、音频或字幕文件。
-   - `--api_key`：可选参数，指定 OpenAI API 密钥。如果配置文件中已有密钥，则可以省略此参数。
+   - `--api_key`：可选参数，指定 OpenAI API 密钥。如果配置文件中已有密钥，则可以省略此参数。当不传入时，会要求输入，验证后会自动更新 config.yaml。
    - `--output_dir`：可选参数，指定生成文件保存的目录，默认为 `./output/` 文件夹。
    - 其他参数包括 `--model_name`、`--language`、`--temperature` 和 `--timestamped`，可根据需要调整。
 
    以上命令会从指定文件中提取音频，生成字幕并自动生成摘要。
 
----
+   生成的文件默认会保存在 `./output` 文件夹下，包括：
+   - **转录生成的字幕文件**（SRT 格式）
+   - **视频摘要文件**（TXT 格式）
 
 #### 配置管理
 
 脚本支持从 `config.yaml` 文件中读取默认配置，你可以通过编辑该文件来自定义参数，避免每次运行脚本时手动指定。
 
-[配置文件]()示例：
+[配置文件](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/CodePlayground/config.yaml)示例：
 
    ```yaml
 summarizer:
   model_name: "medium"
   language: "zh"
-  temperature: 0.2
+  whisper_temperature: 0.2
+  llm_temperature: 0.2
   timestamped: false
   output_dir: "./output"
+  api_key:
   api_base_url: "https://dashscope.aliyuncs.com/compatible-mode/v1"
    ```
 
@@ -98,25 +102,18 @@ summarizer:
 
 - `model_name`: Whisper 模型名称（如 `tiny`, `base`, `small`, `medium`, `large-v3`）。
 - `language`: 转录语言，默认设置为 `zh`（中文）。
-- `temperature`: OpenAI API 生成文本时的温度，范围为 0 到 1。
+- `whisper_temperature`: Whisper 模型音频转字幕时的温度，范围为 0 到 1。
+- `llm_temperature`: 大模型生成文本时的温度，范围为 0 到 1。
 - `timestamped`: 是否保留转录文本的时间戳，布尔值。
 - `output_dir`: 生成文件的默认保存目录。
+- `api_key`: 你的 OpenAI API 密钥，可以通过命令行参数或配置文件指定。
+- `api_base_url`: 默认使用阿里云大模型平台。
 
-#### 摘要示例
-
-```bash
-python summarizer.py ./example_video.mp4 --api_key your-api-key
-```
-
-生成的文件默认会保存在 `./output` 目录下，包括：
-
-- **转录生成的字幕文件**（SRT 格式）
-- **视频摘要文件**（TXT 格式）
 
 #### 注意事项
 
-- **中间文件保留**：默认情况下，Summarizer.py 会保留所有中间转换文件，如音频和字幕文件。如果您需要删除这些中间文件，可以在脚本中进行相应修改。
-- **模型选择**：在 `model_name` 中选择 Whisper 模型时，请注意，模型越大对显存的占用越高，建议在显存充足的环境下使用。
+- **中间文件保留**：默认情况下，summarizer.py 会保留所有中间转换文件，如音频和字幕文件。如果你需要删除这些中间文件，可以在脚本中进行相应修改。
+- **模型选择**：在 `model_name` 中选择 Whisper 模型时注意，模型越大对显存的占用越高，建议在显存充足的环境下使用。
 
 ---
 

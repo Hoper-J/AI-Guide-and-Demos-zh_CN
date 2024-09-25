@@ -1,6 +1,8 @@
 import os
 import yaml
 
+from openai import OpenAI
+
 
 def load_config(config_file='config.yaml', script_name='summarizer') -> dict:
     """
@@ -52,13 +54,32 @@ def save_config(config, config_file='config.yaml', script_name='summarizer'):
 def get_api_key(config, config_file='config.yaml', script_name='summarizer') -> str:
     """
     从配置文件中获取 API 密钥。如果配置中没有 API 密钥，则提示用户输入并保存到配置文件中。
+    验证密钥是否有效，如果无效则提示重新输入。
 
     返回:
-    - str: 获取到的 API 密钥。
+    - str: 验证后的 API 密钥。
     """
     api_key = config.get('api_key')
-    if not api_key:
+    base_url = config.get('api_base_url', "https://dashscope.aliyuncs.com/compatible-mode/v1")
+
+    while not api_key:
         api_key = input("请输入你的 OpenAI API 密钥: ").strip()
-        config['api_key'] = api_key
-        save_config(config, config_file=config_file, script_name=script_name)
+        # 构建客户端
+        client = OpenAI(api_key=api_key, base_url=base_url)
+        
+        # 验证 API 密钥
+        try:
+            # 简单的请求测试，例如获取模型列表
+            client.models.list()
+            print("API 密钥验证成功。")
+            
+            # 将验证通过的密钥保存到配置文件中
+            config['api_key'] = api_key
+            save_config(config, config_file=config_file, script_name=script_name)
+            return api_key
+
+        except Exception as e:
+            print(f"API 密钥无效: {e}")
+            api_key = None  # 重置 API 密钥，提示用户重新输入
+
     return api_key
