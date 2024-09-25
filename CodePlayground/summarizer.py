@@ -247,11 +247,7 @@ def summarize_text(text, client, timestamped=False, model="qwen-vl-max-0809", ll
         print(f"生成摘要时出错: {e}")
     return None
 
-<<<<<<< HEAD
 def process_file(file_path, client, output_dir=None, timestamped=False, model_name="medium", language="zh", whisper_temperature=0.2, llm_temperature=0.2):
-=======
-def process_file(file_path, client, output_dir=None, timestamped=False, model_name="medium", language="zh", temperature=0.2):
->>>>>>> b3fcb481d81631ff882dc4470aa442ae5668e635
     """
     根据文件类型处理文件并生成摘要。处理包括视频文件转换为音频、音频转录为字幕等。
 
