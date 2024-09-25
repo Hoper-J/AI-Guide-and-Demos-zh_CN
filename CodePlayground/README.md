@@ -6,14 +6,21 @@
 
 ## 搭建场地
 
-1. 创建并激活虚拟环境（可选）：
+1. 克隆仓库：
+
+   ```bash
+   git clone https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN.git
+   cd AI-Guide-and-Demos-zh_CN/CodePlayground
+   ```
+
+2. 创建并激活虚拟环境（可选）：
 
    ```bash
    conda create -n playground python=3.9
    conda activate playground
    ```
 
-2. 安装依赖
+3. 安装依赖
 
    ### PyTorch 依赖
 
@@ -61,6 +68,14 @@
 - **视频摘要**：使用 OpenAI 的模型生成视频内容的摘要。
 - **配置管理**：支持从 `config.yaml` 文件中读取和保存配置。
 
+#### 快速使用
+
+```bash
+python summarizer.py examples/summarizer.mp4
+```
+
+仓库提供了一个样例视频供你运行，以防止可能存在的选择困难症 :)
+
 #### 使用方法
 
 你可以通过命令行运行 `summarizer.py`，并指定要处理的文件路径：
@@ -69,14 +84,15 @@
 python summarizer.py file_path [--api_key YOUR_API_KEY] [--output_dir OUTPUT_DIR] [其他可选参数]
    ```
 
-   - `file_path`：你要处理的文件路径，可以是视频、音频或字幕文件。
+   - `file_path`：替换为要处理的文件路径，可以是视频、音频或字幕文件。
    - `--api_key`：可选参数，指定 OpenAI API 密钥。如果配置文件中已有密钥，则可以省略此参数。当不传入时，会要求输入，验证后会自动更新 config.yaml。
    - `--output_dir`：可选参数，指定生成文件保存的目录，默认为 `./output/` 文件夹。
    - 其他参数包括 `--model_name`、`--language`、`--temperature` 和 `--timestamped`，可根据需要调整。
 
-   以上命令会从指定文件中提取音频，生成字幕并自动生成摘要。
+   以上命令会从样例视频中提取音频，生成字幕并自动生成摘要。
 
    生成的文件默认会保存在 `./output` 文件夹下，包括：
+   - **对应的音频文件**（MP3格式）
    - **转录生成的字幕文件**（SRT 格式）
    - **视频摘要文件**（TXT 格式）
 
