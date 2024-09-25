@@ -6,6 +6,8 @@
 >
 > 强烈建议搭配李宏毅老师的课程：【生成式人工智能导论】进行学习。
 > [课程相关链接快速访问](https://github.com/Hoper-J/LLM-Guide-and-Demos-zh_CN?tab=readme-ov-file#快速访问)
+>
+> 现在，项目开设了[🎡CodePlayground](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/tree/master/CodePlayground)，你可以跟随文档配置好环境，用一行代码执行脚本感受 AI 的魅力。
 
 ## 目录
 
@@ -58,12 +60,16 @@
 
     这里是 .md 文件用到的图片，不需要关注这个文件夹。
   
-- **CodePlayground**
+- [**CodePlayground**](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/tree/master/CodePlayground)
 
   - 一些有趣的代码脚本示例（Toy 版）。
 
-    - **summarizer.py** [🎡脚本](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/CodePlayground/summarizer.py)
+    - **README.md**
 
+      - 你需要先阅读这份说明。
+    
+    - **summarizer.py** [🎡脚本](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/CodePlayground/summarizer.py)
+    
       AI 视频/音频/字幕摘要。
 
 
