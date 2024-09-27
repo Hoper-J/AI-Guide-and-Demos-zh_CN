@@ -46,6 +46,7 @@
 | Guide                                                        | Describe                                                     |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | [a. 使用 HFD 加快 Hugging Face 模型和数据集的下载](https://github.com/Hoper-J/LLM-Guide-and-Demos-zh_CN/blob/master/Guide/a.%20使用%20HFD%20加快%20Hugging%20Face%20模型和数据集的下载.md) | 如果你觉得模型下载实在是太慢了，可以参考这篇文章进行配置。<br />遇到代理相关的 443 错误，也可以试着查看这篇文章。 |
+| [b. 命令行基础指令速查（Linux/Mac适用）](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/b.%20命令行基础指令速查（Linux%3AMac适用）.md) | 一份命令行的指令速查，基本包含当前仓库的涉及的所有指令，在感到疑惑时去查看它。 |
 
 **文件夹解释：**
 
@@ -118,4 +119,8 @@
 2. TODO: 利用 OpenCC 库去除过去演示中的繁体 Prompt 限制。
 
 
+
+
+
+**感谢你的STAR🌟，希望这一切对你有所帮助。**
 
