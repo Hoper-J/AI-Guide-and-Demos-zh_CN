@@ -6,7 +6,7 @@
 
 ## 搭建场地
 
-1. 克隆仓库：
+1. 克隆仓库（如果之前克隆过可以跳过）：
 
    ```bash
    git clone https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN.git
@@ -28,10 +28,10 @@
 
    ```python
    # pip
-   pip install torch torchvision torchaudio
+   pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
    
    # conda
-   conda install pytorch::pytorch torchvision torchaudio -c pytorch
+   conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia
    ```
 
    ### AI Summarizer 依赖

@@ -107,6 +107,65 @@
 
 **P.S. 中文镜像将完全实现作业代码的所有功能，Colab 链接对应于原作业，选择其中一个完成学习即可。**
 
+## 环境准备
+
+### 克隆仓库项目
+
+通过以下命令拉取项目:
+
+```bash
+git clone https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN.git
+cd AI-Guide-and-Demos-zh_CN
+```
+
+### 虚拟环境（可选，推荐）
+
+版本不限制:
+
+```bash
+conda create -n aigc python=3.9
+```
+
+按`y`回车以继续，等创建完成后，激活虚拟环境:
+
+```bash
+conda activate aigc
+```
+
+### 基础配置
+
+先安装 `jupyter-lab`，这比 `jupyter notebook` 好用很多。
+
+```bash
+pip install jupyterlab
+```
+
+安装完成后，执行下面的命令：
+
+```bash
+jupyter-lab
+```
+
+![image-20240928110805693](./Guide/assets/image-20240928110805693.png)
+
+现在你将可以通过弹出的链接进行访问，一般位于8888端口。对于图形化界面，Windows/Linux 摁住 `Ctrl`，mac 按住 `Command`，然后点击链接可以直接跳转。至此，你将获得项目的全貌：
+
+![image-20240928115726301](./Guide/assets/image-20240928115726301.png)
+
+### 依赖安装
+
+接下来需要进行基础的依赖安装，参考[PyTorch官网](https://pytorch.org/get-started/locally/)，以 CUDA 11.8 为例（如果显卡不支持11.8，需要更换命令），二选一进行安装：
+
+```bash
+# pip
+pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+
+# conda
+conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia
+```
+
+现在，你已经成功配置好了所有需要的环境，准备开始学习 :) 其余依赖在每个文章中会单独列出。
+
 ## 后续规划
 
 1. 将优先完全复现【生成式人工智能导论】这门课程的所有代码以供学习，具体：
@@ -117,11 +176,11 @@
 
    下一节预告：Stable diffusion AI 生图 LoRA 微调
 
-2. TODO: 利用 OpenCC 库去除过去演示中的繁体 Prompt 限制。
+2. 更多的实战项目。
 
 
 
-
+---
 
 **感谢你的STAR🌟，希望这一切对你有所帮助。**
 
