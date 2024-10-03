@@ -152,11 +152,11 @@ pip install jupyterlab
 jupyter-lab
 ```
 
-![image-20240928110805693](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/assets/image-20240928110805693.png)
+![image-20240928110805693](./Guide/assets/image-20240928110805693.png)
 
 现在你将可以通过弹出的链接进行访问，一般位于8888端口。对于图形化界面，Windows/Linux 摁住 `Ctrl`，mac 按住 `Command`，然后点击链接可以直接跳转。至此，你将获得项目的全貌：
 
-![image-20240928115726301](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/assets/image-20240928115726301.png)
+![image-20240928115726301](./Guide/assets/image-20240928115726301.png)
 
 ### 依赖安装
 
