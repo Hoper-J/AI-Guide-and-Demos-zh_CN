@@ -87,7 +87,7 @@ python summarizer.py file_path [--api_key YOUR_API_KEY] [--output_dir OUTPUT_DIR
    - `file_path`：替换为要处理的文件路径，可以是视频、音频或字幕文件。
    - `--api_key`：可选参数，指定 OpenAI API 密钥。如果配置文件中已有密钥，则可以省略此参数。当不传入时，会要求输入，验证后会自动更新 config.yaml。
    - `--output_dir`：可选参数，指定生成文件保存的目录，默认为 `./output/` 文件夹。
-   - 其他参数包括 `--model_name`、`--language`、`--temperature` 和 `--timestamped`，可根据需要调整。
+   - 其他参数见[配置文件](#配置管理)或使用 `--help` 进行查看
 
    以上命令会从样例视频中提取音频，生成字幕并自动生成摘要。
 
@@ -109,6 +109,7 @@ summarizer:
   whisper_temperature: 0.2
   llm_temperature: 0.2
   timestamped: false
+  max_tokens: 1000
   output_dir: "./output"
   api_key:
   api_base_url: "https://dashscope.aliyuncs.com/compatible-mode/v1"
@@ -121,6 +122,7 @@ summarizer:
 - `whisper_temperature`: Whisper 模型音频转字幕时的温度，范围为 0 到 1。
 - `llm_temperature`: 大模型生成文本时的温度，范围为 0 到 1。
 - `timestamped`: 是否保留转录文本的时间戳，布尔值。
+- `max_tokens:` 摘要生成时的最大 token 数量。
 - `output_dir`: 生成文件的默认保存目录。
 - `api_key`: 你的 OpenAI API 密钥，可以通过命令行参数或配置文件指定。
 - `api_base_url`: 默认使用阿里云大模型平台。

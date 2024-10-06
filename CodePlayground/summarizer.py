@@ -1,9 +1,13 @@
 # 这里是一个 Toy Summarizer. 祝你玩的开心。
 # 它会保留中间转换的文件，因为这或许对你有用。
 # 出现错误欢迎提出 Issue，记得贴上操作系统环境和可复现的命令。
-# 对应文章：《15. 0 基础也能轻松实现 AI 视频摘要》
-# https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/15.%200%20基础也能轻松实现%20AI%20视频摘要.md
-# 使用方法：python summarizer.py ./example_video.mp4
+
+# 对应文章：《15. 用 API 实现 AI 视频摘要：动手制作属于你的 AI 视频小助手》
+# https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/15.%20用%20API%20实现%20AI%20视频摘要：动手制作属于你的%20AI%20视频助手.md
+
+# 使用方法：python summarizer.py <file_path> [可选参数]
+# 示例：python summarizer.py ./examples/summarizer.mp4
+# 查看完整帮助：使用 -h 或 --help
 
 import os
 import sys
@@ -180,7 +184,7 @@ def read_subtitle(file_path, timestamped=False):
         print(f"未知错误: {e}. 请检查输入和配置。")
     return None
     
-def summarize_text(text, client, timestamped=False, model="qwen-vl-max-0809", llm_temperature=0.2):
+def summarize_text(text, client, timestamped=False, model="qwen-vl-max-0809", llm_temperature=0.2, max_tokens=1000):
     """
     注意，我们没有对字幕文件做更多的处理，没有滑动窗口，没有文本清理，没有语义分割。
     只是使用 Prompt 指导模型生成摘要。即（美名其曰）：In-context Learning.
@@ -191,6 +195,7 @@ def summarize_text(text, client, timestamped=False, model="qwen-vl-max-0809", ll
     - timestamped (bool): 是否基于时间戳生成摘要，默认为 False。
     - model (str): 使用的 OpenAI 模型名称，默认为 'qwen-vl-max-0809'。
     - llm_temperature (float): 生成摘要时的温度，默认为 0.2。
+    - max_tokens (int): 生成摘要时的最大 token 数，默认为 1000。
 
     返回:
     - str: 生成的摘要文本。
@@ -218,7 +223,7 @@ def summarize_text(text, client, timestamped=False, model="qwen-vl-max-0809", ll
                 ],
                 model=model,
                 temperature=llm_temperature,
-                max_tokens=1000
+                max_tokens=max_tokens
             )
             summary = response.choices[0].message.content.strip()
             print("摘要生成成功。")
@@ -232,7 +237,7 @@ def summarize_text(text, client, timestamped=False, model="qwen-vl-max-0809", ll
                 ],
                 model=model,
                 temperature=llm_temperature,
-                max_tokens=1000
+                max_tokens=max_tokens
             )
             summary = response.choices[0].message.content.strip()
             print("摘要生成成功。")
@@ -247,7 +252,7 @@ def summarize_text(text, client, timestamped=False, model="qwen-vl-max-0809", ll
         print(f"生成摘要时出错: {e}")
     return None
 
-def process_file(file_path, client, output_dir=None, timestamped=False, model_name="medium", language="zh", whisper_temperature=0.2, llm_temperature=0.2):
+def process_file(file_path, client, output_dir=None, timestamped=False, model_name="medium", language="zh", whisper_temperature=0.2, llm_temperature=0.2, max_tokens=1000):
     """
     根据文件类型处理文件并生成摘要。处理包括视频文件转换为音频、音频转录为字幕等。
 
@@ -260,6 +265,7 @@ def process_file(file_path, client, output_dir=None, timestamped=False, model_na
     - language (str): Whisper 模型的转录语言，默认为 "zh"。
     - whisper_temperature (float): 音频转字幕时的温度，默认为 0.2。
     - llm_temperature (float): 生成摘要时的温度，默认为 0.2。
+    - max_tokens (int): 生成摘要时的最大 token 数，默认为 1000。
 
     返回:
     - str: 生成的摘要文本或错误消息。
@@ -314,7 +320,7 @@ def process_file(file_path, client, output_dir=None, timestamped=False, model_na
         return "文本提取失败"
 
     # 生成摘要
-    summary = summarize_text(text, client, timestamped=timestamped, llm_temperature=llm_temperature)
+    summary = summarize_text(text, client, timestamped=timestamped, llm_temperature=llm_temperature, max_tokens=max_tokens)
     if summary is None:
         return "摘要生成失败"
 
@@ -333,7 +339,10 @@ def main():
     config = load_config(script_name='summarizer')
     
     # 设置命令行参数
-    parser = argparse.ArgumentParser(description="视频/音频/字幕文件生成摘要工具")
+    parser = argparse.ArgumentParser(
+        description="视频/音频/字幕文件生成摘要工具。该工具可以处理视频、音频文件，将它们转换为字幕，并生成摘要。",
+        epilog="示例: python summarizer.py ./examples/summarizer.mp4"
+    )
     parser.add_argument("file_path", type=str, help="要处理的文件路径")
     parser.add_argument("--api_key", type=str, help="OpenAI API 密钥")
     parser.add_argument("--output_dir", type=str, default=config.get('output_dir', './output'), help="生成文件的保存目录")
@@ -343,8 +352,14 @@ def main():
     parser.add_argument("--whisper_temperature", type=float, default=config.get('whisper_temperature', 0.2), help="Whisper 模型的温度")
     parser.add_argument("--llm_temperature", type=float, default=config.get('llm_temperature', 0.2), help="大语言模型的温度")
     parser.add_argument("--timestamped", action="store_true", default=config.get('timestamped', False), help="保留转录的时间戳")
-    
-    args = parser.parse_args()
+    parser.add_argument("--max_tokens", type=int, default=config.get('max_tokens', 1000), help="生成摘要时的最大 token 数")
+
+    try:
+        args = parser.parse_args()
+    except SystemExit:
+        print("\n错误: 必须提供 'file_path' 参数。请指定要处理的视频、音频或字幕文件的路径。\n")
+        print("使用 -h 或 --help 以获取命令行参数的详细说明。\n")
+        sys.exit(1)
 
     # 获取 API 密钥并验证：从命令行或配置文件中获取
     api_key = args.api_key if args.api_key else get_api_key(config)
@@ -383,7 +398,6 @@ def main():
     
     print("\n=====================================\n")
     
-
     # 生成摘要
     summary = process_file(
         file_path=args.file_path,
@@ -393,7 +407,8 @@ def main():
         model_name=args.model_name,
         language=args.language,
         whisper_temperature=args.whisper_temperature,
-        llm_temperature=args.llm_temperature
+        llm_temperature=args.llm_temperature,
+        max_tokens=args.max_tokens
     )
     print(f"\n生成的摘要：\n{summary}")
 
