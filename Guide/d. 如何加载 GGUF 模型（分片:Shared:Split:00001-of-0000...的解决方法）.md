@@ -49,9 +49,9 @@
 命令行执行以下命令：
 
 ```bash
-pip install --upgrade transformers
-pip install gguf
 pip install numpy==1.24.4
+pip install gguf
+pip install --upgrade transformers
 ```
 
 ### 加载单个 GGUF 文件
@@ -173,7 +173,7 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
 
    **输出**：
 
-   ```bash
+   ```
    Converting and de-quantizing GGUF tensors...: 100%|████████████████████████████████████████████████████████████| 339/339 [00:57<00:00,  5.92it/s]
    ```
 
@@ -323,7 +323,7 @@ for name, param in model.named_parameters():
 
 **输出**：
 
-```python
+```
 参数名称: model.embed_tokens.weight, 数据类型: torch.float32
 参数名称: model.layers.0.self_attn.q_proj.weight, 数据类型: torch.float32
 参数名称: model.layers.0.self_attn.q_proj.bias, 数据类型: torch.float32
@@ -378,7 +378,7 @@ Converting and de-quantizing GGUF tensors...: 100%|█████████�
 find /usr/local -name "cuda" -exec readlink -f {} \;
 ```
 
-参数解释**：
+**参数解释**：
 
 - `-name "cuda"`：在 `/usr/local` 目录下搜索名为 "cuda" 的文件或目录。
 - `-exec readlink -f {} \;`：对找到的每个文件或目录执行 `readlink -f`，获取其完整的绝对路径。
@@ -407,7 +407,6 @@ CMAKE_ARGS="-DGGML_CUDA=on \
             -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc" \
 FORCE_CMAKE=1 \
 pip install --upgrade --force-reinstall llama-cpp-python --no-cache-dir --verbose
-
 ```
 
 ### 加载单个 GGUF 文件
@@ -415,10 +414,10 @@ pip install --upgrade --force-reinstall llama-cpp-python --no-cache-dir --verbos
 ```python
 from llama_cpp import Llama
 
-model_id = "Qwen/Qwen2.5-7B-Instruct-GGUF"
+repo_id = "Qwen/Qwen2.5-7B-Instruct-GGUF"
 filename = "qwen2.5-7b-instruct-q3_k_m.gguf"
 
-llm = Llama.from_pretrained(repo_id=model_id, filename=filename)
+llm = Llama.from_pretrained(repo_id=repo_id, filename=filename)
 ```
 
 如果你下载到了某个文件夹下，也可以通过 `model_path` **指定路径**进行加载：
@@ -438,11 +437,11 @@ llm = Llama(model_path=model_path)
 ```python
 from llama_cpp import Llama
 
-model_id = "Qwen/Qwen2.5-7B-Instruct-GGUF"
+repo_id = "Qwen/Qwen2.5-7B-Instruct-GGUF"
 filename = "qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf"
 additional_files = ["qwen2.5-7b-instruct-q4_k_m-00002-of-00002.gguf"]
 
-llm = Llama.from_pretrained(repo_id=model_id, filename=filename, additional_files=additional_files)
+llm = Llama.from_pretrained(repo_id=repo_id, filename=filename, additional_files=additional_files)
 ```
 
 `llama-cpp-python` 会自动加载并合并。
