@@ -43,7 +43,7 @@
 | [16. 用 LoRA 微调 Stable Diffusion：拆开炼丹炉，动手实现你的第一次 AI 绘画](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/16.%20用%20LoRA%20微调%20Stable%20Diffusion：拆开炼丹炉，动手实现你的第一次%20AI%20绘画.md) | SD        | 使用 LoRA 进行文生图模型的微调，现在你也能够为别人提供属于你的 LoRA 文件。 | [Code](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Demos/14a.%20尝试使用%20LoRA%20微调%20Stable%20Diffusion%20模型.ipynb)<br />[Code - 精简版](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Demos/14b.%20尝试使用%20LoRA%20微调%20Stable%20Diffusion%20模型%20-%20精简版.ipynb) |
 | [17. 浅谈模型量化：非对称 vs 对称.md](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/17.%20浅谈模型量化：非对称%20vs%20对称.md) | ---       | 更进一步地了解模型量化的行为，文章以 INT8 为例进行讲解。     | [Code](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Demos/15.%20探究非对称量化和对称量化%20-%20INT8.ipynb) |
 | [18. 模型量化技术概述及 GGUF/GGML 文件格式解析](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/18.%20模型量化技术概述及%20GGUF%3AGGML%20文件格式解析.md) | ---       | 这是一个概述文章，或许可以解决一些你在使用 GGUF/GGML 时的疑惑。 |                                                              |
-| [19. ✍️](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/19.%20.md) | LLM       | 涉及从零开始的LLM部署和微调。<br />目前拆分了量化的前置知识以理解模型选择，可以先阅读 [18. 模型量化技术概述及 GGUF/GGML 文件格式解析](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/18.%20模型量化技术概述及%20GGUF%3AGGML%20文件格式解析.md)。<br />未完待续.. |                                                              |
+| [19. ✍️](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/19.%20.md) | LLM       | 涉及从零开始的LLM部署和微调。<br />目前拆分了量化的前置知识以理解模型选择，可以先阅读 <br />[18. 模型量化技术概述及 GGUF/GGML 文件格式解析](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/18.%20模型量化技术概述及%20GGUF%3AGGML%20文件格式解析.md)。<br />[d. 如何加载 GGUF 模型（分片/Shared/Split/00001-of-0000...的解决方法）](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/d.%20如何加载%20GGUF%20模型（分片%3AShared%3ASplit%3A00001-of-0000...的解决方法）.md)<br />未完待续.. |                                                              |
 
 > [!TIP]
 >
@@ -56,7 +56,7 @@
 | [a. 使用 HFD 加快 Hugging Face 模型和数据集的下载](https://github.com/Hoper-J/LLM-Guide-and-Demos-zh_CN/blob/master/Guide/a.%20使用%20HFD%20加快%20Hugging%20Face%20模型和数据集的下载.md) | 如果你觉得模型下载实在是太慢了，可以参考这篇文章进行配置。<br />遇到代理相关的 443 错误，也可以试着查看这篇文章。 |
 | [b. 命令行基础指令速查（Linux/Mac适用）](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/b.%20命令行基础指令速查（Linux%3AMac适用）.md) | 一份命令行的指令速查，基本包含当前仓库的涉及的所有指令，在感到疑惑时去查看它。 |
 | [c. 一些问题的解决方法](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/c.%20一些问题的解决方法.md) | 这里会解决一些项目运行过程中可能遇到的问题。<br />- 如何拉取远程仓库覆盖本地的一切修改？<br />- 怎么查看和删除 Hugging Face 下载的文件，怎么修改保存路径？ |
-|                                                              |                                                              |
+| [d. 如何加载 GGUF 模型（分片/Shared/Split/00001-of-0000...的解决方法）](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/d.%20如何加载%20GGUF%20模型（分片%3AShared%3ASplit%3A00001-of-0000...的解决方法）.md) | - 了解 Transformers 关于 GGUF 的新特性。<br />- 使用 Transformers/Llama-cpp-python/Ollama 加载 GGUF 格式的模型文件。<br />- 学会合并分片的 GGUF 文件。<br />- 解决 LLama-cpp-python 无法 offload 的问题。 |
 
 **文件夹解释：**
 
