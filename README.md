@@ -13,6 +13,8 @@
 > 现在，项目还开设了[🎡CodePlayground](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/tree/master/CodePlayground)，你可以按照文档配置好环境，使用一行代码运行脚本，体验 AI 的魅力。
 >
 > 祝你旅途愉快！
+>
+> （只存在当前 Commit：每天拖到十一点更新怎么还有那么多同学拉取？！你们太好学了啊喂）
 
 ## 目录
 
