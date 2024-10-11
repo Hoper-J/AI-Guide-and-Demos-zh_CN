@@ -54,7 +54,7 @@
 
 ## 当前的玩具
 
-### 1. AI Summarizer
+<details> <summary> <strong>1. AI Summarizer</strong> </summary>
 
 > [15. 0 基础也能轻松实现 AI 视频摘要](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/15.%200%20基础也能轻松实现%20AI%20视频摘要.md)
 
@@ -132,6 +132,56 @@ summarizer:
 
 - **中间文件保留**：默认情况下，summarizer.py 会保留所有中间转换文件，如音频和字幕文件。如果你需要删除这些中间文件，可以在脚本中进行相应修改。
 - **模型选择**：在 `model_name` 中选择 Whisper 模型时注意，模型越大对显存的占用越高，建议在显存充足的环境下使用。
+
+</details> <details> <summary> <strong>2. AI Chat</strong> </summary>
+
+> [19a. 从加载到对话：使用 Transformers 本地运行量化 LLM 大模型（GPTQ & AWQ）](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/19a.%20从加载到对话：使用%20Transformers%20本地运行量化%20LLM%20大模型（GPTQ%20%26%20AWQ）.md)
+>
+> [19b. 从加载到对话：使用 Llama-cpp-python 本地运行量化 LLM 大模型（GGUF）](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/19b.%20从加载到对话：使用%20Llama-cpp-python%20本地运行量化%20LLM%20大模型（GGUF）.md)
+>
+> 建议阅读并跟随文章进行了配置。
+
+**Chat** 是一个 LLM 对话工具，用于与量化的大模型（LLM）进行对话。支持 GPTQ、AWQ 和 GGUF 格式的模型加载与推理。
+
+#### 功能
+
+- **与 LLM 对话**：支持从模型路径加载不同格式的大语言模型，并根据配置与之进行交互。
+- **配置管理**：现在支持初步的环境检测是否符合脚本运行条件（待进一步测试）。
+- **聊天历史保存**：自动保存聊天记录并支持从历史记录中加载。
+
+#### 快速使用
+
+```bash
+python chat.py <model_path>
+```
+
+替换 `<model_path>` 为 GPTQ、AWQ 或 GGUF 格式模型的路径，即可开始与模型进行交互。
+
+注意，运行脚本会严格检查所有的环境并给出安装指引，你可以注释[setup_chat()](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/1f23368f5a3eaab865ccf9343445516a3d9ce671/CodePlayground/chat.py#L13)对应的行来跳过这个行为（如果不需要加载 GPTQ 和 AWQ 的模型文件）。
+
+#### 使用方法
+
+你可以通过命令行运行 `chat.py`，并指定要加载的模型路径：
+
+```bash
+python chat.py <model_path> [--no_stream] [--max_length 512] [--io history.json] [其他可选参数]
+```
+
+- `model_path`：模型的名称或本地路径，可以是 GPTQ、AWQ 或 GGUF 格式的模型。
+- `--no_stream`：禁用流式输出，模型会在生成完毕后一次性返回全部内容（不建议启用，默认流式输出）。
+- `--max_length`：可选参数，生成文本的最大长度。
+- `--io`：同时指定对话历史的输入和输出路径，避免重复配置。
+- 其他参数使用 `--help` 进行查看。
+
+[配置文件](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/CodePlayground/config.yaml)示例：
+
+```yaml
+chat:
+  max_length: 512
+  no_stream: False
+```
+
+</details>
 
 ---
 

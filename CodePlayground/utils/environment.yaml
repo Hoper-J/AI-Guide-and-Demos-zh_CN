@@ -1,16 +1,13 @@
 pytorch:
   install_instructions: |
-    缺少 PyTorch，请运行以下命令安装：
     pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 
 transformers:
   install_instructions: |
-    缺少 Transformers，请运行以下命令安装：
     pip install --upgrade transformers
 
 autogptq:
   install_instructions: |
-    未检测到 auto-gptq，请按以下步骤进行安装：
     1. 如果仅在 CPU 上运行，请使用：
        pip install auto-gptq
     2. 如果希望启用 CUDA 支持，从源码安装：
@@ -26,16 +23,14 @@ autogptq:
 
 autoawq:
   install_instructions: |
-    未检测到 autoawq，请安装 autoawq 和 autoawq-kernels：
     pip install autoawq autoawq-kernels
 
 llama_cpp:
   install_instructions: |
-    未检测到 llama-cpp-python，请按以下步骤进行安装：
     1. 如果仅在 CPU 上运行，请使用：
        pip install llama-cpp-python
     2. 如果希望启用 GPU 加速，请确保系统已安装 CUDA（可通过 `nvcc --version` 检查）。
-       然后安装：
+       然后安装（设置 CUDA_HOME 参阅：https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/19b.%20从加载到对话：使用%20Llama-cpp-python%20本地运行量化%20LLM%20大模型（GGUF）.md
        CMAKE_ARGS="-DGGML_CUDA=on -DCUDA_PATH=${CUDA_HOME} -DCMAKE_CUDA_COMPILER=${CUDA_HOME}/bin/nvcc" \
        FORCE_CMAKE=1 \
        pip install --upgrade --force-reinstall llama-cpp-python --no-cache-dir --verbose

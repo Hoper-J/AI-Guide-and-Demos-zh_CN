@@ -8,3 +8,6 @@ summarizer:
   output_dir: "./output"
   api_key:
   api_base_url: "https://dashscope.aliyuncs.com/compatible-mode/v1"
+chat:
+  max_length: 512
+  no_stream: False
