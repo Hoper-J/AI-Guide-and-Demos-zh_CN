@@ -100,7 +100,7 @@ class ChatSession:
         - bool: 是否应该终止会话。
         """
         try:
-            user_input = input("User: ").strip()
+            user_input = input("user: ").strip()
         except EOFError:
             print("\n收到 EOF 输入，正在退出对话...")
             return "", True  # 返回终止信号
@@ -266,7 +266,7 @@ class TransformersChatSession(ChatSession):
         }
 
         with torch.no_grad():
-            print("Assistant: ", end="")
+            print("assistant: ", end="")
             output_ids = self.model.generate(**generation_kwargs)
 
         assistant_reply = self.tokenizer.decode(output_ids[0][input_ids.shape[1]:], skip_special_tokens=True)
@@ -276,7 +276,7 @@ class TransformersChatSession(ChatSession):
             print(assistant_reply)
 
 
-def create_chat_session(model_name_or_path, max_length, no_stream, history_path, output_path):
+def create_chat_session(model_name_or_path, max_length, no_stream, history_path, output_path, remote=False):
     """
     根据模型路径和类型创建适当的 ChatSession 实例。
 
@@ -286,6 +286,7 @@ def create_chat_session(model_name_or_path, max_length, no_stream, history_path,
     - no_stream (bool): 是否禁用流式输出。
     - history_path (str): 对话历史的输入文件路径（可选）。
     - output_path (str): 对话历史的保存路径。
+    - remote (bool): 是否远程加载 GGUF 模型。
 
     返回:
     - ChatSession: 适当的 ChatSession 实例（LlamaChatSession 或 TransformersChatSession）。
@@ -295,14 +296,30 @@ def create_chat_session(model_name_or_path, max_length, no_stream, history_path,
 
     try:
         if is_gguf:
-            # 加载 GGUF 格式模型并创建 LlamaChatSession
-            llm = Llama(
-                model_path=model_name_or_path,
-                n_gpu_layers=-1,  # 根据需要卸载到 GPU
-                n_ctx=4096,       # 设置上下文窗口大小
-                verbose=False
-            )
-            print(f"GGUF 模型加载完成，路径: {model_name_or_path}")
+            # 解析路径和文件名（用于远程加载时）
+            if remote:
+                if '/' not in model_name_or_path:
+                    raise ValueError("远程加载时，模型路径应包括 repo_id 和文件名，例如 'repo_id/model_name.gguf'。")
+                
+                repo_id, filename = model_name_or_path.rsplit('/', 1)
+                print(f"远程加载 Llama 模型: repo_id='{repo_id}', filename='{filename}'")
+                
+                llm = Llama.from_pretrained(
+                    repo_id=repo_id,
+                    filename=filename,
+                    n_gpu_layers=-1 if DEVICE == 'cuda' else 0,  # 根据是否为 CUDA 设置 GPU 加速
+                    verbose=False
+                )
+            else:
+                # 本地加载模型
+                llm = Llama(
+                    model_path=model_name_or_path,
+                    n_gpu_layers=-1 if DEVICE == 'cuda' else 0,  # 根据是否为 CUDA 设置 GPU 加速
+                    n_ctx=4096,
+                    verbose=False
+                )
+                print(f"本地 GGUF 模型加载完成，路径: {model_name_or_path}")
+            
             return LlamaChatSession(
                 llm=llm, 
                 max_length=max_length, 
@@ -318,7 +335,7 @@ def create_chat_session(model_name_or_path, max_length, no_stream, history_path,
                 torch_dtype="auto",
                 device_map="auto" if DEVICE == 'cuda' else None
             ).to(DEVICE)
-            print(f"模型加载完成，当前使用设备: {DEVICE}。")
+            print(f"Transformers 模型加载完成，当前使用设备: {DEVICE}。")
             if DEVICE == 'cuda':
                 print(f"当前显存占用: {torch.cuda.memory_allocated() / 1e6:.2f} MB")
             return TransformersChatSession(
@@ -332,6 +349,7 @@ def create_chat_session(model_name_or_path, max_length, no_stream, history_path,
     except Exception as e:
         print(f"加载模型失败: {e}")
         raise
+
 
 
 def configure_logging(verbose):
@@ -368,6 +386,7 @@ def main():
     parser.add_argument("--history_path", "-i", type=str, default=config.get('history_path'), help="对话历史的输入文件路径（可选）")
     parser.add_argument("--output_path", "-o", type=str, default=config.get('output_path'), help="对话历史的输出文件路径（可选）")
     parser.add_argument("--io", "-io", type=str, help="同时指定对话历史输入和输出的路径")
+    parser.add_argument("--remote", action="store_true", help="从远程加载 Llama 模型")
     parser.add_argument("--verbose", "-v", action="store_true", help="启用详细日志输出")
     args = parser.parse_args()
 
@@ -386,7 +405,8 @@ def main():
             max_length=args.max_length,
             no_stream=args.no_stream,
             history_path=args.history_path,
-            output_path=args.output_path
+            output_path=args.output_path,
+            remote=args.remote
         )
     except Exception as e:
         print(f"创建对话会话失败: {e}")

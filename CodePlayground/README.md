@@ -139,7 +139,7 @@ summarizer:
 >
 > [19b. 从加载到对话：使用 Llama-cpp-python 本地运行量化 LLM 大模型（GGUF）](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/19b.%20从加载到对话：使用%20Llama-cpp-python%20本地运行量化%20LLM%20大模型（GGUF）.md)
 >
-> 建议阅读并跟随文章进行了配置。
+> 建议阅读文章进行配置。
 
 **Chat** 是一个 LLM 对话工具，用于与量化的大模型（LLM）进行对话。支持 GPTQ、AWQ 和 GGUF 格式的模型加载与推理。
 
@@ -157,7 +157,9 @@ python chat.py <model_path>
 
 替换 `<model_path>` 为 GPTQ、AWQ 或 GGUF 格式模型的路径，即可开始与模型进行交互。
 
-注意，运行脚本会严格检查所有的环境并给出安装指引，你可以注释[setup_chat()](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/1f23368f5a3eaab865ccf9343445516a3d9ce671/CodePlayground/chat.py#L13)对应的行来跳过这个行为（如果不需要加载 GPTQ 和 AWQ 的模型文件）。
+**注意，暂时仅支持拥有 `tokenizer.chat_template` 属性的模型对话。**
+
+注意，运行脚本会严格检查所有的环境并给出安装指引，你可以注释 [setup_chat()](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/1f23368f5a3eaab865ccf9343445516a3d9ce671/CodePlayground/chat.py#L13) 对应的行来跳过这个行为（如果不需要加载 GPTQ 和 AWQ 的模型文件）。
 
 #### 使用方法
 
@@ -171,6 +173,7 @@ python chat.py <model_path> [--no_stream] [--max_length 512] [--io history.json]
 - `--no_stream`：禁用流式输出，模型会在生成完毕后一次性返回全部内容（不建议启用，默认流式输出）。
 - `--max_length`：可选参数，生成文本的最大长度。
 - `--io`：同时指定对话历史的输入和输出路径，避免重复配置。
+- `--remote`：**仅适用于 GGUF 模型文件**，从 `<model_path>` 解析出 `repo_id` 和 `model_name` 进行远程模型文件的加载。
 - 其他参数使用 `--help` 进行查看。
 
 [配置文件](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/CodePlayground/config.yaml)示例：
