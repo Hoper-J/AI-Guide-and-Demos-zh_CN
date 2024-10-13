@@ -214,7 +214,7 @@ class LlamaChatSession(ChatSession):
 
 
 class TransformersChatSession(ChatSession):
-    def __init__(self, model, tokenizer, max_length=200, no_stream=False, history_path=None, output_path=None):
+    def __init__(self, model, tokenizer, max_length=200, no_stream=False, history_path=None, output_path=None, custom_template=None):
         """
         初始化 Transformers 对话会话。
 
@@ -225,11 +225,21 @@ class TransformersChatSession(ChatSession):
         - no_stream (bool): 是否禁用流式输出。
         - history_path (str): 对话历史文件的路径。
         - output_path (str): 对话历史保存的文件路径。
+        - custom_template (str): 自定义对话模板。
         """
         super().__init__(no_stream=no_stream, history_path=history_path, output_path=output_path)
         self.model = model
         self.tokenizer = tokenizer
         self.max_length = max_length
+
+        # 如果 chat_template 不存在或其值为 None，使用自定义模板
+        if not hasattr(self.tokenizer, 'chat_template') or self.tokenizer.chat_template is None:
+            print("未检测到有效的 chat_template，应用自定义模板...")
+            print("注意，模版位于 config.yaml 中，如果你看到当前输出，那意味着模型需要自定义模版，因为默认模版并不是通用的，只是为了脚本能够正常运行这些模型，并为之后的自定义做一个参考。在一些未见过模版类训练资料的大模型上，极大概率需要在对应的官方文档中找寻模版进行定义")
+            if custom_template:
+                self.tokenizer.chat_template = custom_template
+            else:
+                raise ValueError("未找到有效的模板且自定义模板未提供。")
 
     def get_response(self, user_input):
         """
@@ -338,13 +348,17 @@ def create_chat_session(model_name_or_path, max_length, no_stream, history_path,
             print(f"Transformers 模型加载完成，当前使用设备: {DEVICE}。")
             if DEVICE == 'cuda':
                 print(f"当前显存占用: {torch.cuda.memory_allocated() / 1e6:.2f} MB")
+
+            custom_template = load_config(script_name='chat').get('custom_template', None)
+
             return TransformersChatSession(
                 model=model,
                 tokenizer=tokenizer,
                 max_length=max_length,
                 no_stream=no_stream,
                 history_path=history_path,
-                output_path=output_path
+                output_path=output_path,
+                custom_template=custom_template
             )
     except Exception as e:
         print(f"加载模型失败: {e}")

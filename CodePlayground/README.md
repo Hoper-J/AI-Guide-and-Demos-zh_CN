@@ -157,9 +157,9 @@ python chat.py <model_path>
 
 替换 `<model_path>` 为 GPTQ、AWQ 或 GGUF 格式模型的路径，即可开始与模型进行交互。
 
-**注意，暂时仅支持拥有 `tokenizer.chat_template` 属性的模型对话。**
+**注意，暂时仅支持拥有 `tokenizer.chat_template` 属性的模型进行正常对话，对于其他模型，需要自定义 [config.yaml](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/c29e7dc522fc34a897e4e9cff88fc6e0c1110139/CodePlayground/config.yaml#L14) 中的 `custom_template` 参数。**
 
-注意，运行脚本会严格检查所有的环境并给出安装指引，你可以注释 [setup_chat()](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/1f23368f5a3eaab865ccf9343445516a3d9ce671/CodePlayground/chat.py#L13) 对应的行来跳过这个行为（如果不需要加载 GPTQ 和 AWQ 的模型文件）。
+运行脚本会严格检查所有的环境并给出安装指引，你可以注释 [setup_chat()](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/1f23368f5a3eaab865ccf9343445516a3d9ce671/CodePlayground/chat.py#L13) 对应的行来跳过这个行为（如果不需要加载 GPTQ 和 AWQ 的模型文件）。
 
 #### 使用方法
 
@@ -182,6 +182,21 @@ python chat.py <model_path> [--no_stream] [--max_length 512] [--io history.json]
 chat:
   max_length: 512
   no_stream: False
+  custom_template: |
+    {{ bos_token }}
+    {% for message in messages %}
+        {% if (message['role'] == 'user') != (loop.index0 % 2 == 0) %}
+            {{ raise_exception('Conversation roles must alternate user/assistant/user/assistant/...') }}
+        {% endif %}
+        
+        {% if message['role'] == 'user' %}
+            {{ '[INST] ' + message['content'] + ' [/INST]' }}
+        {% elif message['role'] == 'assistant' %}
+            {{ message['content'] + eos_token}}
+        {% else %}
+            {{ raise_exception('Only user and assistant roles are supported!') }}
+        {% endif %}
+    {% endfor %}
 ```
 
 </details>
