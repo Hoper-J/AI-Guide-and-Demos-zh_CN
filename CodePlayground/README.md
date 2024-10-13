@@ -40,16 +40,18 @@
 
    ```bash
    # Linux
+   sudo apt-get update
    sudo apt-get install ffmpeg
    
    # Mac
    brew install ffmpeg
    ```
-
+   
    b. **Python 库**
-
+   
    ```python
-   pip install openai-whisper openai pyyaml numpy librosa srt certifi
+   pip install openai-whisper openai pyyaml librosa srt certifi
+   pip install numpy==1.26.4  # >= 2.0.0 会无法正常执行 summarizer.py
    ```
 
 ## 当前的玩具

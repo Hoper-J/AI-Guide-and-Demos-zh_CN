@@ -127,7 +127,8 @@ def transcribe_audio(audio_path, subtitle_path, decode_options, model_name="medi
     except ssl.SSLError as e:
         print(f"SSL 错误: {e}. 可能是网络连接问题或证书问题，请检查网络设置和 SSL 证书。")
     except Exception as e:
-        print(f"音频转录时出错: {e}")
+        print("音频转录时出错")
+        raise e
     return None
 
 def format_timestamp(timestamp):
@@ -181,7 +182,8 @@ def read_subtitle(file_path, timestamped=False):
     except UnicodeDecodeError:
         print(f"错误：无法解码文件 '{file_path}'，请检查文件编码格式。")
     except Exception as e:
-        print(f"未知错误: {e}. 请检查输入和配置。")
+        print(f"未知错误，请检查输入和配置。")
+        raise e
     return None
     
 def summarize_text(text, client, timestamped=False, model="qwen-vl-max-0809", llm_temperature=0.2, max_tokens=1000):
@@ -249,7 +251,7 @@ def summarize_text(text, client, timestamped=False, model="qwen-vl-max-0809", ll
     except AttributeError as e:
         print(f"属性错误: {e}. 请检查响应对象的结构。")
     except Exception as e:
-        print(f"生成摘要时出错: {e}")
+        raise e
     return None
 
 def process_file(file_path, client, output_dir=None, timestamped=False, model_name="medium", language="zh", whisper_temperature=0.2, llm_temperature=0.2, max_tokens=1000):
@@ -330,7 +332,8 @@ def process_file(file_path, client, output_dir=None, timestamped=False, model_na
             f.write(summary)
         print(f"摘要文件已保存：{summary_path}")
     except Exception as e:
-        print(f"保存摘要文件时出错: {e}")
+        print(f"保存摘要文件时出错")
+        raise e
 
     return summary
 
