@@ -82,6 +82,12 @@
 
     这里是 .md 文件用到的图片，不需要关注这个文件夹。
   
+- **PaperNotes**
+
+  论文随笔。
+
+  - [对比学习（整理中）](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/PaperNotes/对比学习.md)
+
 - [**CodePlayground**](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/tree/master/CodePlayground)
 
   - 一些有趣的代码脚本示例（Toy 版）。
