@@ -86,7 +86,8 @@
 
   论文随笔。
 
-  - [对比学习（整理中）](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/PaperNotes/对比学习.md)
+  - [**README.md**](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/tree/master/PaperNotes)
+    - 随笔目录索引。
 
 - [**CodePlayground**](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/tree/master/CodePlayground)
 
