@@ -9,7 +9,7 @@
 | Notes                                                        | Tag      | Describe                                                     |
 | ------------------------------------------------------------ | -------- | ------------------------------------------------------------ |
 | [对比学习论文随笔 1：正负样本](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/PaperNotes/对比学习论文随笔%201：正负样本.md) | 对比学习 | 涉及使用正负样本思想且优化目标一致的基础论文：<br />- [Inst Disc CVPR 2018](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/PaperNotes/对比学习论文随笔%201：正负样本.md#inst-disc)<br />- [InvaSpread CVPR 2019](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/PaperNotes/对比学习论文随笔%201：正负样本.md#invaspread)<br />- [MoCo CVPR 2020](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/PaperNotes/对比学习论文随笔%201：正负样本.md#moco)<br />- [SimCLR ICML 2020](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/PaperNotes/对比学习论文随笔%201：正负样本.md#simclr)<br />- [MoCo v2 arXiv 2020](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/PaperNotes/对比学习论文随笔%201：正负样本.md#moco-v2) |
-|                                                              |          |                                                              |
+| [Transformer](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/PaperNotes/Transformer.md) | NLP      | ✍️ 未完待续<br />2024.10.23 文字概述<br />TODO：各模块代码部分和论文结果展示。 |
 
 > [!note]
 >
