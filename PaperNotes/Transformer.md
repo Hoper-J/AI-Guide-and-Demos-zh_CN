@@ -16,22 +16,23 @@ Ashish Vaswan et al. | [arXiv 1706.03762](https://arxiv.org/pdf/1706.03762) | [C
 >   - [Transformer（下）](https://www.bilibili.com/video/BV1Wv411h7kN/?p=50&share_source=copy_web&vd_source=e46571d631061853c8f9eead71bdb390)
 >
 > - **论文逐段精读**
+>   
+>   —— 沐神的论文精读合集
+>   
 >   - [Transformer论文逐段精读【论文精读】]( https://www.bilibili.com/video/BV1pu411o7BE/?share_source=copy_web&vd_source=e46571d631061853c8f9eead71bdb390)
->
->     —— 沐神的论文精读合集
->
+>   
 > - **3Blue1Brown**
 >
->   —— 最顶级的动画解释
+>   —— 顶级的动画解释
 >
 >   - [【官方双语】GPT是什么？直观解释Transformer | 深度学习第5章]( https://www.bilibili.com/video/BV13z421U7cs/?share_source=copy_web&vd_source=e46571d631061853c8f9eead71bdb390)
 >   - [【官方双语】直观解释注意力机制，Transformer的核心 | 【深度学习第6章】](https://www.bilibili.com/video/BV1TZ421j7Ke/?share_source=copy_web)
 >
 > - **代码**
 >
->   - [The Annotated Transformer](https://nlp.seas.harvard.edu/annotated-transformer/)
+>   —— 哈佛 NLP 团队公开的 Transformer 注释版本，基于 PyTorch 实现。
 >
->     —— 哈佛 NLP 团队公开的 Transformer 注释版本，基于 PyTorch 实现。
+>   - [The Annotated Transformer](https://nlp.seas.harvard.edu/annotated-transformer/)
 >
 
 ## 时间线
@@ -270,9 +271,9 @@ def scaled_dot_product_attention(Q, K, V, mask=None):
     """
     计算缩放点积注意力。
     参数:
-        Q: 查询矩阵 (batch_size, num_heads, seq_len_q, d_k)
-        K: 键矩阵 (batch_size, num_heads, seq_len_k, d_k)
-        V: 值矩阵 (batch_size, num_heads, seq_len_v, d_v)
+        Q: 查询矩阵 (batch_size, seq_len_q, embed_size)
+        K: 键矩阵 (batch_size, seq_len_k, embed_size)
+        V: 值矩阵 (batch_size, seq_len_v, embed_size)
         mask: 掩码矩阵，用于屏蔽不应该关注的位置 (可选)
 
     返回:
@@ -407,6 +408,9 @@ class Attention(nn.Module):
 如果使用 mask 掩盖将要预测的词汇，那么 Attention 就延伸为 Masked Attention，这里的实现非常简洁，追溯 scaled_dot_product_attention() 的代码：
 
 ```python
+# 计算分数
+scores = torch.matmul(Q, K.transpose(-2, -1)) / torch.sqrt(torch.tensor(d_k, dtype=torch.float32))
+    
 # 如果提供了掩码矩阵，则将掩码对应位置的分数设为 -inf
 if mask is not None:
     scores = scores.masked_fill(mask == 0, float('-inf'))
@@ -415,7 +419,7 @@ if mask is not None:
 attention_weights = F.softmax(scores, dim=-1)
 ```
 
-在这段代码中，`mask` 矩阵用于指定哪些位置应该被遮蔽（即填充为 -∞），从而保证这些位置的注意力权重在 softmax 输出中接近于零。
+在这段代码中，`mask` 矩阵用于指定哪些位置应该被遮蔽（即填充为 -∞），从而保证这些位置的注意力权重在 softmax 输出中接近于零。注意，掩码机制并不是直接在截断输入序列，也不是在算分数的时候就排除不应该看到的位置，因为看到也没有关系，不会影响与其他位置的分数，所以在传入 Softmax（计算注意力权重）之前排除就可以了。
 
 下图展示了掩码机制的工作原理。对于**自回归生成任务**（训练时的解码器），掩码会覆盖未来的时间步，确保模型只能基于已有的部分生成当前的 token。
 
@@ -537,6 +541,8 @@ class CrossAttention(nn.Module):
 
 #### 总结
 
+> ![image-20241027191114130](./assets/image-20241027191114130.png)
+
 **Masked Attention**、**Self-Attention** 和 **Cross-Attention** 的本质是一致的，这一点从代码调用可以看出来，三者的区别在于未来掩码的使用和输入数据的来源：
 
 - **Masked Attention**：用于解码过程，通过掩码屏蔽未来的时间步，确保模型只能基于已生成的部分进行预测，论文中解码器部分的第一个 Attention 使用的是 Masked Self-Attention。
@@ -549,9 +555,349 @@ class CrossAttention(nn.Module):
 
     在这一阶段，**解码器中的交叉注意力机制**会使用**当前已生成的译文“The capital of China is”**的编码表示作为**查询**，并将**编码器对输入句子“中国的首都是北京”编码表示**作为**键**和**值**，通过计算**查询与键之间的匹配程度**，生成相应的注意力权重，以此从值中提取上下文信息，基于这些信息生成下一个可能的单词（token），比如：“Beijing”。
 
+### 多头注意力机制（Multi-Head Attention）
+
+多头注意力机制在 Transformer 中发挥着与卷积神经网络（CNN）中的**卷积核**（Kernel）类似的作用。CNN 使用多个不同的卷积核在空间域上捕捉不同的局部特征，而 Transformer 的多头注意力通过**多个头**（Head）并行地关注输入数据在不同维度上的依赖关系。
+
+#### 数学表达
+
+假设我们有 $h$ 个头，每个头拥有独立的线性变换矩阵 $W_i^Q, W_i^K, W_i^V$（分别作用于查询、键和值的映射），每个头的计算如下：
+
+$$
+\text{head}_i = \text{Attention}(Q W_i^Q, K W_i^K, V W_i^V)
+$$
+这些头的输出将沿最后一维拼接（**Concat**），并通过线性变换矩阵 $W^O$ 映射回原始嵌入维度（`embed_size`）：
+
+$$
+\text{MultiHead}(Q, K, V) = \text{Concat}(\text{head}_1, \dots, \text{head}_h) W^O
+$$
+
+- **$h$**：注意力头的数量。
+- **$W^O$**：拼接后所通过的线性变换矩阵，用于将多头的输出映射回原始维度。  
+
+> [!note]
+>
+> ![Encoder](./assets/image-20241027191251526.png)
+>
+> 映射回原始维度的主要目的是为了实现残差连接（Residual Connection），即：
+>
+> $x + \text{Layer}(x)$
+>
+> 你将发现其他模块（如自注意力模块、多头注意力机制和前馈网络）的输出层大多都是一样的维度，这是因为只有当输入 $x$ 的形状与经过层变换后的输出 $\text{Layer}(x)$ 的形状一致时，才能按预期的进行逐元素相加（element-wise addition），否则会导致张量维度不匹配，需要额外的变换操作。
+>
+> 演示代码暂时保持 embed_size 的使用，知晓是一致的即可。
+
+先从符合直觉的角度构造多头。
+
+```python
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+class MultiHeadAttention(nn.Module):
+    def __init__(self, embed_size, num_heads):
+        """
+        多头注意力机制。（暂时使用更复杂的变量名来减少理解难度，在最后将统一映射到论文的表达）
+        参数:
+            embed_size: 输入序列的嵌入维度。
+            num_heads: 注意力头的数量，对应于数学公式中的 h。
+        """
+        super(MultiHeadAttention, self).__init__()
+        self.embed_size = embed_size
+        self.num_heads = num_heads
+
+        # 为每个头单独定义 Q, K, V 的线性层，输出维度同为 embed_size
+        self.w_q = nn.ModuleList([nn.Linear(embed_size, embed_size) for _ in range(num_heads)])
+        self.w_k = nn.ModuleList([nn.Linear(embed_size, embed_size) for _ in range(num_heads)])
+        self.w_v = nn.ModuleList([nn.Linear(embed_size, embed_size) for _ in range(num_heads)])
+
+        # 输出线性层，用于将多头拼接后的输出映射回 embed_size
+        self.fc_out = nn.Linear(num_heads * embed_size, embed_size)
+
+    def forward(self, q, k, v, mask=None):
+        """
+        前向传播函数。
+        参数:
+            q: 查询矩阵 (batch_size, seq_len_q, embed_size)
+            k: 键矩阵 (batch_size, seq_len_k, embed_size)
+            v: 值矩阵 (batch_size, seq_len_v, embed_size)
+            mask: 掩码矩阵 (batch_size, seq_len_q, seq_len_k)
+
+        返回:
+            out: 注意力加权后的输出
+            attention_weights: 注意力权重矩阵
+        """
+        batch_size = q.shape[0]
+        multi_head_outputs = []
+
+        # 对每个头分别计算 Q, K, V，并执行缩放点积注意力
+        for i in range(self.num_heads):
+            Q = self.w_q[i](q)  # (batch_size, seq_len_q, embed_size)
+            K = self.w_k[i](k)  # (batch_size, seq_len_k, embed_size)
+            V = self.w_v[i](v)  # (batch_size, seq_len_v, embed_size)
+
+            # 缩放点积注意力
+            scaled_attention, _ = scaled_dot_product_attention(Q, K, V, mask)
+            multi_head_outputs.append(scaled_attention)
+
+        # 将所有头的输出拼接起来
+        concat_out = torch.cat(multi_head_outputs, dim=-1)  # (batch_size, seq_len_q, num_heads * embed_size)
+
+        # 通过输出线性层
+        out = self.fc_out(concat_out)  # (batch_size, seq_len_q, embed_size)
+
+        return out
+    
+
+def scaled_dot_product_attention(Q, K, V, mask=None):
+    """
+    计算缩放点积注意力。
+    参数:
+        Q: 查询矩阵 (batch_size, seq_len_q, embed_size)
+        K: 键矩阵 (batch_size, seq_len_k, embed_size)
+        V: 值矩阵 (batch_size, seq_len_v, embed_size)
+        mask: 掩码矩阵，用于屏蔽不应该关注的位置 (可选)
+
+    返回:
+        output: 注意力加权后的输出矩阵
+        attention_weights: 注意力权重矩阵
+    """
+    ...（使用之前的缩放点积注意力函数）
+    
+    return output, attention_weights
+```
+
+**解释**：
+
+- 每个头的 $W_i^Q, W_i^K, W_i^V$ 是独立的线性变换矩阵，不同头捕捉不同的关系。
+- 所有头的输出在最后一维拼接，再通过线性层 $W^O$ 将其映射回原始维度。
+
+我们成功实现了一个多头注意力机制，多头相比于单头通常能带来性能上的提升，但停下来思考一下：
+
+#### Q：现在所说的性能“提升”真的是由多头造成的吗？
+
+不一定。如果**每个头都独立使用线性层且维度等于 `embed_size`**，模型的参数量会比单头模型大很多，此时性能提升可能是因为**参数量的增加**。为了更准确地评估多头机制的实际贡献，我们可以使用以下两种方法进行公平的对比：
+
+1. **方法 1：单头模型增加参数量（与多头模型参数量一致）**
+
+   使用**一个头**，但将其参数矩阵 $W^Q, W^K, W^V$ 扩展为：
+
+   $$
+   W \in \mathbb{R}^{d_{\text{model}} \times (d_{\text{model}} \cdot h)}
+   $$
+
+   在这种情况下，虽然还是单头模型，但增加了参数量，参数规模将与多头模型保持一致，可以评估性能提升是否真的来自于多头机制本身。
+
+2. **方法 2：降低每个头的维度（与单头模型参数量一致）**
+
+   降低**每**个头的维度，使得：
+
+   $$
+   h \times \text{head\_dim} = \text{embed\_size}
+   $$
+
+   也就是说，每个头的线性变换矩阵 $W_i^Q, W_i^K, W_i^V$ 的尺寸应为：
+
+   $$
+   W_i \in \mathbb{R}^{d_{\text{model}} \times \text{head\_dim}}
+   $$
+
+   其中：
+
+   $$
+   \text{head\_dim} = \frac{\text{embed\_size}}{h}
+   $$
+
+   在这种情况下，多头模型的参数规模与单头模型保持一致。
+
+接下来使用方法 2 修改（方便之后过渡到 Transformer 的真正实现）：
+
+```python
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+class MultiHeadAttention(nn.Module):
+    def __init__(self, embed_size, num_heads):
+        """
+        多头注意力机制：每个头单独定义线性层。
+        参数:
+            embed_size: 输入序列的嵌入维度。
+            num_heads: 注意力头的数量。
+        """
+        super(MultiHeadAttention, self).__init__()
+        assert embed_size % num_heads == 0, "embed_size 必须能被 num_heads 整除。"
+
+        self.embed_size = embed_size
+        self.num_heads = num_heads
+        self.head_dim = embed_size // num_heads  # 每个头的维度
+
+        # 为每个头单独定义 Q, K, V 的线性层
+        self.w_q = nn.ModuleList([nn.Linear(embed_size, self.head_dim) for _ in range(num_heads)])
+        self.w_k = nn.ModuleList([nn.Linear(embed_size, self.head_dim) for _ in range(num_heads)])
+        self.w_v = nn.ModuleList([nn.Linear(embed_size, self.head_dim) for _ in range(num_heads)])
+
+        # 输出线性层，将多头拼接后的输出映射回 embed_size
+        self.fc_out = nn.Linear(embed_size, embed_size)
+
+    def forward(self, q, k, v, mask=None):
+        """
+        前向传播函数。
+        参数:
+            q: 查询矩阵 (batch_size, seq_len_q, embed_size)
+            k: 键矩阵 (batch_size, seq_len_k, embed_size)
+            v: 值矩阵 (batch_size, seq_len_v, embed_size)
+            mask: 掩码矩阵 (batch_size, seq_len_q, seq_len_k)
+
+        返回:
+            out: 注意力加权后的输出
+            attention_weights: 注意力权重矩阵
+        """
+        batch_size = q.shape[0]
+        multi_head_outputs = []
+
+        # 针对每个头独立计算 Q, K, V，并执行缩放点积注意力
+        for i in range(self.num_heads):
+            Q = self.w_q[i](q)  # (batch_size, seq_len_q, head_dim)
+            K = self.w_k[i](k)  # (batch_size, seq_len_k, head_dim)
+            V = self.w_v[i](v)  # (batch_size, seq_len_v, head_dim)
+
+            # 执行缩放点积注意力
+            scaled_attention, _ = scaled_dot_product_attention(Q, K, V, mask)
+            multi_head_outputs.append(scaled_attention)
+
+        # 将所有头的输出拼接起来
+        concat_out = torch.cat(multi_head_outputs, dim=-1)  # (batch_size, seq_len_q, embed_size)
+
+        # 通过输出线性层
+        out = self.fc_out(concat_out)  # (batch_size, seq_len_q, embed_size)
+
+        return out
+
+def scaled_dot_product_attention(Q, K, V, mask=None):
+    """
+    缩放点积注意力计算。
+    参数:
+        Q: 查询矩阵 (batch_size, seq_len_q, head_dim)
+        K: 键矩阵 (batch_size, seq_len_k, head_dim)
+        V: 值矩阵 (batch_size, seq_len_v, head_dim)
+        mask: 掩码矩阵 (batch_size, seq_len_q, seq_len_k)
+
+    返回:
+        output: 注意力加权后的输出矩阵
+        attention_weights: 注意力权重矩阵
+    """
+    ...（使用之前的缩放点积注意力函数，区别在于修改了注释里面的 shape）
+
+    return output, attention_weights
+```
+
+至此就已经真正实现了多头注意力机制，但需要注意到当前代码使用了 **`for` 循环**逐一计算每个头的查询、键和值，虽然逻辑上更直观，但计算起来极慢，只适合去理解而非使用。接下来，我们将优化这些循环，将代码转换为经典的 **Transformer** 源码形式。
+
+#### 优化循环
+
+- **\_\_init\_\_()部分**
+
+  我们不再为每个头单独创建线性层，而是定义一个看起来“共享”（\_\_init\_\_() 中），实际上却“泾渭分明”（forward() 中）的线性层。
+
+  **原代码：**
+
+  ```python
+  self.w_q = nn.ModuleList([nn.Linear(embed_size, self.head_dim) for _ in range(num_heads)])
+  self.w_k = nn.ModuleList([nn.Linear(embed_size, self.head_dim) for _ in range(num_heads)])
+  self.w_v = nn.ModuleList([nn.Linear(embed_size, self.head_dim) for _ in range(num_heads)])
+  ```
+
+  **优化后：**
+
+  ```python
+  # 用于计算 Q, K, V
+  self.w_q = nn.Linear(embed_size, embed_size)
+  self.w_k = nn.Linear(embed_size, embed_size)
+  self.w_v = nn.Linear(embed_size, embed_size)
+  ```
 
 
+- **forward()**
 
+  不再循环遍历每个头来单独计算查询、键和值，而是**一次性计算 Q、K 和 V**，然后使用**重塑**（`reshape`）和**转置**（`transpose`）将这些矩阵拆分为多头的格式，有些代码实现将该操作称为**拆分**（`split`）。
+
+  我们还可以选择使用 `view()` 替代 `reshape()`，因为它们在功能上类似，但 `view()` 需要保证张量在内存中是连续的，本质上，这些操作都是为了确保计算后的形状与多头机制的需求一致。
+
+  **原代码：**
+
+  ```python
+  multi_head_outputs = []
+  for i in range(self.num_heads):
+      Q = self.w_q[i](q)  # (batch_size, seq_len_q, head_dim)
+      K = self.w_k[i](k)  # (batch_size, seq_len_k, head_dim)
+      V = self.w_v[i](v)  # (batch_size, seq_len_v, head_dim)
+  
+      # 执行缩放点积注意力
+      scaled_attention, _ = scaled_dot_product_attention(Q, K, V, mask)
+      multi_head_outputs.append(scaled_attention)
+  
+  # 将所有头的输出拼接起来
+  concat_out = torch.cat(multi_head_outputs, dim=-1)  # (batch_size, seq_len_q, embed_size)
+  ```
+
+  **优化后：**
+
+  ```python
+  # 一次性计算 Q, K, V
+  Q = self.w_q(q)  # (batch_size, seq_len, embed_size)
+  K = self.w_k(k)  # (batch_size, seq_len, embed_size)
+  V = self.w_v(v)  # (batch_size, seq_len, embed_size)
+  
+  # 重塑并拆分为多头 (batch_size, num_heads, seq_len, head_dim)
+  Q = Q.reshape(batch_size, seq_len, self.num_heads, self.head_dim).transpose(1, 2)  # 注意这个转置操作之前的 shape
+  K = K.reshape(batch_size, seq_len, self.num_heads, self.head_dim).transpose(1, 2)
+  V = V.reshape(batch_size, seq_len, self.num_heads, self.head_dim).transpose(1, 2)
+  
+  # 执行缩放点积注意力
+  scaled_attention, _ = scaled_dot_product_attention(Q, K, V, mask)
+  
+  # 拼接多头输出并恢复原始维度
+  concat_out = scaled_attention.transpose(1, 2).reshape(batch_size, -1, self.embed_size)
+  ```
+
+  **详细说明：多头拆分与维度转换**
+
+  **1. `reshape` 操作：**
+
+  ```python
+  Q = Q.reshape(batch_size, seq_len, self.num_heads, self.head_dim)
+  ```
+
+  - 该操作将原始的 `embed_size` 拆分为 `num_heads` 个 `head_dim`。
+    - 如果 `embed_size=512` 且 `num_heads=8`，则每个头的 `head_dim=64`。
+
+  **2. `transpose` 操作：**
+
+  ```python
+  Q = Q.transpose(1, 2)  # 和 Q.transpose(2, 1) 一样
+  ```
+
+  - `transpose` 就是转置，不过这里指定第 1 维和第 2 维互换，即将形状（shape）从 `(batch_size, seq_len, num_heads, head_dim)` 转换为 `(batch_size, num_heads, seq_len, head_dim)`。
+  - 这种变换确保了每个头的数据在后续的注意力计算中是相互独立的。
+
+  **替代实现：`view` 方法的使用**
+
+  我们也可以使用 `view` 方法实现相同的效果，为了简洁，这里将线性变换的代码结合进行展示：
+
+  ```python
+  Q = self.w_q(q).view(batch_size, seq_len, self.num_heads, -1).transpose(1, 2)
+  K = self.w_k(k).view(batch_size, seq_len, self.num_heads, -1).transpose(1, 2)
+  V = self.w_v(v).view(batch_size, seq_len, self.num_heads, -1).transpose(1, 2)
+  
+  scaled_attention, _ = scaled_dot_product_attention(Q, K, V, mask)
+  concat_out = scaled_attention.transpose(1, 2).contiguous().view(batch_size, -1, self.embed_size)
+  ```
+
+  - `-1` 会自动推断头的维度（`head_dim`），与显式使用 `self.head_dim` 等效（reshape 一样可以这么写，结果一样，此处的不同是刻意造成的）。
+  - `view` 要求输入张量在内存上连续，所以在“拼接”的时候先使用 `contiguous()`。
+
+  
 
 ## QA
 
@@ -560,8 +906,16 @@ class CrossAttention(nn.Module):
 将**输入序列**编码为高维特征表示，再将这些表示解码为**输出序列**，具体数学表述如下：
 
 - **编码器**将输入序列 $X = (x_1, ..., x_n)$ 映射为特征表示 $Z = (z_1, ..., z_n)$, 这些表示实际上代表了输入的高维语义信息。
+
 - **解码器**基于编码器生成的表示 $Z$, 逐步生成输出序列 $Y = (y_1, ..., y_m)$。在每一步解码时，解码器是**自回归**（auto-regressive）的，即依赖于先前生成的符号作为输入，以生成当前符号。
+  
   - 在第 $t$ 步时，解码器会将上一步生成的 $y_{t-1}$ 作为额外输入，以预测当前时间步的 $y_t$。 
+  
+  > 结合下面的 GIF 进行理解：
+  >
+  > ![autoregressive](./assets/autoregressive.gif)
+  >
+  > —— [Illustrated Guide to Transformers- Step by Step Explanation](https://towardsdatascience.com/illustrated-guide-to-transformers-step-by-step-explanation-f74876522bc0) 中解码器部分的配图。
 
 ### Q2: 什么是自回归与非自回归？
 
