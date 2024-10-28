@@ -16,11 +16,11 @@ Ashish Vaswan et al. | [arXiv 1706.03762](https://arxiv.org/pdf/1706.03762) | [C
 >   - [Transformer（下）](https://www.bilibili.com/video/BV1Wv411h7kN/?p=50&share_source=copy_web&vd_source=e46571d631061853c8f9eead71bdb390)
 >
 > - **论文逐段精读**
->   
+>
 >   —— 沐神的论文精读合集
->   
+>
 >   - [Transformer论文逐段精读【论文精读】]( https://www.bilibili.com/video/BV1pu411o7BE/?share_source=copy_web&vd_source=e46571d631061853c8f9eead71bdb390)
->   
+>
 > - **3Blue1Brown**
 >
 >   —— 顶级的动画解释
@@ -33,13 +33,22 @@ Ashish Vaswan et al. | [arXiv 1706.03762](https://arxiv.org/pdf/1706.03762) | [C
 >   —— 哈佛 NLP 团队公开的 Transformer 注释版本，基于 PyTorch 实现。
 >
 >   - [The Annotated Transformer](https://nlp.seas.harvard.edu/annotated-transformer/)
+>   
+> - 可视化工具
+>
+>   - [TRANSFORMER EXPLAINER](https://poloclub.github.io/transformer-explainer/)
+>
+>     观察 Self-Attention 的中间过程，并调节右上角的温度（Temperature）查看对概率的影响。
+>
+>     需要注意的是网页端演示的不是传统的 Transformer 架构，而是 GPT-2（Decoder-Only），不过后续的大型语言模型（LLMs）本质都是 Transformer 的子架构，通过 GPT-2 理解相同的部分是完全足够的。
+>
 >
 
 ## 时间线
 
 > ✍️ 未完待续...（完结后删除该模块）
 >
-> TODO：多头注意力机制，各模块代码部分和论文结果展示。
+> 因为 Transformer 是一篇非常重要的基础论文，所以我决定尽量复现所有模块以供学习，网络上确实有很多的资料，但都没有解决我曾经阅读时的疑惑，本文将附带曾经的困惑并指引理解，但时间过于久远，有一些地方可能在目前我觉得“显然”所以没有提及，读者可以大胆的提出 issue，我会在闲暇时补充对应叙述（Python 语言相关的函数问题就不赘述了，查文档更清晰）。
 
 2024.10.23 文字概述
 
@@ -47,34 +56,59 @@ Ashish Vaswan et al. | [arXiv 1706.03762](https://arxiv.org/pdf/1706.03762) | [C
 
 2024.10.25 总结论文 Attention 之间的区别，增加 QA 中对并行的回答
 
+2024.10.27 完成多头注意力模块
+
+2024.10.28 完成编码器-解码器中所有子模块的代码实现
+
+TODO：输入和输出处理代码/编码器-解码器代码和论文结果展示，消除因为时间线拉长可能导致的繁杂冗余表述。
+
 ## 目录
 
    - [前言](#前言)
      - [RNN 的递归原理](#rnn-的递归原理)
-   - [贡献](#贡献)
-   - [模型架构](#模型架构)
-     - [快速概述](#快速概述)
-       - [编码器的输入处理](#编码器的输入处理)
-       - [解码器的输出处理](#解码器的输出处理)
-   - [注意力机制详解](#注意力机制详解)
-     - [缩放点积注意力机制](#缩放点积注意力机制)
-       - [公式解释](#公式解释)
-       - [代码实现](#代码实现)
-       - [为什么需要 Mask 机制？](#为什么需要-mask-机制)
-     - [单头注意力机制（Single-Head Attention）](#单头注意力机制single-head-attention)
-       - [掩码机制（Masked Attention）](#掩码机制masked-attention)
-       - [自注意力机制（Self-attention）](#自注意力机制self-attention)
+- [贡献](#贡献)
+- [模型架构](#模型架构)
+   - [快速概述](#快速概述)
+      - [编码器-解码器架构](#编码器-解码器架构)
+      - [编码器的输入处理](#编码器的输入处理)
+      - [解码器的输出处理](#解码器的输出处理)
+- [注意力机制详解](#注意力机制详解)
+   - [缩放点积注意力机制](#缩放点积注意力机制)
+      - [公式解释](#公式解释)
+      - [代码实现](#代码实现)
+      - [为什么需要 Mask 机制？](#为什么需要-mask-机制)
+   - [单头注意力机制（Single-Head Attention）](#单头注意力机制single-head-attention)
+      - [掩码机制（Masked Attention）](#掩码机制masked-attention)
+      - [自注意力机制（Self-attention）](#自注意力机制self-attention)
          - [代码实现](#代码实现-1)
-       - [交叉注意力机制（Cross-Attention）](#交叉注意力机制cross-attention)
+      - [交叉注意力机制（Cross-Attention）](#交叉注意力机制cross-attention)
          - [代码实现](#代码实现-2)
-       - [总结](#总结)
-   - [QA](#qa)
-     - [Q1: 什么是编码器-解码器架构？](#q1-什么是编码器-解码器架构)
-     - [Q2: 什么是自回归与非自回归？](#q2-什么是自回归与非自回归)
-       - [自回归（Auto-Regressive）](#自回归auto-regressive)
-       - [非自回归（Non-Autoregressive）](#非自回归non-autoregressive)
-     - [Q3: 既然输出 $h_t$ 同样依赖于 $h_{t-1}$, 那并行体现在哪？](#q3-既然输出-h_t-同样依赖于-h_t-1-那并行体现在哪)
-       - [训练阶段的并行化](#训练阶段的并行化)
+      - [总结](#总结)
+   - [多头注意力机制（Multi-Head Attention）](#多头注意力机制multi-head-attention)
+      - [数学表达](#数学表达)
+      - [Q：现在所说的性能“提升”真的是由多头造成的吗？](#q现在所说的性能提升真的是由多头造成的吗)
+      - [优化循环](#优化循环)
+      - [代码实现](#代码实现-3)
+- [Position-wise Feed-Forward Networks（FFN）](#position-wise-feed-forward-networksffn)
+   - [数学表达](#数学表达-1)
+   - [代码实现](#代码实现-4)
+- [残差连接（Residual Connection）和层归一化（Layer Normalization, LayerNorm）](#残差连接residual-connection和层归一化layer-normalization-layernorm)
+   - [Add（残差连接，Residual Connection）](#add残差连接residual-connection)
+      - [代码实现](#代码实现-5)
+   - [Norm（层归一化，Layer Normalization）](#norm层归一化layer-normalization)
+      - [BatchNorm 和 LayerNorm 的区别](#batchnorm-和-layernorm-的区别)
+      - [LayerNorm 的计算过程](#layernorm-的计算过程)
+      - [代码实现](#代码实现-6)
+      - [澄清：LayerNorm 最后的缩放与线性层 (nn.Linear) 的区别](#澄清layernorm-最后的缩放与线性层-nnlinear-的区别)
+   - [Add &amp; Norm](#add--norm)
+      - [代码实现](#代码实现-7)
+- [QA](#qa)
+   - [Q1: 什么是编码器-解码器架构？](#q1-什么是编码器-解码器架构)
+   - [Q2: 什么是自回归与非自回归？](#q2-什么是自回归与非自回归)
+      - [自回归（Auto-Regressive）](#自回归auto-regressive)
+      - [非自回归（Non-Autoregressive）](#非自回归non-autoregressive)
+   - [Q3: 既然输出 $h_t$ 同样依赖于 $h_{t-1}$, 那并行体现在哪？](#q3-既然输出-h_t-同样依赖于-h_t-1-那并行体现在哪)
+      - [训练阶段的并行化](#训练阶段的并行化)
 
 ## 前言
 
@@ -122,6 +156,8 @@ Transformer 的主要贡献如下：
 
 ### 快速概述
 
+#### 编码器-解码器架构
+
 Transformer 模型基于**编码器**（左）- **解码器**（右）架构（如图中灰色透明框所示），
 
 - **$N$** 表示编码器或解码器的**层数**，在原始 Transformer 论文中，均设为 $N=6$, 即编码器和解码器各由六层堆叠（Stack）而成。
@@ -142,7 +178,7 @@ Transformer 模型基于**编码器**（左）- **解码器**（右）架构（�
   
   - **残差连接（Residual Connection）**
   
-    残差连接形式为 $x + \text{Layer}(x)$, 缓解模型在训练深层网络时的梯度消失问题。
+    残差连接形式为 $x + \text{SubLayer}(x)$, 缓解模型在训练深层网络时的梯度消失问题。
   
     **Add** 表示执行这一操作。
   
@@ -150,7 +186,7 @@ Transformer 模型基于**编码器**（左）- **解码器**（右）架构（�
   
     在 Transformer 中采用 LayerNorm，而不是 BatchNorm。这一步标准化每个**样本**的特征分布，在残差连接后进行：
     
-    $`\text{LayerNorm}(x + \text{Layer}(x))`$
+    $`\text{LayerNorm}(x + \text{SubLayer}(x))`$
     
     对应于架构图中的 **Add & Norm**，即先进行残差连接再通过 LayerNorm 进行标准化。
 
@@ -280,10 +316,10 @@ def scaled_dot_product_attention(Q, K, V, mask=None):
         output: 注意力加权后的输出矩阵
         attention_weights: 注意力权重矩阵
     """
-    d_k = Q.size(-1)  # 查询向量和键向量的维度是相同的
+    embed_size = Q.size(-1)  # embed_size
     
     # 计算点积并进行缩放
-    scores = torch.matmul(Q, K.transpose(-2, -1)) / torch.sqrt(torch.tensor(d_k, dtype=torch.float32))
+    scores = torch.matmul(Q, K.transpose(-2, -1)) / torch.sqrt(torch.tensor(embed_size, dtype=torch.float32))
 
     # 如果提供了掩码矩阵，则将掩码对应位置的分数设为 -inf
     if mask is not None:
@@ -343,7 +379,7 @@ def scaled_dot_product_attention(Q, K, V, mask=None):
 
 - **未来掩码（Look-ahead Mask）**
 
-  > This masking, combined with fact that the output embeddings are offset by one position, ensures that the predictions for position $i$ can depend only on the known outputs at positions less than $i$.
+  > ![image-20241028152056813](./assets/image-20241028152056813.png)
   
   在训练自回归模型（如 Transformer 中的解码器）时，为了防止模型“偷看”未来的词，需要用掩码屏蔽未来的位置，确保模型只能利用已知的上下文进行预测。
 
@@ -403,7 +439,7 @@ class Attention(nn.Module):
 
 #### 掩码机制（Masked Attention）
 
-![image-20241025201205746](./assets/image-20241025201205746.png)
+> ![image-20241025201205746](./assets/image-20241025201205746.png)
 
 如果使用 mask 掩盖将要预测的词汇，那么 Attention 就延伸为 Masked Attention，这里的实现非常简洁，追溯 scaled_dot_product_attention() 的代码：
 
@@ -421,9 +457,13 @@ attention_weights = F.softmax(scores, dim=-1)
 
 在这段代码中，`mask` 矩阵用于指定哪些位置应该被遮蔽（即填充为 -∞），从而保证这些位置的注意力权重在 softmax 输出中接近于零。注意，掩码机制并不是直接在截断输入序列，也不是在算分数的时候就排除不应该看到的位置，因为看到也没有关系，不会影响与其他位置的分数，所以在传入 Softmax（计算注意力权重）之前排除就可以了。
 
-下图展示了掩码机制的工作原理。对于**自回归生成任务**（训练时的解码器），掩码会覆盖未来的时间步，确保模型只能基于已有的部分生成当前的 token。
+下图展示了掩码机制的工作原理。对于**自回归生成任务**（训练时的解码器），掩码会覆盖未来的时间步，确保模型只能基于已有的部分生成当前的 token，掩码矩阵：
 
 ![mask](./assets/mask.png)
+
+> [TRANSFORMER EXPLAINER](https://poloclub.github.io/transformer-explainer/) 可视化
+
+![掩码操作](./assets/image-20241028110633805.png)
 
 另外，根据输入数据的来源，还可以将注意力分为**自注意力（Self-Attention）**和**交叉注意力（Cross-Attention)**。
 
@@ -497,6 +537,7 @@ class SelfAttention(nn.Module):
 ![image-20241025221317159](./assets/image-20241025221317159.png)
 
 数学表达如下：
+
 $$
 Q = X_{\text{decoder}} W^Q, \quad K = X_{\text{encoder}} W^K, \quad V = X_{\text{encoder}} W^V
 $$
@@ -566,6 +607,7 @@ class CrossAttention(nn.Module):
 $$
 \text{head}_i = \text{Attention}(Q W_i^Q, K W_i^K, V W_i^V)
 $$
+
 这些头的输出将沿最后一维拼接（**Concat**），并通过线性变换矩阵 $W^O$ 映射回原始嵌入维度（`embed_size`）：
 
 $$
@@ -581,9 +623,9 @@ $$
 >
 > 映射回原始维度的主要目的是为了实现残差连接（Residual Connection），即：
 >
-> $x + \text{Layer}(x)$
+> $x + \text{SubLayer}(x)$
 >
-> 你将发现其他模块（如自注意力模块、多头注意力机制和前馈网络）的输出层大多都是一样的维度，这是因为只有当输入 $x$ 的形状与经过层变换后的输出 $\text{Layer}(x)$ 的形状一致时，才能按预期的进行逐元素相加（element-wise addition），否则会导致张量维度不匹配，需要额外的变换操作。
+> 你将发现其他模块（如自注意力模块、多头注意力机制和前馈网络）的输出层大多都是一样的维度，这是因为只有当输入 $x$ 的形状与经过层变换后的输出 $\text{SubLayer}(x)$ 的形状一致时，才能按预期的进行逐元素相加（element-wise addition），否则会导致张量维度不匹配，需要额外的变换操作。
 >
 > 演示代码暂时保持 embed_size 的使用，知晓是一致的即可。
 
@@ -682,9 +724,9 @@ def scaled_dot_product_attention(Q, K, V, mask=None):
 
    使用**一个头**，但将其参数矩阵 $W^Q, W^K, W^V$ 扩展为：
 
-   $$
+   $`
    W \in \mathbb{R}^{d_{\text{model}} \times (d_{\text{model}} \cdot h)}
-   $$
+   `$
 
    在这种情况下，虽然还是单头模型，但增加了参数量，参数规模将与多头模型保持一致，可以评估性能提升是否真的来自于多头机制本身。
 
@@ -692,21 +734,21 @@ def scaled_dot_product_attention(Q, K, V, mask=None):
 
    降低**每**个头的维度，使得：
 
-   $$
+   $`
    h \times \text{head\_dim} = \text{embed\_size}
-   $$
+   `$
 
    也就是说，每个头的线性变换矩阵 $W_i^Q, W_i^K, W_i^V$ 的尺寸应为：
 
-   $$
+   $`
    W_i \in \mathbb{R}^{d_{\text{model}} \times \text{head\_dim}}
-   $$
+   `$
 
    其中：
 
-   $$
+   $`
    \text{head\_dim} = \frac{\text{embed\_size}}{h}
-   $$
+   `$
 
    在这种情况下，多头模型的参数规模与单头模型保持一致。
 
@@ -811,7 +853,7 @@ def scaled_dot_product_attention(Q, K, V, mask=None):
   **优化后：**
 
   ```python
-  # 用于计算 Q, K, V
+  # “共享”的 Q, K, V 线性层
   self.w_q = nn.Linear(embed_size, embed_size)
   self.w_k = nn.Linear(embed_size, embed_size)
   self.w_v = nn.Linear(embed_size, embed_size)
@@ -820,9 +862,11 @@ def scaled_dot_product_attention(Q, K, V, mask=None):
 
 - **forward()**
 
-  不再循环遍历每个头来单独计算查询、键和值，而是**一次性计算 Q、K 和 V**，然后使用**重塑**（`reshape`）和**转置**（`transpose`）将这些矩阵拆分为多头的格式，有些代码实现将该操作称为**拆分**（`split`）。
+  不再循环遍历每个头来单独计算查询、键和值，而是**一次性计算 Q、K 和 V**，然后使用**重塑**（`reshape`）和**转置**（`transpose`）将这些矩阵拆分为多头的格式，有些代码实现将这些操作统一称为**拆分**（`split`）。
 
-  我们还可以选择使用 `view()` 替代 `reshape()`，因为它们在功能上类似，但 `view()` 需要保证张量在内存中是连续的，本质上，这些操作都是为了确保计算后的形状与多头机制的需求一致。
+  我们还可以选择使用 `view()` 替代 `reshape()`，因为它们在功能上类似，但 `view()` 需要保证张量在内存中是连续的。
+
+  本质上，这些操作都是为了确保计算后的形状与多头机制的需求一致。
 
   **原代码：**
 
@@ -844,13 +888,13 @@ def scaled_dot_product_attention(Q, K, V, mask=None):
   **优化后：**
 
   ```python
-  # 一次性计算 Q, K, V
+  # 通过“共享”线性层计算 Q, K, V
   Q = self.w_q(q)  # (batch_size, seq_len, embed_size)
   K = self.w_k(k)  # (batch_size, seq_len, embed_size)
   V = self.w_v(v)  # (batch_size, seq_len, embed_size)
   
-  # 重塑并拆分为多头 (batch_size, num_heads, seq_len, head_dim)
-  Q = Q.reshape(batch_size, seq_len, self.num_heads, self.head_dim).transpose(1, 2)  # 注意这个转置操作之前的 shape
+  # 拆分为多头，调整维度为 (batch_size, num_heads, seq_len, head_dim)
+  Q = Q.reshape(batch_size, seq_len, self.num_heads, self.head_dim).transpose(1, 2)  # transpose(1, 2) 操作之前的 shape 为 (batch_size, seq_len, num_heads, head_dim)
   K = K.reshape(batch_size, seq_len, self.num_heads, self.head_dim).transpose(1, 2)
   V = V.reshape(batch_size, seq_len, self.num_heads, self.head_dim).transpose(1, 2)
   
@@ -886,11 +930,15 @@ def scaled_dot_product_attention(Q, K, V, mask=None):
   我们也可以使用 `view` 方法实现相同的效果，为了简洁，这里将线性变换的代码结合进行展示：
 
   ```python
+  # 将线性变换后的“共享”矩阵拆分为多头，调整维度为 (batch_size, num_heads, seq_len, head_dim)
   Q = self.w_q(q).view(batch_size, seq_len, self.num_heads, -1).transpose(1, 2)
   K = self.w_k(k).view(batch_size, seq_len, self.num_heads, -1).transpose(1, 2)
   V = self.w_v(v).view(batch_size, seq_len, self.num_heads, -1).transpose(1, 2)
   
+  # 执行缩放点积注意力
   scaled_attention, _ = scaled_dot_product_attention(Q, K, V, mask)
+  
+  # 合并多头并还原为 (batch_size, seq_len_q, d_model)
   concat_out = scaled_attention.transpose(1, 2).contiguous().view(batch_size, -1, self.embed_size)
   ```
 
@@ -898,6 +946,528 @@ def scaled_dot_product_attention(Q, K, V, mask=None):
   - `view` 要求输入张量在内存上连续，所以在“拼接”的时候先使用 `contiguous()`。
 
   
+
+**scaled_dot_product_attention()**
+
+缩放点积注意力函数也需要稍做修改。
+
+**原代码：**
+
+```python
+def scaled_dot_product_attention(Q, K, V, mask=None):
+    """
+    缩放点积注意力计算。
+    参数:
+        Q: 查询矩阵 (batch_size, seq_len_q, head_dim)
+        K: 键矩阵 (batch_size, seq_len_k, head_dim)
+        V: 值矩阵 (batch_size, seq_len_v, head_dim)
+        mask: 掩码矩阵 (batch_size, seq_len_q, seq_len_k)
+
+    返回:
+        output: 注意力加权后的输出矩阵
+        attention_weights: 注意力权重矩阵
+    """
+    ...
+    return output, attention_weights    
+```
+
+**修改**：
+
+```python
+def scaled_dot_product_attention(Q, K, V, mask=None):
+	"""
+    缩放点积注意力计算。
+    参数:
+        Q: 查询矩阵 (batch_size, num_heads, seq_len_q, head_dim)
+        K: 键矩阵 (batch_size, num_heads, seq_len_k, head_dim)
+        V: 值矩阵 (batch_size, num_heads, seq_len_v, head_dim)
+        mask: 掩码矩阵 (1, 1, seq_len_q, seq_len_k) 或 (batch_size, 1, seq_len_q, seq_len_k) 或 (batch_size, num_heads, seq_len_q, seq_len_k)
+
+    返回:
+        output: 注意力加权后的输出矩阵
+        attention_weights: 注意力权重矩阵
+    """
+    ...（操作依旧不变，只需要改注释）
+    return output, attention_weights    
+```
+
+scaled_dot_product_attention() 唯一的改动是注释，因为一直是对最后的两个维度进行操作，而我们之前已经正确处理了维度的顺序。
+
+这里值得一提的是，因为广播机制 mask 矩阵的 shape 甚至可以是 (1, 1, seq_len_q, seq_len_k)  或 (batch_size, 1, seq_len_q, seq_len_k) ，下面用一个简单的代码示例进行演示：
+
+```python
+import torch
+import torch.nn.functional as F
+
+def scaled_dot_product_attention(Q, K, V, mask=None):
+    """
+    缩放点积注意力计算。
+    参数:
+        Q: 查询矩阵 (batch_size, num_heads, seq_len_q, head_dim)
+        K: 键矩阵 (batch_size, num_heads, seq_len_k, head_dim)
+        V: 值矩阵 (batch_size, num_heads, seq_len_v, head_dim)
+        mask: 掩码矩阵 (1, 1, seq_len_q, seq_len_k) 或 (batch_size, 1, seq_len_q, seq_len_k) 或 (batch_size, num_heads, seq_len_q, seq_len_k)
+
+    返回:
+        output: 注意力加权后的输出矩阵
+        attention_weights: 注意力权重矩阵
+    """
+    head_dim = Q.size(-1)  # head_dim
+    
+    # 计算点积并进行缩放
+    scores = torch.matmul(Q, K.transpose(-2, -1)) / torch.sqrt(torch.tensor(head_dim, dtype=torch.float32))
+
+    # 如果提供了掩码矩阵，则将掩码对应位置的分数设为 -inf
+    if mask is not None:
+        scores = scores.masked_fill(mask == 0, float('-inf'))
+
+    # 对缩放后的分数应用 Softmax 函数，得到注意力权重
+    attention_weights = F.softmax(scores, dim=-1)
+
+    # 加权求和，计算输出
+    output = torch.matmul(attention_weights, V)
+    
+    return output, attention_weights
+
+
+# 示例参数
+batch_size = 2
+num_heads = 2
+seq_len_q = 3  # 查询序列长度
+seq_len_k = 3  # 键序列长度
+head_dim = 4
+
+# 模拟查询矩阵 Q 和键值矩阵 K, V
+Q = torch.randn(batch_size, num_heads, seq_len_q, head_dim)
+K = torch.randn(batch_size, num_heads, seq_len_k, head_dim)
+V = torch.randn(batch_size, num_heads, seq_len_k, head_dim)
+
+# 生成下三角掩码矩阵 (1, 1, seq_len_q, seq_len_k)，通过广播应用到所有头
+mask = torch.tril(torch.ones(seq_len_q, seq_len_k)).unsqueeze(0).unsqueeze(0)  # mask.shape (seq_len_q, seq_len_k) -> (1, 1, seq_len_q, seq_len_k)
+
+# 执行缩放点积注意力，并应用下三角掩码
+output, attn_weights = scaled_dot_product_attention(Q, K, V, mask)
+
+# 打印结果
+print("掩码矩阵 (下三角):")
+print(mask[0, 0])
+
+print("\n注意力权重矩阵:")
+print(attn_weights)
+
+```
+
+**输出**：
+
+```sql
+掩码矩阵 (下三角):
+tensor([[1., 0., 0.],
+        [1., 1., 0.],
+        [1., 1., 1.]])
+
+注意力权重矩阵:
+tensor([[[[1.0000, 0.0000, 0.0000],
+          [0.1560, 0.8440, 0.0000],
+          [0.1730, 0.8085, 0.0185]],
+
+         [[1.0000, 0.0000, 0.0000],
+          [0.6482, 0.3518, 0.0000],
+          [0.2068, 0.2115, 0.5817]]],
+
+
+        [[[1.0000, 0.0000, 0.0000],
+          [0.3249, 0.6751, 0.0000],
+          [0.0279, 0.0680, 0.9041]],
+
+         [[1.0000, 0.0000, 0.0000],
+          [0.4522, 0.5478, 0.0000],
+          [0.4550, 0.2689, 0.2761]]]])
+```
+
+#### 代码实现
+
+让我们将变量名称映射为符合论文中的符号表述，以便于与论文对应：
+
+>![image-20241028150326688](./assets/image-20241028150326688.png)
+
+- **`embed_size` → $d_{\text{model}}$**：输入序列的嵌入维度，即 Transformer 中每个位置的特征向量维度。
+- **`num_heads` → $h$**：注意力头的数量，即将输入序列拆分为多少个并行的注意力头。
+- **`head_dim` → $d_k$**：每个注意力头的维度，由 $d_k = \frac{d_{\text{model}}}{h}$ 计算得到，确保所有头的总维度与嵌入维度一致。
+
+```python
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+class MultiHeadAttention(nn.Module):
+    def __init__(self, d_model, h):
+        """
+        多头注意力机制：每个头单独定义线性层。
+        参数:
+            d_model: 输入序列的嵌入维度。
+            h: 注意力头的数量。
+        """
+        super(MultiHeadAttention, self).__init__()
+        assert d_model % h == 0, "d_model 必须能被 h 整除。"
+
+        self.d_model = d_model
+        self.h = h
+
+        # “共享”的 Q, K, V 线性层
+        self.w_q = nn.Linear(d_model, d_model)
+        self.w_k = nn.Linear(d_model, d_model)
+        self.w_v = nn.Linear(d_model, d_model)
+
+        # 输出线性层，将多头拼接后的输出映射回 d_model
+        self.fc_out = nn.Linear(d_model, d_model)
+
+    def forward(self, q, k, v, mask=None):
+        """
+        前向传播函数。
+        参数:
+            q: 查询矩阵 (batch_size, seq_len_q, d_model)
+            k: 键矩阵 (batch_size, seq_len_k, d_model)
+            v: 值矩阵 (batch_size, seq_len_v, d_model)
+            mask: 掩码矩阵 (batch_size, 1, seq_len_q, seq_len_k)
+
+        返回:
+            out: 注意力加权后的输出
+            attention_weights: 注意力权重矩阵
+        """
+        batch_size, seq_len, _ = q.shape 
+
+        # 将线性变换后的“共享”矩阵拆分为多头，调整维度为 (batch_size, h, seq_len, d_k)
+        # d_k 就是每个注意力头的维度
+        Q = self.w_q(q).view(batch_size, seq_len, self.h, -1).transpose(1, 2)
+        K = self.w_k(k).view(batch_size, seq_len, self.h, -1).transpose(1, 2)
+        V = self.w_v(v).view(batch_size, seq_len, self.h, -1).transpose(1, 2)
+
+        # 执行缩放点积注意力
+        scaled_attention, _ = scaled_dot_product_attention(Q, K, V, mask)
+
+        # 合并多头并还原为 (batch_size, seq_len_q, d_model)
+        concat_out = scaled_attention.transpose(1, 2).contiguous().view(batch_size, -1, self.d_model)
+
+        # 通过输出线性层
+        out = self.fc_out(concat_out)  # (batch_size, seq_len_q, d_model)
+
+        return out
+
+def scaled_dot_product_attention(Q, K, V, mask=None):
+    """
+    缩放点积注意力计算。
+    参数:
+        Q: 查询矩阵 (batch_size, num_heads, seq_len_q, d_k)
+        K: 键矩阵 (batch_size, num_heads, seq_len_k, d_k)
+        V: 值矩阵 (batch_size, num_heads, seq_len_v, d_v)
+        mask: 掩码矩阵 (batch_size, 1, seq_len_q, seq_len_k) 或 (1, 1, seq_len_q, seq_len_k) 或 (batch_size, h, seq_len_q, seq_len_k)
+
+    返回:
+        output: 注意力加权后的输出矩阵
+        attention_weights: 注意力权重矩阵
+    """
+    d_k = Q.size(-1)  # d_k
+    
+    # 计算点积并进行缩放
+    scores = torch.matmul(Q, K.transpose(-2, -1)) / torch.sqrt(torch.tensor(d_k, dtype=torch.float32))
+
+    # 如果提供了掩码矩阵，则将掩码对应位置的分数设为 -inf
+    if mask is not None:
+        scores = scores.masked_fill(mask == 0, float('-inf'))
+
+    # 对缩放后的分数应用 Softmax 函数，得到注意力权重
+    attention_weights = F.softmax(scores, dim=-1)
+
+    # 加权求和，计算输出
+    output = torch.matmul(attention_weights, V)
+    
+    return output, attention_weights
+```
+
+## Position-wise Feed-Forward Networks（FFN）
+
+> ![image-20241028151143736](./assets/image-20241028151143736.png)
+
+### 数学表达
+
+> ![image-20241028151815767](./assets/image-20241028151815767.png)
+
+在编码器-解码器架构中，另一个看起来“大一点”的模块就是 Feed Forward，它在每个位置 $i$ 上的计算可以表示为：
+
+$$
+\text{FFN}(x_i) = \text{max}(0, x_i W_1 + b_1) W_2 + b_2
+$$
+
+其中：
+
+- $x_i \in \mathbb{R}^{d_{\text{model}}}$ 表示第 $i$ 个位置的输入向量。 
+- $W_1 \in \mathbb{R}^{d_{\text{model}} \times d_{\text{ff}}}$ 和 $W_2 \in \mathbb{R}^{d_{\text{ff}} \times d_{\text{model}}}$ 是两个线性变换的权重矩阵。
+- $b_1 \in \mathbb{R}^{d_{\text{ff}}}$ 和 $b_2 \in \mathbb{R}^{d_{\text{model}}}$ 是对应的偏置向量。
+- $\text{max}(0, \cdot)$ 是 **ReLU 激活函数**，用于引入非线性。
+
+Position-wise 实际是线性层本身的一个特性，在线性层中，每个输入向量（对应于序列中的一个位置，比如一个词向量）都会通过相同的权重矩阵进行线性变换，这意味着每个位置的处理是相互独立的，逐元素这一点可以看成 kernal_size=1 的卷积核扫过一遍序列，毕竟绝大多数的可视化对于线性层都是并行处理的。
+
+> 更进一步地了解概念 Position-wise 推荐观看：[Transformer论文逐段精读【论文精读】 56:53 - 58:50 部分](https://www.bilibili.com/video/BV1pu411o7BE/?share_source=copy_web&vd_source=e46571d631061853c8f9eead71bdb390&t=3413)。
+
+### 代码实现
+
+```python
+import torch
+import torch.nn as nn
+
+class PositionwiseFeedForward(nn.Module):
+    def __init__(self, d_model, d_ff, dropout=0.1):
+        """
+        d_model: 输入和输出向量的维度
+        d_ff: FFN 隐藏层的维度，或者说中间层
+        dropout: 随机失活率（Dropout），即随机屏蔽部分神经元的输出，用于防止过拟合
+        
+        （可以暂时忽略 dropout，这里只是提前放进来，论文之后会提到）
+        """
+        super(PositionwiseFeedForward, self).__init__()
+        self.w_1 = nn.Linear(d_model, d_ff)  # 第一个线性层
+        self.w_2 = nn.Linear(d_ff, d_model)  # 第二个线性层
+        self.dropout = nn.Dropout(dropout)   # Dropout 层
+
+    def forward(self, x):
+        # 先经过第一个线性层和 ReLU，再进行 Dropout，最后经过第二个线性层
+        return self.w_2(self.dropout(self.w_1(x).relu()))
+
+```
+
+所以 FFN 本质就是两个线性变换之间嵌入了一个 **ReLU** 激活函数，实现起来非常简单。
+
+## 残差连接（Residual Connection）和层归一化（Layer Normalization, LayerNorm）
+
+> ![image-20241028160901884](./assets/image-20241028160901884.png)
+
+在 Transformer 架构中，**残差连接**（Residual Connection）与**层归一化**（LayerNorm）结合使用，统称为 **Add & Norm** 操作。
+
+### Add（残差连接，Residual Connection）
+
+> **ResNet**
+> Deep Residual Learning for Image Recognition | [arXiv 1512.03385](https://arxiv.org/pdf/1512.03385)
+>
+> **简单，但有效。**
+
+残差连接是一种跳跃连接（Skip Connection），它将层的输入直接加到输出上（观察架构图中的箭头），对应的公式如下：
+
+$$
+\text{Output} = \text{SubLayer}(x) + x
+$$
+
+这种连接方式有效缓解了**深层神经网络的梯度消失**问题。
+
+
+
+#### 代码实现
+
+```python
+import torch
+import torch.nn as nn
+
+class ResidualConnection(nn.Module):
+    def __init__(self, sublayer):
+        super(ResidualConnection, self).__init__()
+        self.sublayer = sublayer
+
+    def forward(self, x):
+        return x + self.sublayer(x)  # 输入和子层输出相加
+```
+
+
+
+### Norm（层归一化，Layer Normalization）
+
+> Layer Normalization | [arXiv 1607.06450](https://arxiv.org/pdf/1607.06450)
+
+**层归一化**（LayerNorm）是一种归一化技术，用于提升训练的稳定性和模型的泛化能力。
+
+#### BatchNorm 和 LayerNorm 的区别
+
+如果你听说过 **Batch Normalization (BatchNorm)**，或许会疑惑于二者的区别。
+
+假设输入张量的形状为 **(batch_size, feature_size)**，其中 `batch_size=32`，`feature_size=512`。
+
+- **batch_size**：表示批次中的样本数量。  
+- **feature_size**：表示每个样本的特征维度，即每个样本包含 512 个特征。
+
+这里的一行对应于一个样本，一列对应于一种特征属性。
+
+- BatchNorm 基于一个**批次**（batch）内的所有样本，针对**特征维度**（列）进行归一化，即在每一列（相同特征或嵌入维度上的 batch_size 个样本）上计算均值和方差。
+
+  - 对第 $j$ 列（特征）计算均值和方差：
+
+    $`
+    \mu_j = \frac{1}{\text{batch\_size}} \sum_{i=1}^{\text{batch\_size}} x_{i,j}, \quad 
+    \sigma^2_j = \frac{1}{\text{batch\_size}} \sum_{i=1}^{\text{batch\_size}} (x_{i,j} - \mu_j)^2
+    `$
+
+- LayerNorm 基于**每个样本的所有特征**，针对**样本自身**（行内所有特征）进行归一化，即在每一行（一个样本的 embed_size 个特征）上计算均值和方差。
+
+  - 对第 $i$ 行（样本）计算均值和方差：
+
+    $`
+    \mu_i = \frac{1}{\text{feature\_size}} \sum_{j=1}^{\text{feature\_size}} x_{i,j}, \quad 
+    \sigma^2_i = \frac{1}{\text{feature\_size}} \sum_{j=1}^{\text{feature\_size}} (x_{i,j} - \mu_i)^2
+    `$
+
+用表格说明：
+
+| 操作          | 处理维度                       | 解释                         |
+| ------------- | ------------------------------ | ---------------------------- |
+| **BatchNorm** | 对列（特征维度）归一化         | 每个特征在所有样本中的归一化 |
+| **LayerNorm** | 对行（样本内的特征维度）归一化 | 每个样本的所有特征一起归一化 |
+
+> BatchNorm 和 LayerNorm 在视频中也有讲解：[Transformer论文逐段精读【论文精读】25:40 - 32:04 部分](https://www.bilibili.com/video/BV1pu411o7BE/?share_source=copy_web&vd_source=e46571d631061853c8f9eead71bdb390&t=1540)，不过需要注意的是在 26:25 处应该除以的是标准差而非方差。
+>
+> ![image-20241028172742399](./assets/image-20241028172742399.png)
+>
+> 对于三维张量，比如图示的 (batch_size, seq_len, feature_size)，可以从立方体的左侧(batch_size, feature_size) 去看成二维张量进行切片。
+
+#### LayerNorm 的计算过程
+
+假设输入向量为 $x = (x_1, x_2, \dots, x_d)$, LayerNorm 的计算步骤如下：
+
+1. **计算均值和方差**：
+   对输入的所有特征求均值 $\mu$ 和方差 $\sigma^2$：
+   
+   $`
+   \mu = \frac{1}{d} \sum_{j=1}^{d} x_j, \quad 
+   \sigma^2 = \frac{1}{d} \sum_{j=1}^{d} (x_j - \mu)^2
+   `$
+
+2. **归一化公式**：
+   将输入特征 $\hat{x}_i$ 进行归一化：
+   
+   $`
+   \hat{x}_i = \frac{x_i - \mu}{\sqrt{\sigma^2 + \epsilon}}
+   `$
+   
+   其中, $\epsilon$ 是一个很小的常数（比如 1e-9），用于防止除以零的情况。
+
+3. **引入可学习参数**：
+   归一化后的输出乘以 $\gamma$ 并加上 $\beta$, 公式如下：
+   
+   $`
+   \text{Output} = \gamma \hat{x} + \beta
+   `$
+   
+   其中 $\gamma$ 和 $\beta$ 是可学习的参数，用于进一步调整归一化后的输出。
+
+#### 代码实现
+
+```python
+class LayerNormalization(nn.Module):
+    def __init__(self, feature_size, epsilon=1e-9):
+        super(LayerNormalization, self).__init__()
+        self.gamma = nn.Parameter(torch.ones(feature_size))  # 可学习缩放参数
+        self.beta = nn.Parameter(torch.zeros(feature_size))  # 可学习偏移参数
+        self.epsilon = epsilon
+
+    def forward(self, x):
+        mean = x.mean(dim=-1, keepdim=True)
+        std = x.std(dim=-1, keepdim=True)
+        return self.gamma * (x - mean) / (std + self.epsilon) + self.beta
+```
+
+> [!note]
+>
+> #### 澄清：LayerNorm 最后的缩放与线性层 (nn.Linear) 的区别
+>
+> 见过线性层源码但不熟悉乘法运算符的同学可能会有一个错误的困惑：
+>
+> **最后不就是线性层的实现吗，为什么不直接用 `nn.Linear((x - mean) / (std + self.epsilon))` 实现呢？**
+>
+> 乍一看，LayerNorm 的计算过程确实与 `nn.Linear` 有些相似：LayerNorm 对归一化后的输出进行了缩放（乘以 $\gamma$）和偏移（加上 $\beta$），但这两者的核心作用和参数运算方式存在**本质的不同**，接下来逐一澄清：
+>
+> 1. `self.gamma * x` 实际上是逐元素缩放操作而非对输入做线性组合。
+>
+> 2. self.gamma 的 shape 为 `(feature_size,)` 而非 `(feature_size, feature_size)`。
+>
+> 3. 线性层的公式为: $\text{Output} = x W^T + b$, 代码实现为：
+>
+>    ```python
+>    # 初始化的 shape 是二维的
+>    self.weight = nn.Parameter(torch.randn(out_features, in_features))  # 权重矩阵
+>    self.bias = nn.Parameter(torch.zeros(out_features))  # 偏置向量
+>                   
+>    # 计算
+>    def forward(self, x):
+>    	return torch.matmul(x, self.weight.T) + self.bias
+>    ```
+>
+> LayerNorm 是 `* `逐元素乘积，nn.Linear 是 `torch.matmul()` 矩阵乘法，运行代码：
+>
+> ```python
+> import torch
+> 
+> # 创建两个张量 A 和 B
+> A = torch.tensor([[1, 2], [3, 4]])  # 形状 (2, 2)
+> B = torch.tensor([[5, 6], [7, 8]])  # 形状 (2, 2)
+> 
+> ### 1. 逐元素乘法
+> elementwise_product = A * B  # 对应位置元素相乘
+> print("逐元素乘法 (A * B) 的结果：\n", elementwise_product)
+> 
+> ### 2. 矩阵乘法
+> matrix_product = torch.matmul(A, B)  # 矩阵乘法
+> print("矩阵乘法 (torch.matmul(A, B)) 的结果：\n", matrix_product)
+> 
+> ```
+>
+> **输出**：
+>
+> ```sql
+> 逐元素乘法 (A * B) 的结果：
+>  tensor([[ 5, 12],
+>         [21, 32]])
+> 矩阵乘法 (torch.matmul(A, B)) 的结果：
+>  tensor([[19, 22],
+>         [43, 50]])
+> ```
+>
+> 可以看到二者并不是一个操作。
+
+### Add & Norm
+
+**操作步骤**：
+
+1. **残差连接**：将输入直接与输出相加。
+2. **层归一化**：对相加后的结果进行归一化。
+
+公式如下：
+
+$$
+\text{Output} = \text{LayerNorm}(x + \text{SubLayer}(x))
+$$
+
+其中, $\text{SubLayer}(x)$ 表示 Transformer 中的某个子层（如自注意力层或前馈网络层）的输出。
+
+#### 代码实现
+
+```python
+ class AddNorm(nn.Module):
+    def __init__(self, sublayer, feature_size, epsilon=1e-9):
+        super(AddNorm, self).__init__()
+        self.residual = ResidualConnection(sublayer)  # 使用 ResidualConnection 进行残差连接
+        self.norm = LayerNormalization(feature_size, epsilon)  # 层归一化
+
+    def forward(self, x):
+        return self.norm(self.residual(x))  # 残差连接后的结果传递给 LayerNorm
+    
+# 或者直接在 AddNorm 里面实现残差连接
+class AddNorm(nn.Module):
+    def __init__(self, sublayer, feature_size, epsilon=1e-9):
+        super(AddNorm, self).__init__()
+        self.sublayer = sublayer
+        self.norm = LayerNormalization(feature_size, epsilon)
+
+    def forward(self, x):
+        return self.norm(x + self.sublayer(x))  # 残差连接后归一化
+```
+
+
 
 ## QA
 
