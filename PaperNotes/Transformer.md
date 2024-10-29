@@ -60,6 +60,8 @@ Ashish Vaswan et al. | [arXiv 1706.03762](https://arxiv.org/pdf/1706.03762) | [C
 
 2024.10.28 完成编码器-解码器中所有子模块的代码实现
 
+2024.10.29 Embedding 模块以及其和 Linear 的区别
+
 TODO：输入和输出处理代码/编码器-解码器代码和论文结果展示，消除因为时间线拉长可能导致的繁杂冗余表述。
 
 ## 目录
@@ -102,6 +104,10 @@ TODO：输入和输出处理代码/编码器-解码器代码和论文结果展�
       - [澄清：LayerNorm 最后的缩放与线性层 (nn.Linear) 的区别](#澄清layernorm-最后的缩放与线性层-nnlinear-的区别)
    - [Add &amp; Norm](#add--norm)
       - [代码实现](#代码实现-7)
+   - [嵌入（Embeddings）](#嵌入embeddings)
+      - [为什么需要嵌入层？](#为什么需要嵌入层)
+      - [代码实现](#代码实现-8)
+      - [什么是 nn.Embedding()？和 nn.Linear() 的区别是什么？](#什么是-nnembedding和-nnlinear-的区别是什么)
 - [QA](#qa)
    - [Q1: 什么是编码器-解码器架构？](#q1-什么是编码器-解码器架构)
    - [Q2: 什么是自回归与非自回归？](#q2-什么是自回归与非自回归)
@@ -1258,7 +1264,7 @@ $$
 
 这种连接方式有效缓解了**深层神经网络的梯度消失**问题。
 
-
+> TODO: 解释缓解原因
 
 #### 代码实现
 
@@ -1274,8 +1280,6 @@ class ResidualConnection(nn.Module):
     def forward(self, x):
         return x + self.sublayer(x)  # 输入和子层输出相加
 ```
-
-
 
 ### Norm（层归一化，Layer Normalization）
 
@@ -1391,7 +1395,7 @@ class LayerNormalization(nn.Module):
 >    # 初始化的 shape 是二维的
 >    self.weight = nn.Parameter(torch.randn(out_features, in_features))  # 权重矩阵
 >    self.bias = nn.Parameter(torch.zeros(out_features))  # 偏置向量
->                   
+>                                  
 >    # 计算
 >    def forward(self, x):
 >    	return torch.matmul(x, self.weight.T) + self.bias
@@ -1467,6 +1471,113 @@ class AddNorm(nn.Module):
         return self.norm(x + self.sublayer(x))  # 残差连接后归一化
 ```
 
+## 嵌入（Embeddings）
+
+> ![Embedding](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/image-20241029172114093.png)
+
+在 Transformer 模型中，**嵌入层**（Embedding Layer） 是处理输入和输出数据的关键步骤，因为模型实际操作的是**张量**（tensor），而非**字符串**（string）。在将输入文本传递给模型之前，首先需要进行**分词**（tokenization），即将文本拆解为多个 **token**，随后这些 token 会被映射为对应的 **token ID**，从而转换为模型可理解的数值形式。此时，数据的形状为 `(seq_len,)`，其中 `seq_len` 表示输入序列的长度。
+
+### 为什么需要嵌入层？
+
+因为 token ID 只是整数标识符，彼此之间没有内在联系。如果直接使用这些整数，模型可能在训练过程中学习到一些模式，但无法充分捕捉词汇之间的语义关系，这显然不足以支撑起现在的大模型。
+
+举个简单的例子来理解“语义”关系：像“猫”和“狗”在向量空间中的表示应该非常接近，因为它们都是宠物；“男人”和“女人”之间的向量差异可能代表性别的区别。此外，不同语言的词汇，如“男人”（中文）和“man”（英文），如果在相同的嵌入空间中，它们的向量也会非常接近，反映出跨语言的语义相似性。同时，【“女人”和“woman”（中文-英文）】与【“男人”和“man”（中文-英文）】之间的差异也可能非常相似。
+
+对于模型而言，没有语义信息就像我们小时候第一次读英语阅读报：“这些字母拼起来是什么？不知道。这些单词在说什么？不知道。”囫囵吞枣看完后去做题：“嗯，昨天对答案的时候，A 好像多一点，其他的差不多，那多选一点 A，其他平均分 :)。”
+
+所以，为了让模型捕捉到 token 背后复杂的语义（Semantic meaning）关系，我们需要将离散的 token ID 映射到一个高维的连续向量空间（Continuous, dense）。这意味着每个 token ID 会被转换为一个**嵌入向量**（embedding vector），期望通过这种方式让语义相近的词汇在向量空间中距离更近，使模型能更好地捕捉词汇之间的关系。当然，简单的映射无法做到这一点，因此需要“炼丹”——是的，嵌入层是可以训练的。
+
+### 代码实现
+
+```python
+import torch
+import torch.nn as nn
+
+class Embeddings(nn.Module):
+    def __init__(self, vocab_size, d_model):
+        super(Embeddings, self).__init__()
+        self.embed = nn.Embedding(vocab_size, d_model)
+
+    def forward(self, x):
+        return self.embed(x) * torch.sqrt(torch.tensor(d_model, dtype=torch.float32))
+```
+
+**解释**：
+
+- **`nn.Embedding`**：创建嵌入层，将词汇表中的每个 token ID 映射为对应的嵌入向量。
+
+- **`vocab_size`**：词汇表的大小。
+
+- **`d_model`**：嵌入向量的维度大小。
+
+**特殊设计**
+
+> ![3.4](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/image-20241029173230358.png)
+
+- **缩放嵌入（Scaled Embedding）**：将嵌入层的输出（参数）乘以 $\sqrt{d_{\text{model}}}$。
+
+> [!note]
+>
+> Tokenization 的操作其实就是常用的 tokenizer，感兴趣可以进一步阅读这篇文章：《[21. BPE vs WordPiece：理解 Tokenizer 的工作原理与子词分割方法](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/21.%20BPE%20vs%20WordPiece：理解%20Tokenizer%20的工作原理与子词分割方法.md)》。
+>
+> ### 什么是 nn.Embedding()？和 nn.Linear() 的区别是什么？
+>
+> 其实非常简单，`nn.Embedding()` 就是从权重矩阵中查找与输入索引对应的行，类似于查找表操作，而 `nn.Linear()` 进行线性变换。直接对比二者的 forward()：
+>
+> ```python
+> # Embedding
+> def forward(self, input):
+> 	return self.weight[input]  # 没错，就是返回对应的行
+> 
+> # Linear
+> def forward(self, input):
+> 	torch.matmul(input, self.weight.T) + self.bias
+> ```
+> 运行下面的代码来验证：
+>
+> ```python
+> import torch
+> import torch.nn as nn
+> 
+> # 设置随机种子
+> torch.manual_seed(42)
+> 
+> # nn.Embedding() 权重矩阵形状为 (num_embeddings, embedding_dim)
+> num_embeddings = 5  # 假设有 5 个 token
+> embedding_dim = 3   # 每个 token 对应 3 维嵌入
+> 
+> # 初始化嵌入层
+> embedding = nn.Embedding(5, 3)
+> 
+> # 整数索引
+> input_indices = torch.tensor([0, 2, 4])
+> 
+> # 查找嵌入
+> output = embedding(input_indices)
+> 
+> # 打印结果
+> print("权重矩阵：")
+> print(embedding.weight.data)
+> print("\nEmbedding 输出：")
+> print(output)
+> ```
+>
+> **输出**：
+>
+> ```sql
+> 权重矩阵：
+> tensor([[ 0.3367,  0.1288,  0.2345],
+>         [ 0.2303, -1.1229, -0.1863],
+>         [ 2.2082, -0.6380,  0.4617],
+>         [ 0.2674,  0.5349,  0.8094],
+>         [ 1.1103, -1.6898, -0.9890]])
+> 
+> Embedding 输出：
+> tensor([[ 0.3367,  0.1288,  0.2345],
+>         [ 2.2082, -0.6380,  0.4617],
+>         [ 1.1103, -1.6898, -0.9890]], grad_fn=<EmbeddingBackward0>)
+> ```
+
 
 
 ## QA
@@ -1533,3 +1644,8 @@ class AddNorm(nn.Module):
 >
 > ![image-20241026192000142](./assets/image-20241026192000142.png)
 
+
+
+
+
+最后的最后，Transformer 不是圣经，在之后还有着一系列文章进一步消除其中的限制，所以大胆的拆解它并使用你的想法。
