@@ -1395,7 +1395,7 @@ class LayerNormalization(nn.Module):
 >    # 初始化的 shape 是二维的
 >    self.weight = nn.Parameter(torch.randn(out_features, in_features))  # 权重矩阵
 >    self.bias = nn.Parameter(torch.zeros(out_features))  # 偏置向量
->                                  
+>                                     
 >    # 计算
 >    def forward(self, x):
 >    	return torch.matmul(x, self.weight.T) + self.bias
@@ -1473,7 +1473,7 @@ class AddNorm(nn.Module):
 
 ## 嵌入（Embeddings）
 
-> ![Embedding](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/image-20241029172114093.png)
+> ![Embedding](./assets/image-20241029172114093.png)
 
 在 Transformer 模型中，**嵌入层**（Embedding Layer） 是处理输入和输出数据的关键步骤，因为模型实际操作的是**张量**（tensor），而非**字符串**（string）。在将输入文本传递给模型之前，首先需要进行**分词**（tokenization），即将文本拆解为多个 **token**，随后这些 token 会被映射为对应的 **token ID**，从而转换为模型可理解的数值形式。此时，数据的形状为 `(seq_len,)`，其中 `seq_len` 表示输入序列的长度。
 
@@ -1512,7 +1512,7 @@ class Embeddings(nn.Module):
 
 **特殊设计**
 
-> ![3.4](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/image-20241029173230358.png)
+> ![3.4](./assets/image-20241029173230358.png)
 
 - **缩放嵌入（Scaled Embedding）**：将嵌入层的输出（参数）乘以 $\sqrt{d_{\text{model}}}$。
 
