@@ -16,6 +16,7 @@
    - [数学公式](#数学公式)
       - [带权重的公式（weight）](#带权重的公式weight)
       - [标签平滑（label_smoothing）](#标签平滑label_smoothing)
+      - [同时带权重和标签平滑](#同时带权重和标签平滑)
    - [要点](#要点)
 - [附录](#附录)
 - [参考链接](#参考链接)
@@ -238,17 +239,39 @@ tensor([[1, 0, 0],
    
    如果 `reduction` 参数为 `'none'`，则返回每个样本的损失 $\ell_i$ 组成的张量: 
    
-   $`\mathcal{L} = [\ell_1, \ell_2, \ldots, \ell_N] = [-\log(p_{iy_1}), -\log(p_{iy_2}), \ldots, -\log(p_{iy_N})]`$
+   $`\mathcal{L} = [\ell_1, \ell_2, \ldots, \ell_N] = [-\log(p_{1 y_1}), -\log(p_{2 y_2}), \ldots, -\log(p_{N y_N})]`$
 
 ### 带权重的公式（weight）
 
-如果指定了类别权重 $\mathbf{w} = (w_1, w_2, \ldots, w_C)$, 则总损失公式为: 
+如果指定了类别权重 $\mathbf{w} = (w_1, w_2, \ldots, w_C)$, 则每个样本的损失会根据其真实类别的权重进行调整：
 
 $$
-\mathcal{L} = \frac{1}{N} \sum_{i=1}^{N} w_{y_i} \cdot \ell_i = \frac{\sum_{i=1}^{N} w_{y_i} \cdot (-\log(p_{iy_i}))}{\sum_{i=1}^{N} w_{y_i}}
+\ell_i = w_{y_i} \cdot (-\log(p_{iy_i}))
 $$
 
 其中 $w_{y_i}$ 是第 $i$ 个样本真实类别的权重。
+
+**总损失**: 
+
+1. `reduction='mean'`：
+
+    $`
+    \mathcal{L} = \frac{\sum_{i=1}^{N} \ell_i}{\sum_{i=1}^{N} w_{y_i}} =\frac{\sum_{i=1}^{N} w_{y_i} \cdot (-\log(p_{iy_i}))}{\sum_{i=1}^{N} w_{y_i}}
+    `$
+    
+    当所有类别的权重均为 1 时，分母就是样本数量 $N$。
+
+2. `reduction='sum'`
+   
+   $`
+   \mathcal{L} = \sum_{i=1}^{N} w_{y_i} \cdot (-\log(p_{iy_i}))
+   `$
+
+3.  `reduction='none'`
+   
+    $`
+    \mathcal{L} = [w_{y_1} \cdot (-\log(p_{1 y_1})), \ldots, w_{y_N} \cdot (-\log(p_{N y_N}))]
+    `$
 
 ### 标签平滑（label_smoothing）
 
@@ -260,13 +283,31 @@ $$
 
 其中， $\mathbf{y}_i$ 是原始的 one-hot 编码目标标签, $\mathbf{y}_i'$ 是平滑后的标签。
 
-总的损失公式会相应调整: 
+样本损失会相应调整: 
 
 $$
 \ell_i = - \sum_{c=1}^{C} y_{ic}' \cdot \log(p_{ic})
 $$
 
 其中， $y_{ic}$ 是第 $i$ 个样本在第 $c$ 类别上的标签，为原标签 $y_i$ 经过 one-hot 编码后 $`\mathbf{y}_i`$ 中的值。对于一个 one-hot 编码标签向量, $`y_{ic}`$ 在样本属于类别 $c$ 时为 1，否则为 0。
+
+### 同时带权重和标签平滑
+
+将权重和标签平滑结合起来，样本损失函数的计算为：
+
+$$
+\ell_i = w_{y_i} \cdot \left( - \sum_{c=1}^{C} y_{i c}' \cdot \log(p_{i c}) \right)
+$$
+
+其中, $y_{i c}' = (1 - \alpha) y_{i c} + \frac{\alpha}{C}$。
+
+损失（`reduction='mean'`）为：
+
+$$
+\mathcal{L} = \frac{\sum_{i=1}^{N} w_{y_i} \cdot \left( - \sum_{c=1}^{C} y_{i c}' \cdot \log(p_{i c}) \right)}{\sum_{i=1}^{N} w_{y_i}}
+$$
+
+
 
 ## 要点
 
@@ -530,6 +571,41 @@ print("根据公式实现的标签平滑的交叉熵损失:", loss_label_smoothi
 
 # 验证结果是否相等
 assert torch.isclose(loss_label_smoothing_torch, loss_label_smoothing_custom, atol=1e-6), "标签平滑的数学公式验证失败"
+
+# 同时带权重和标签平滑的交叉熵损失
+criterion_both = torch.nn.CrossEntropyLoss(weight=weights, label_smoothing=alpha, reduction='mean')
+loss_both_torch = criterion_both(logits, targets)
+
+# 根据公式实现同时带权重和标签平滑的交叉熵损失
+def custom_both_cross_entropy(logits, targets, weights, alpha):
+    N, C = logits.size()
+    log_probs = log_softmax(logits)
+    
+    # 创建目标的 one-hot 编码
+    one_hot = torch.zeros_like(log_probs).scatter(1, targets.view(-1, 1), 1)
+    
+    # 应用标签平滑
+    smooth_targets = (1 - alpha) * one_hot + alpha / C
+    
+    # 将类别权重应用到平滑后的目标上
+    # weights 的形状为 (C,)
+    weighted_smooth_targets = smooth_targets * weights  # 形状为 (N, C)
+    
+    # 计算加权的损失
+    weighted_loss = - (weighted_smooth_targets * log_probs).sum(dim=1)  # 形状为 (N,)
+    
+    # 计算平均损失
+    return weighted_loss.sum() / weights[targets].sum()
+
+loss_both_custom = custom_both_cross_entropy(logits, targets, weights, alpha)
+
+# 打印结果
+print("PyTorch 计算的同时带权重和标签平滑的交叉熵损失:", loss_both_torch.item())
+print("根据公式实现的同时带权重和标签平滑的交叉熵损失:", loss_both_custom.item())
+
+# 验证结果是否相等
+assert torch.isclose(loss_both_torch, loss_both_custom, atol=1e-6), "同时带权重和标签平滑的数学公式验证失败"
+
 ```
 
 **输出**：
@@ -541,6 +617,8 @@ PyTorch 计算的带权重的交叉熵损失: 0.5048722624778748
 根据公式实现的带权重的交叉熵损失: 0.50487220287323
 PyTorch 计算的标签平滑的交叉熵损失: 0.5469098091125488
 根据公式实现的标签平滑的交叉熵损失: 0.5469098091125488
+PyTorch 计算的同时带权重和标签平滑的交叉熵损失: 0.7722168564796448
+根据公式实现的同时带权重和标签平滑的交叉熵损失: 0.772216796875
 ```
 
 输出没有抛出 AssertionError，验证通过。
