@@ -12,6 +12,8 @@
 >
 > 现在，项目还开设了[🎡CodePlayground](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/tree/master/CodePlayground)，你可以按照文档配置好环境，使用一行代码运行脚本，体验 AI 的魅力。
 >
+> 📑论文随笔位于 [PaperNotes](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/tree/master/PaperNotes)，将逐步上传大模型相关的基础论文。
+>
 > 祝你旅途愉快！
 >
 
@@ -195,6 +197,13 @@ conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvi
   - [x] 将其中的行为使用 OpenAI 库进行替换
   - [x] 使用 ipywidgets 模拟 Colab 的交互
   - [x] 以中文进行作业引导
+
+### 11月更新计划
+
+- [ ] 大模型基础论文（Transformer -> GPT -> Bert）
+- [ ] Bert 微调抽取式问答任务（在 Bert 论文随笔上传前会提供一个中文作业版本的基础微调代码以供学习，Bert 完成后会给出答案）
+- [ ] nn.Embedding vs nn.Linear 的区别（在 [Transformer](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/PaperNotes/Transformer.md#什么是-nnembedding和-nnlinear-的区别是什么) 论文随笔中有简单提到，考虑拆分出来供拓展阅读）
+- [ ] LoRA 文生图的 🎡 命令行脚本制作上传
 - [ ] 更多有趣的实践项目与理论...
 
 
