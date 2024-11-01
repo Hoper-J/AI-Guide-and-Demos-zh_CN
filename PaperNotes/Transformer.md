@@ -66,7 +66,7 @@ Ashish Vaswan et al. | [arXiv 1706.03762](https://arxiv.org/pdf/1706.03762) | [C
 
 2024.10.31 Dropout 的应用以及论文表格和训练细节呈现，解释 PPL 和 BLEU
 
-
+2024.11.01 解释学习率的 warmup 过程和标签平滑的作用
 
 TODO：输入和输出处理代码/编码器-解码器代码和论文结果展示，消除因为时间线拉长可能导致的繁杂冗余表述。
 
@@ -378,8 +378,17 @@ $$
   lrate = d_{model}^{-0.5} \cdot \min(\text{step\_num}^{-0.5}, \text{step\_num} \cdot \text{warmup\_steps}^{-1.5})
   `$
 
-  $d_{model}$ 是嵌入维度，也是模型训练过程中所学习的向量的维度（model_size），$\text{step\_num}$ 是当前训练步数，$`\text{warmup\_steps}`$ 是 “热身”步数，论文中 $`\text{warmup\_steps}=4000`$, 表示在前 4000 步线性增加学习率，之后按步数平方根倒数（$\text{step\_num}^{-0.5}$）逐渐减少学习率。
+  $d_{model}$ 是嵌入维度，也就是一个 token 变成 embedding 后的维度，或者说模型的宽度（model size），$\text{step\_num}$ 是当前训练步数，$`\text{warmup\_steps}`$ 是 “热身”步数，论文中 $`\text{warmup\_steps}=4000`$, 表示在前 4000 步线性增加学习率，之后按步数平方根倒数（$\text{step\_num}^{-0.5}$）逐渐减少学习率。结合下图进行理解。
 
+  ![lr](./assets/lr.png)
+
+  #### Q1: 为什么学习率热身的时候可以刚好线性增加到 warmup_steps？
+
+  注意公式中只有 $\text{step\_num}$ 是变量，其余为固定的常数，因此可以分三种情况来讨论：
+
+  - 当 $\text{step\_num} < \text{warmup\_steps}$ 时，公式第二项 $ \text{step\_num} \cdot \text{warmup\_steps}^{-1.5} $ 的值小于第一项 $ \text{step\_num}^{-0.5} $，此时学习率等于 $d_{model}^{-0.5} \cdot \text{step\_num} \cdot \text{warmup\_steps}^{-1.5}$ ，随训练步数线性增加，直到 $\text{step\_num}$ 达到 $\text{warmup\_steps}$。
+  - 当 $\text{step\_num} = \text{warmup\_steps}$ 时，$\text{step\_num} \cdot \text{warmup\_steps}^{-1.5} = \text{step\_num} \cdot \text{step\_num}^{-1.5} = \text{step\_num}^{-0.5}$，此时，学习率刚好达到峰值 $d_{model}^{-0.5} \cdot \text{warmup\_steps}^{-0.5}$。
+  - 当 $\text{step\_num} > \text{warmup\_steps}$ 时，公式第一项 $ \text{step\_num}^{-0.5} $ 的值小于第二项 $ \text{step\_num} \cdot \text{warmup\_steps}^{-1.5} $，学习率等于 $d_{model}^{-0.5} \cdot \text{step\_nums}^{-0.5}$，按步数平方根倒数逐渐减小。
 
 **正则化方法**：
 
@@ -390,8 +399,46 @@ $$
   
 - **标签平滑（Label Smoothing）**: $\epsilon_{ls} = 0.1$, 这会增加 PPL（困惑度 perplexity），因为模型会变得更加不确定，但会提高准确性和 BLEU 分数。
 
-  #### Q3: 什么是 PPL?
+  #### Q2: 什么是标签平滑（Label Smoothing）？
 
+  > 修改自拓展阅读《[f. 交叉熵损失函数 nn.CrossEntropyLoss() 详解和要点提醒（PyTorch）](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/f.%20交叉熵损失函数%20nn.CrossEntropyLoss()%20详解和要点提醒（PyTorch）.md#标签平滑label_smoothing)》。
+
+  标签平滑（Label Smoothing）是一种与“硬标签”（hard label）相对的概念，我们通常使用的标签都是硬标签，即正确类别的概率为1，其他类别的概率为0。这种方式直观且常用，但在语言模型训练时可能会过于“极端”：在 softmax 中，只有当 logit 值无限大时，概率才能逼近 1。
+  
+  标签平滑的作用就是将 one-hot 转换为“软标签”，即正确类别的概率稍微小于 1，其余类别的概率稍微大于 0，形成一个更平滑的目标标签分布。具体来说，对于一个多分类问题，标签平滑后，正确类别的概率由 1 变为 $1 - \epsilon_{ls}$，所有类别（包括正确）再均分 $\epsilon_{ls}$ 的概率。
+  
+  下面我们通过**公式**和**代码**来理解。
+  
+  对于一个具有 $C$ 个类别的分类任务，假设 $\mathbf{y}$ 是真实标签的 one-hot 编码，正确类别的概率为 1，其余类别的概率为 0：
+  $$
+  \mathbf{y} = [0, 0, \ldots, 1, \ldots, 0]
+  $$
+  
+  
+  应用标签平滑后，目标标签的分布 $\mathbf{y}'$ 变为：
+  $$
+  \mathbf{y}' = (1 - \epsilon_{ls}) \cdot \mathbf{y} + \frac{\epsilon_{ls}}{C}
+  $$
+  
+  也就是说，对于正确类别 $i$，标签平滑后的概率为：
+  $$
+  \mathbf{y}_i = 1 - \epsilon_{ls} + \frac{\epsilon_{ls}}{C}
+  $$
+  对于其他类别 $j \neq i$，标签平滑后的概率为：
+  $$
+  \mathbf{y}'_j = \frac{\epsilon_{ls}}{C}
+  $$
+  标签平滑后的标签向量 $\mathbf{y}'$ 的形式为：
+  $$
+  \mathbf{y}' = [\frac{\epsilon_{ls}}{C}, \frac{\epsilon_{ls}}{C}, \ldots, 1 - \epsilon_{ls} + \frac{\epsilon_{ls}}{C}, \ldots, \frac{\epsilon_{ls}}{C}]
+  $$
+  **代码实现**：
+  
+  ```python
+  smooth = (1 - epsilon) * one_hot + epsilon / C
+  ```
+
+#### Q3: 什么是 PPL?
 
 > 《[18. 模型量化技术概述及 GGUF:GGML 文件格式解析](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/eb30d73be9388bace7e6de9b520712afdc2da569/Guide/18.%20模型量化技术概述及%20GGUF%3AGGML%20文件格式解析.md#什么是-ppl)》
 
@@ -495,7 +542,7 @@ $$
   - $d_{model}$：嵌入维度（默认为 512）。
   - $d_{ff}$：前馈网络（FFN）的隐藏层维度（默认为 2048）。
   - $h$：多头注意力中的头数（默认为 8）。
-  - $d_k, d_v$：注意力中键和值的维度（默认为 64）。
+  - $d_k, d_v$：注意力中键和值的维度（默认为 64），需要注意到 $h \times d_k = d_{model}$ 。
   - $P_{drop}$：Dropout 概率（默认为 0.1）。
   - $ϵ_{ls}$：标签平滑参数（默认为 0.1）。
   - $\text{train steps}$：训练步数（默认为 100,000 步）
@@ -576,6 +623,7 @@ $$
 ```python
 import torch
 import torch.nn.functional as F
+import math
 
 def scaled_dot_product_attention(Q, K, V, mask=None):
     """
@@ -593,7 +641,7 @@ def scaled_dot_product_attention(Q, K, V, mask=None):
     embed_size = Q.size(-1)  # embed_size
     
     # 计算点积并进行缩放
-    scores = torch.matmul(Q, K.transpose(-2, -1)) / torch.sqrt(torch.tensor(embed_size))
+    scores = torch.matmul(Q, K.transpose(-2, -1)) / math.sqrt(embed_size)
 
     # 如果提供了掩码矩阵，则将掩码对应位置的分数设为 -inf
     if mask is not None:
@@ -719,7 +767,7 @@ class Attention(nn.Module):
 
 ```python
 # 计算分数
-scores = torch.matmul(Q, K.transpose(-2, -1)) / torch.sqrt(torch.tensor(d_k))
+scores = torch.matmul(Q, K.transpose(-2, -1)) / math.sqrt(embed_size)
     
 # 如果提供了掩码矩阵，则将掩码对应位置的分数设为 -inf
 if mask is not None:
@@ -1272,6 +1320,7 @@ scaled_dot_product_attention() 唯一的改动是注释，因为一直是对最�
 ```python
 import torch
 import torch.nn.functional as F
+import math
 
 def scaled_dot_product_attention(Q, K, V, mask=None):
     """
@@ -1289,7 +1338,7 @@ def scaled_dot_product_attention(Q, K, V, mask=None):
     head_dim = Q.size(-1)  # head_dim
     
     # 计算点积并进行缩放
-    scores = torch.matmul(Q, K.transpose(-2, -1)) / torch.sqrt(torch.tensor(head_dim))
+    scores = torch.matmul(Q, K.transpose(-2, -1)) / math.sqrt(head_dim)
 
     # 如果提供了掩码矩阵，则将掩码对应位置的分数设为 -inf
     if mask is not None:
@@ -1372,6 +1421,7 @@ tensor([[[[1.0000, 0.0000, 0.0000],
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import math
 
 class MultiHeadAttention(nn.Module):
     def __init__(self, d_model, h):
@@ -1443,7 +1493,7 @@ def scaled_dot_product_attention(Q, K, V, mask=None):
     d_k = Q.size(-1)  # d_k
     
     # 计算点积并进行缩放
-    scores = torch.matmul(Q, K.transpose(-2, -1)) / torch.sqrt(torch.tensor(d_k))
+    scores = torch.matmul(Q, K.transpose(-2, -1)) / math.sqrt(d_k)
 
     # 如果提供了掩码矩阵，则将掩码对应位置的分数设为 -inf
     if mask is not None:
@@ -1567,14 +1617,13 @@ import torch
 import torch.nn as nn
 
 class ResidualConnection(nn.Module):
-    def __init__(self, sublayer, dropout=0.1):
+    def __init__(self, dropout=0.1):
         super(ResidualConnection, self).__init__()
-        self.sublayer = sublayer
         self.dropout = nn.Dropout(p=dropout)
 
-    def forward(self, x):
+    def forward(self, x, sublayer):
         # 将子层输出应用 dropout，然后与输入相加（参见论文 5.4 的表述或者本文「呈现」部分）
-        return x + self.dropout(self.sublayer(x))
+        return x + self.dropout(sublayer(x))
 ```
 
 ### Norm（层归一化，Layer Normalization）
@@ -1658,9 +1707,9 @@ class ResidualConnection(nn.Module):
 #### 代码实现
 
 ```python
-class LayerNormalization(nn.Module):
+class LayerNorm(nn.Module):
     def __init__(self, feature_size, epsilon=1e-9):
-        super(LayerNormalization, self).__init__()
+        super(LayerNorm, self).__init__()
         self.gamma = nn.Parameter(torch.ones(feature_size))  # 可学习缩放参数
         self.beta = nn.Parameter(torch.zeros(feature_size))  # 可学习偏移参数
         self.epsilon = epsilon
@@ -1747,29 +1796,30 @@ $$
 #### 代码实现
 
 ```python
- class AddNorm(nn.Module):
-    def __init__(self, sublayer, feature_size, dropout=0.1, epsilon=1e-9):
-        super(AddNorm, self).__init__()
-        self.residual = ResidualConnection(sublayer, dropout)  # 使用 ResidualConnection 进行残差连接
-        self.norm = LayerNormalization(feature_size, epsilon)  # 层归一化
+class SublayerConnection(nn.Module):
+    def __init__(self, feature_size, dropout=0.1, epsilon=1e-9):
+        super(SublayerConnection, self).__init__()
+        self.residual = ResidualConnection(dropout)  # 使用 ResidualConnection 进行残差连接
+        self.norm = LayerNorm(feature_size, epsilon)  # 层归一化
         self.dropout = nn.Dropout(p=dropout)
 
-    def forward(self, x):
+    def forward(self, x, sublayer):
         # 将子层输出应用 dropout 后经过残差连接后再进行归一化，可见本文「呈现」部分
-        return self.norm(self.residual(x))
+        return self.norm(self.residual(x, sublayer))
 
 # 或者直接在 AddNorm 里面实现残差连接
-class AddNorm(nn.Module):
-    def __init__(self, sublayer, feature_size, dropout=0.1, epsilon=1e-9):
-        super(AddNorm, self).__init__()
-        self.sublayer = sublayer
-        self.norm = LayerNormalization(feature_size, epsilon)
+class SublayerConnection(nn.Module):
+    def __init__(self, feature_size, dropout=0.1, epsilon=1e-9):
+        super(SublayerConnection, self).__init__()
+        self.norm = LayerNorm(feature_size, epsilon)
         self.dropout = nn.Dropout(p=dropout)
 
-    def forward(self, x):
+    def forward(self, x, sublayer):
         # 将子层输出应用 dropout 后经过残差连接后再进行归一化，可见本文「呈现」部分
-        return self.norm(x + self.dropout(self.sublayer(x)))
+        return self.norm(x + self.dropout(sublayer(x)))
 ```
+
+这里是 Post-Norm，即残差连接后进行 LayerNorm，和 Transformer 论文的表述一致。另一种实现是 Pre-Norm，即在进入子层计算之前先进行 LayerNorm： ` return x + self.dropout(sublayer(self.norm(x)))`。
 
 ## 嵌入（Embeddings）
 
@@ -1792,14 +1842,16 @@ class AddNorm(nn.Module):
 ```python
 import torch
 import torch.nn as nn
+import math
 
 class Embeddings(nn.Module):
     def __init__(self, vocab_size, d_model):
         super(Embeddings, self).__init__()
         self.embed = nn.Embedding(vocab_size, d_model)
+		self.scale_factor = math.sqrt(d_model)
 
     def forward(self, x):
-        return self.embed(x) * torch.sqrt(torch.tensor(d_model))
+        return self.embed(x) * self.scale_factor
 ```
 
 **解释**：
