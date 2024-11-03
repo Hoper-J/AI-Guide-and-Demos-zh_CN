@@ -25,7 +25,7 @@ Ashish Vaswan et al. | [arXiv 1706.03762](https://arxiv.org/pdf/1706.03762) | [C
 >
 >   —— 顶级的动画解释
 >
->   - [【官方双语】GPT是什么？直观解释Transformer | 深度学习第5章]( https://www.bilibili.com/video/BV13z421U7cs/?share_source=copy_web&vd_source=e46571d631061853c8f9eead71bdb390)
+>   - [【官方双语】GPT是什么？直观解释Transformer | 【深度学习第5章】]( https://www.bilibili.com/video/BV13z421U7cs/?share_source=copy_web&vd_source=e46571d631061853c8f9eead71bdb390)
 >   - [【官方双语】直观解释注意力机制，Transformer的核心 | 【深度学习第6章】](https://www.bilibili.com/video/BV1TZ421j7Ke/?share_source=copy_web)
 >
 > - **代码**
@@ -34,7 +34,7 @@ Ashish Vaswan et al. | [arXiv 1706.03762](https://arxiv.org/pdf/1706.03762) | [C
 >
 >   - [The Annotated Transformer](https://nlp.seas.harvard.edu/annotated-transformer/)
 >
-> - 可视化工具
+> - **可视化工具**
 >
 >   - [TRANSFORMER EXPLAINER](https://poloclub.github.io/transformer-explainer/)
 >
@@ -44,11 +44,9 @@ Ashish Vaswan et al. | [arXiv 1706.03762](https://arxiv.org/pdf/1706.03762) | [C
 >
 > ---
 >
-> 因为 Transformer 是一篇非常重要的基础论文，所以我决定尽量复现所有模块以供学习，。网络上确实有很多的相关资料，但阅读下来都无法一次性解决阅读时产生的疑惑。因此，本文将附带曾经的困惑进行撰写并提供理解指引。
+> 因为 Transformer 是一篇非常重要的基础论文，所以我决定尽量复现所有模块以供学习，另外，本文将附带曾经阅读论文时的困惑进行撰写，并尽可能地解答它们。不过，由于时间久远，有些我目前认为“显然”的内容可能没有特别说明，欢迎读者随时提出 issue，我会在闲暇时补充相关叙述。
 >
-> 不过，由于时间久远，有些我目前认为“显然”的内容可能没有特别说明，欢迎读者随时提出 issue，我会在闲暇时补充相关叙述。
->
-> [代码文件下载]()
+> [代码文件下载](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/PaperNotes/Demos/动手实现%20Transformer.ipynb)
 
 ## 目录
 
@@ -144,11 +142,34 @@ Ashish Vaswan et al. | [arXiv 1706.03762](https://arxiv.org/pdf/1706.03762) | [C
   - [Q2: 什么是自回归与非自回归？](#q2-什么是自回归与非自回归)
     - [自回归（Auto-Regressive）](#自回归auto-regressive)
     - [非自回归（Non-Autoregressive）](#非自回归non-autoregressive)
-  - [Q3: 既然输出 $h_t$ 同样依赖于 $h_{t-1}$, 那并行体现在哪？](#q3-既然输出-h_t-同样依赖于-h_t-1-那并行体现在哪)
+  - [Q3: 既然输出 $`h_t`$ 同样依赖于 $`h_{t-1}`$, 那并行体现在哪？](#q3-既然输出-h_t-同样依赖于-h_t-1-那并行体现在哪)
     - [训练阶段的并行化](#训练阶段的并行化)
   - [Q4: 词嵌入 Word Embedding（输入处理）和句子嵌入 Sentence Embedding（e.g., in RAG）是同一回事吗？](#q4-词嵌入-word-embedding输入处理和句子嵌入-sentence-embeddingeg-in-rag是同一回事吗)
 - [结语](#结语)
 - [附录](#附录)
+
+### 速览疑问
+
+- [Q: 自注意力中每层的计算复杂度怎么计算？](#q1-自注意力中每层的计算复杂度怎么计算)
+- [Q: 什么是顺序操作次数（Sequential Operations）？](#q2-什么是顺序操作次数sequential-operations)
+- [Q: 什么是最大路径长度（Maximum Path Length）？](#q3-什么是最大路径长度maximum-path-length)
+- [Q: 为什么学习率热身的时候可以刚好线性增加到 warmup_steps？](#q1-为什么学习率热身的时候可以刚好线性增加到-warmup_steps)
+- [Q: 什么是标签平滑（Label Smoothing）？](#q2-什么是标签平滑label-smoothing)
+- [Q: 什么是 PPL?](#q3-什么是-ppl)
+- [Q: 什么是 BLEU？](#q4-什么是-bleu)
+- [Q: 为什么需要 Mask 机制？](#q-为什么需要-mask-机制)
+- [Q: 现在所说的性能“提升”真的是由多头造成的吗？](#q-现在所说的性能提升真的是由多头造成的吗)
+- [Q: 为什么可以缓解梯度消失？](#q-为什么可以缓解梯度消失)
+- [Q: BatchNorm 和 LayerNorm 的区别](#q-batchnorm-和-layernorm-的区别)
+- [澄清：LayerNorm 最后的缩放与线性层 (nn.Linear) 的区别](#澄清layernorm-最后的缩放与线性层-nnlinear-的区别)
+- [Q: 为什么需要嵌入层？](#q-为什么需要嵌入层)
+- [Q: 什么是 nn.Embedding()？和 nn.Linear() 的区别是什么？](#q-什么是-nnembedding和-nnlinear-的区别是什么)
+- [Q: Transformer 模型的输出是概率还是 logits？](#q-transformer-模型的输出是概率还是-logits)
+- [Q: 什么是右移（shifted right）？](#q-什么是右移shifted-right)
+- [Q: 什么是编码器-解码器架构？](#q1-什么是编码器-解码器架构)
+- [Q: 什么是自回归与非自回归？](#q2-什么是自回归与非自回归)
+- [Q: 既然输出 $`h_t`$ 同样依赖于 $`h_{t-1}`$, 那并行体现在哪？](#q3-既然输出-h_t-同样依赖于-h_t-1-那并行体现在哪)
+- [Q: 词嵌入 Word Embedding（输入处理）和句子嵌入 Sentence Embedding（e.g., in RAG）是同一回事吗？](#q4-词嵌入-word-embedding输入处理和句子嵌入-sentence-embeddingeg-in-rag是同一回事吗)
 
 ## 前言
 
@@ -288,7 +309,7 @@ Transformer 模型基于**编码器**（左）- **解码器**（右）架构（�
 
 ## 呈现
 
-因为源码部分实在太长，选择将论文的一些对比和实验细节放在源码前，你可以选择暂时跳过这一部分，也可以直接阅读。建议的阅读顺序是先进行子模块源码（从「注意力机制详解」到「位置编码」部分）的阅读，然后再阅读本节。
+因为源码部分实在太长，选择将论文的一些对比和实验细节放在源码前，你可以选择暂时跳过这一部分，也可以直接阅读。建议的阅读顺序是先进行子模块源码（从「注意力机制详解」到「掩码」部分）的阅读，然后再阅读本节。
 
 ### 表 1
 
@@ -426,7 +447,7 @@ $$
 
 - **残差 Dropout**：对每个子层（sublayer）将 dropout 应用于每个子层的输出，经过残差连接后再进行归一化（LayerNorm），见 Add & Norm 的[代码实现](#代码实现-7)。
   
-  - 另外，对 embedding 和位置编码相加的地方也使用 Dropout，见位置编码的[代码实现]()。
+  - 另外，对 embedding 和位置编码相加的地方也使用 Dropout，见位置编码的[代码实现](#代码实现-10)。
   - 基础模型的 Dropout 概率 $P_{drop}$ 为 0.1。
   
 - **标签平滑（Label Smoothing）**: $\epsilon_{ls} = 0.1$, 这会增加 PPL（困惑度 perplexity），因为模型会变得更加不确定，但会提高准确性和 BLEU 分数。
@@ -639,10 +660,12 @@ $$
    
 2. **缩放（Scaling）**
    
-   > We suspect that for large values of $d_k$, the dot products grow large in magnitude, pushing the softmax function into regions where it has extremely small gradients 4. To counteract this effect, we scale the dot products by $\sqrt{d_k}$ .
+   > We suspect that for large values of $d_k$, the dot products grow large in magnitude, pushing the softmax function into regions where it has extremely small gradients. To counteract this effect, we scale the dot products by $\sqrt{d_k}$ .
    
    当 $d_k$ 较大时，点积的数值可能会过大，导致 Softmax 过后的梯度变得极小，因此除以 $\sqrt{d_k}$ 缩放点积结果的数值范围：
+   
    $`\text{Scaled Scores} = \frac{Q K^\top}{\sqrt{d_k}}`$
+   
    缩放后（Scaled Dot-Product）也称为注意力分数（**attention scores**）。
    
 3. **Softmax 归一化**
@@ -752,7 +775,7 @@ def scaled_dot_product_attention(Q, K, V, mask=None):
 
 “那么 Q、K、V 到底是怎么来的？论文架构图中的三种 Attention 是完全不同的架构吗？”
 
-让我们**带着疑惑往下阅读**，先不谈多头，理清楚Masked，self和cross 注意力到底是什么。
+让我们**带着疑惑往下阅读**，先不谈多头，理清楚 Masked，Self 和 Cross 注意力到底是什么。
 
 ### 单头注意力机制（Single-Head Attention）
 
@@ -1282,7 +1305,7 @@ def scaled_dot_product_attention(Q, K, V, mask=None):
 
   **详细说明：多头拆分与维度转换**
 
-  **1. `reshape` 操作：**
+  1. **`reshape` 操作**：
 
   ```python
   Q = Q.reshape(batch_size, seq_len, self.num_heads, self.head_dim)
@@ -1291,7 +1314,7 @@ def scaled_dot_product_attention(Q, K, V, mask=None):
   - 该操作将原始的 `embed_size` 拆分为 `num_heads` 个 `head_dim`。
     - 如果 `embed_size=512` 且 `num_heads=8`，则每个头的 `head_dim=64`。
 
-  **2. `transpose` 操作：**
+  2. **`transpose` 操作**：
 
   ```python
   Q = Q.transpose(1, 2)  # 和 Q.transpose(2, 1) 一样
@@ -1460,6 +1483,8 @@ tensor([[[[1.0000, 0.0000, 0.0000],
           [0.4522, 0.5478, 0.0000],
           [0.4550, 0.2689, 0.2761]]]])
 ```
+
+
 
 #### 代码实现
 
@@ -1827,7 +1852,7 @@ class LayerNorm(nn.Module):
 >    # 初始化的 shape 是二维的
 >    self.weight = nn.Parameter(torch.randn(out_features, in_features))  # 权重矩阵
 >    self.bias = nn.Parameter(torch.zeros(out_features))  # 偏置向量
->                                                                                                                                     
+>                                                                                                                                                                      
 >    # 计算
 >    def forward(self, x):
 >    	return torch.matmul(x, self.weight.T) + self.bias
@@ -1935,7 +1960,7 @@ class SublayerConnection(nn.Module):
 
 举个简单的例子来理解“语义”关系：像“猫”和“狗”在向量空间中的表示应该非常接近，因为它们都是宠物；“男人”和“女人”之间的向量差异可能代表性别的区别。此外，不同语言的词汇，如“男人”（中文）和“man”（英文），如果在相同的嵌入空间中，它们的向量也会非常接近，反映出跨语言的语义相似性。同时，【“女人”和“woman”（中文-英文）】与【“男人”和“man”（中文-英文）】之间的差异也可能非常相似。
 
-对于模型而言，没有语义信息就像我们小时候第一次读英语阅读报：“这些字母拼起来是什么？不知道。这些单词在说什么？不知道。”囫囵吞枣看完后去做题：“嗯，昨天对答案的时候，A 好像多一点，其他的差不多，那多选一点 A，其他平均分 :)。”
+对于模型而言，没有语义信息就像我们小时候刚开始读英语阅读报：“这些字母拼起来是什么？不知道。这些单词在说什么？不知道。”囫囵吞枣看完后去做题：“嗯，昨天对答案的时候，A 好像多一点，其他的差不多，那多选一点 A，其他平均分 :)。”
 
 所以，为了让模型捕捉到 token 背后复杂的语义（Semantic meaning）关系，我们需要将离散的 token ID 映射到一个高维的连续向量空间（Continuous, dense）。这意味着每个 token ID 会被转换为一个**嵌入向量**（embedding vector），期望通过这种方式让语义相近的词汇在向量空间中距离更近，使模型能更好地捕捉词汇之间的关系。当然，简单的映射无法做到这一点，因此需要“炼丹”——是的，嵌入层是可以训练的。
 
@@ -3096,7 +3121,7 @@ print(model)
 
 ## 结语
 
-恭喜你完成了 Transformer 的学习！在这篇文章中，我们大致遵循自底向上的顺序，探索了 Transformer 的基本概念、架构及其核心机制，并解答了一些可能存在的疑惑。考虑到已有许多优秀的 PyTorch 项目可供参考，本文的代码将保留在 [Notebook 文件]()，方便读者快速查看和实践，而不拆分为独立的 Python 文件。
+恭喜你完成了 Transformer 的学习！在这篇文章中，我们大致遵循自底向上的顺序，探索了 Transformer 的基本概念、架构及其核心机制，并解答了一些可能存在的疑惑。考虑到已有许多优秀的 PyTorch 项目可供参考，本文的代码将保留在 [Notebook 文件](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/PaperNotes/Demos/动手实现%20Transformer.ipynb)，方便读者快速查看和实践，而不拆分为独立的 Python 文件。
 
 希望本文对你有所帮助！
 
