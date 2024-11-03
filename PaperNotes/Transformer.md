@@ -50,125 +50,105 @@ Ashish Vaswan et al. | [arXiv 1706.03762](https://arxiv.org/pdf/1706.03762) | [C
 >
 > [代码文件下载]()
 
-## 时间线
-
-> ✍️ 未完待续...（完结后删除该模块，不由得感慨讲解这篇论文需要的工作量，预计11.5日前完成，可以到时候再关注本文，当前文章进入收尾环节）
->
-
-2024.10.23 文字概述
-
-2024.10.24 注意力机制：缩放点积->单头->掩码->self->cross
-
-2024.10.25 总结论文 Attention 之间的区别，增加 QA 中对并行的回答
-
-2024.10.27 完成多头注意力模块
-
-2024.10.28 完成编码器-解码器中所有子模块的代码实现
-
-2024.10.29 Embedding 模块以及其和 Linear 的区别
-
-2024.10.30 Softmax 和交叉熵损失，论文 Table 1 解析
-
-2024.10.31 Dropout 的应用以及论文表格和训练细节呈现，解释 PPL 和 BLEU
-
-2024.11.01 解释学习率的 warmup 过程和标签平滑的作用
-
-2024.11.02 完成编码器 & 解码器 & 模型整体代码完结
-
-2024.11.03 对齐论文叙述
-
-TODO：消除因为时间线拉长可能导致的繁杂冗余表述。
-
 ## 目录
 
 - [前言](#前言)
-   - [RNN 的递归原理](#rnn-的递归原理)
+  - [RNN 的递归原理](#rnn-的递归原理)
 - [贡献](#贡献)
 - [模型架构](#模型架构)
-   - [快速概述](#快速概述)
-      - [编码器-解码器架构](#编码器-解码器架构)
-      - [编码器的输入处理](#编码器的输入处理)
-      - [解码器的输出处理](#解码器的输出处理)
+  - [快速概述](#快速概述)
+    - [编码器-解码器架构](#编码器-解码器架构)
+    - [编码器的输入处理](#编码器的输入处理)
+    - [解码器的输出处理](#解码器的输出处理)
 - [呈现](#呈现)
-   - [表 1](#表-1)
-      - [Q1: 自注意力中每层的计算复杂度怎么计算？](#q1-自注意力中每层的计算复杂度怎么计算)
-      - [Q2: 什么是顺序操作次数（Sequential Operations）？](#q2-什么是顺序操作次数sequential-operations)
-      - [Q3: 什么是最大路径长度（Maximum Path Length）？](#q3-什么是最大路径长度maximum-path-length)
-   - [训练细节](#训练细节)
-      - [Q1: 为什么学习率热身的时候可以刚好线性增加到 warmup_steps？](#q1-为什么学习率热身的时候可以刚好线性增加到-warmup_steps)
-      - [Q2: 什么是标签平滑（Label Smoothing）？](#q2-什么是标签平滑label-smoothing)
-      - [Q3: 什么是 PPL?](#q3-什么是-ppl)
-      - [Q4: 什么是 BLEU？](#q4-什么是-bleu)
-   - [表 3](#表-3)
+  - [表 1](#表-1)
+    - [Q1: 自注意力中每层的计算复杂度怎么计算？](#q1-自注意力中每层的计算复杂度怎么计算)
+    - [Q2: 什么是顺序操作次数（Sequential Operations）？](#q2-什么是顺序操作次数sequential-operations)
+    - [Q3: 什么是最大路径长度（Maximum Path Length）？](#q3-什么是最大路径长度maximum-path-length)
+  - [训练细节](#训练细节)
+    - [Q1: 为什么学习率热身的时候可以刚好线性增加到 warmup_steps？](#q1-为什么学习率热身的时候可以刚好线性增加到-warmup_steps)
+    - [Q2: 什么是标签平滑（Label Smoothing）？](#q2-什么是标签平滑label-smoothing)
+    - [Q3: 什么是 PPL?](#q3-什么是-ppl)
+    - [Q4: 什么是 BLEU？](#q4-什么是-bleu)
+  - [表 3](#表-3)
 - [注意力机制详解](#注意力机制详解)
-   - [缩放点积注意力机制](#缩放点积注意力机制)
-      - [公式解释](#公式解释)
-      - [代码实现](#代码实现)
-      - [Q: 为什么需要 Mask 机制？](#q-为什么需要-mask-机制)
-   - [单头注意力机制（Single-Head Attention）](#单头注意力机制single-head-attention)
-      - [掩码机制（Masked Attention）](#掩码机制masked-attention)
-      - [自注意力机制（Self-attention）](#自注意力机制self-attention)
-         - [代码实现](#代码实现-1)
-      - [交叉注意力机制（Cross-Attention）](#交叉注意力机制cross-attention)
-         - [代码实现](#代码实现-2)
-      - [总结](#总结)
-   - [多头注意力机制（Multi-Head Attention）](#多头注意力机制multi-head-attention)
-      - [数学表达](#数学表达)
-      - [Q: 现在所说的性能“提升”真的是由多头造成的吗？](#q-现在所说的性能提升真的是由多头造成的吗)
-      - [优化循环](#优化循环)
-      - [代码实现](#代码实现-3)
+  - [缩放点积注意力机制](#缩放点积注意力机制)
+    - [公式解释](#公式解释)
+    - [代码实现](#代码实现)
+    - [Q: 为什么需要 Mask 机制？](#q-为什么需要-mask-机制)
+  - [单头注意力机制（Single-Head Attention）](#单头注意力机制single-head-attention)
+    - [掩码机制（Masked Attention）](#掩码机制masked-attention)
+    - [自注意力机制（Self-attention）](#自注意力机制self-attention)
+      - [代码实现](#代码实现-1)
+    - [交叉注意力机制（Cross-Attention）](#交叉注意力机制cross-attention)
+      - [代码实现](#代码实现-2)
+    - [总结](#总结)
+  - [多头注意力机制（Multi-Head Attention）](#多头注意力机制multi-head-attention)
+    - [数学表达](#数学表达)
+    - [Q: 现在所说的性能“提升”真的是由多头造成的吗？](#q-现在所说的性能提升真的是由多头造成的吗)
+    - [优化循环](#优化循环)
+    - [代码实现](#代码实现-3)
 - [Position-wise Feed-Forward Networks（FFN）](#position-wise-feed-forward-networksffn)
-   - [数学表达](#数学表达-1)
-   - [代码实现](#代码实现-4)
+  - [数学表达](#数学表达-1)
+  - [代码实现](#代码实现-4)
 - [残差连接（Residual Connection）和层归一化（Layer Normalization, LayerNorm）](#残差连接residual-connection和层归一化layer-normalization-layernorm)
-   - [Add（残差连接，Residual Connection）](#add残差连接residual-connection)
-      - [Q: 为什么可以缓解梯度消失？](#q-为什么可以缓解梯度消失)
-      - [代码实现](#代码实现-5)
-   - [Norm（层归一化，Layer Normalization）](#norm层归一化layer-normalization)
-      - [Q: BatchNorm 和 LayerNorm 的区别](#q-batchnorm-和-layernorm-的区别)
-      - [LayerNorm 的计算过程](#layernorm-的计算过程)
-      - [代码实现](#代码实现-6)
-      - [澄清：LayerNorm 最后的缩放与线性层 (nn.Linear) 的区别](#澄清layernorm-最后的缩放与线性层-nnlinear-的区别)
-   - [Add &amp; Norm](#add--norm)
-      - [代码实现](#代码实现-7)
+  - [Add（残差连接，Residual Connection）](#add残差连接residual-connection)
+    - [Q: 为什么可以缓解梯度消失？](#q-为什么可以缓解梯度消失)
+    - [代码实现](#代码实现-5)
+  - [Norm（层归一化，Layer Normalization）](#norm层归一化layer-normalization)
+    - [Q: BatchNorm 和 LayerNorm 的区别](#q-batchnorm-和-layernorm-的区别)
+    - [LayerNorm 的计算过程](#layernorm-的计算过程)
+    - [代码实现](#代码实现-6)
+    - [澄清：LayerNorm 最后的缩放与线性层 (nn.Linear) 的区别](#澄清layernorm-最后的缩放与线性层-nnlinear-的区别)
+  - [Add &amp; Norm](#add--norm)
+    - [代码实现](#代码实现-7)
 - [嵌入（Embeddings）](#嵌入embeddings)
-   - [Q: 为什么需要嵌入层？](#q-为什么需要嵌入层)
-   - [代码实现](#代码实现-8)
-   - [Q: 什么是 nn.Embedding()？和 nn.Linear() 的区别是什么？](#q-什么是-nnembedding和-nnlinear-的区别是什么)
+  - [Q: 为什么需要嵌入层？](#q-为什么需要嵌入层)
+  - [代码实现](#代码实现-8)
+  - [Q: 什么是 nn.Embedding()？和 nn.Linear() 的区别是什么？](#q-什么是-nnembedding和-nnlinear-的区别是什么)
 - [Softmax](#softmax)
-   - [代码实现](#代码实现-9)
-   - [交叉熵（Cross-Entropy）损失](#交叉熵cross-entropy损失)
-   - [Q: Transformer 模型的输出是概率还是 logits？](#q-transformer-模型的输出是概率还是-logits)
+  - [代码实现](#代码实现-9)
+  - [交叉熵（Cross-Entropy）损失](#交叉熵cross-entropy损失)
+  - [Q: Transformer 模型的输出是概率还是 logits？](#q-transformer-模型的输出是概率还是-logits)
 - [位置编码（Positional Encoding）](#位置编码positional-encoding)
-   - [代码实现](#代码实现-10)
-- [掩码](#掩码)
-   - [填充掩码（Padding Mask）](#填充掩码padding-mask)
-      - [示例](#示例)
-   - [未来信息掩码（Look-ahead Mask）](#未来信息掩码look-ahead-mask)
-      - [示例](#示例-1)
-   - [组合掩码](#组合掩码)
-      - [示例](#示例-2)
-   - [示例总结](#示例总结)
+  - [代码实现](#代码实现-10)
 - [输入处理](#输入处理)
-   - [编码器输入处理](#编码器输入处理)
-   - [解码器输入处理](#解码器输入处理)
+  - [编码器输入处理](#编码器输入处理)
+  - [解码器输入处理](#解码器输入处理)
+    - [Q: 什么是右移（shifted right）？](#q-什么是右移shifted-right)
+      - [数学表述](#数学表述)
+      - [举例](#举例)
+- [掩码](#掩码)
+  - [填充掩码（Padding Mask）](#填充掩码padding-mask)
+    - [示例](#示例)
+  - [未来信息掩码（Look-ahead Mask）](#未来信息掩码look-ahead-mask)
+    - [示例](#示例-1)
+  - [组合掩码](#组合掩码)
+    - [示例](#示例-2)
+  - [总结](#总结-1)
 - [子层模块](#子层模块)
-   - [编码器层 （Encoder Layer）](#编码器层-encoder-layer)
-      - [代码实现](#代码实现-11)
-   - [解码器层（Decoder Layer）](#解码器层decoder-layer)
-      - [代码实现](#代码实现-12)
+  - [编码器层 （Encoder Layer）](#编码器层-encoder-layer)
+    - [代码实现](#代码实现-11)
+  - [解码器层（Decoder Layer）](#解码器层decoder-layer)
+    - [代码实现](#代码实现-12)
 - [编码器（Encoder）](#编码器encoder)
 - [解码器（Decoder）](#解码器decoder)
-- [Transformer](#transformer-1)
-   - [查收结果](#查收结果)
+- [完整模型](#完整模型)
+  - [实例化](#实例化)
+  - [示例](#示例-3)
+    - [各模块的预期输出形状](#各模块的预期输出形状)
+    - [代码](#代码)
+  - [PyTorch 官方实现](#pytorch-官方实现)
 - [QA](#qa)
-   - [Q1: 什么是编码器-解码器架构？](#q1-什么是编码器-解码器架构)
-   - [Q2: 什么是自回归与非自回归？](#q2-什么是自回归与非自回归)
-      - [自回归（Auto-Regressive）](#自回归auto-regressive)
-      - [非自回归（Non-Autoregressive）](#非自回归non-autoregressive)
-   - [Q3: 既然输出 $h_t$ 同样依赖于 $h_{t-1}$, 那并行体现在哪？](#q3-既然输出-h_t-同样依赖于-h_t-1-那并行体现在哪)
-      - [训练阶段的并行化](#训练阶段的并行化)
-   - [思考Q4: 输入 Embedding 和 RAG 所说的 Embedding 是一个东西吗？](#思考q4-输入-embedding-和-rag-所说的-embedding-是一个东西吗)
+  - [Q1: 什么是编码器-解码器架构？](#q1-什么是编码器-解码器架构)
+  - [Q2: 什么是自回归与非自回归？](#q2-什么是自回归与非自回归)
+    - [自回归（Auto-Regressive）](#自回归auto-regressive)
+    - [非自回归（Non-Autoregressive）](#非自回归non-autoregressive)
+  - [Q3: 既然输出 $h_t$ 同样依赖于 $h_{t-1}$, 那并行体现在哪？](#q3-既然输出-h_t-同样依赖于-h_t-1-那并行体现在哪)
+    - [训练阶段的并行化](#训练阶段的并行化)
+  - [Q4: 词嵌入 Word Embedding（输入处理）和句子嵌入 Sentence Embedding（e.g., in RAG）是同一回事吗？](#q4-词嵌入-word-embedding输入处理和句子嵌入-sentence-embeddingeg-in-rag是同一回事吗)
+- [结语](#结语)
+- [附录](#附录)
 
 ## 前言
 
@@ -182,17 +162,18 @@ Transformer 已成为语言模型领域的奠基之作，大幅推动了自然�
 > ### RNN 的递归原理
 >
 > 给定输入序列 $X = (x_1, x_2, ..., x_t)$, $X$ 可以理解为一个句子，RNN 的隐藏状态递归更新如下：
-> 
+>
 > $$
 > h_t = f(W_h h_{t-1} + W_x x_t + b)
 > $$
-> 
+>
 > 其中：
 >
 > - $W_h$ 和 $W_x$ 是权重矩阵，分别用于处理上一时间步的状态 $h_{t-1}$ 和当前时间步的输入 $x_t$。
 > - $b$ 是偏置项。
+> - $f$ 是激活函数。
 >
-> 从公式可以看出，每个时间步的状态 $h_t$ 依赖于**前一时间步** $h_{t-1}$, 这使得 RNN 无法并行处理序列中的数据，所以 RNN 训练得慢。
+> 从公式可以看出，每个时间步的状态 $h_t$ 依赖于**前一时间步** $h_{t-1}$, 这使得 RNN 无法并行处理序列中的数据。
 
 ## 贡献
 
@@ -429,17 +410,17 @@ $$
   lrate = d_{model}^{-0.5} \cdot \min(\text{step\_num}^{-0.5}, \text{step\_num} \cdot \text{warmup\_steps}^{-1.5})
   `$
 
-  $d_{model}$ 是嵌入维度，也就是一个 token 变成 embedding 后的维度，或者说模型的宽度（model size），$\text{step\_num}$ 是当前训练步数，$`\text{warmup\_steps}`$ 是 “热身”步数，论文中 $`\text{warmup\_steps}=4000`$, 表示在前 4000 步线性增加学习率，之后按步数平方根倒数（$\text{step\_num}^{-0.5}$）逐渐减少学习率。结合下图进行理解。
+  $d_{model}$ 是嵌入维度，也就是一个 token 变成 embedding 后的维度，或者说模型的宽度（model size），$`\text{step\_num}`$ 是当前训练步数，$`\text{warmup\_steps}`$ 是 “热身”步数，论文中 $`\text{warmup\_steps}=4000`$, 表示在前 4000 步线性增加学习率，之后按步数平方根倒数（$`\text{step\_num}^{-0.5}`$）逐渐减少学习率。结合下图进行理解。
 
   ![lr](./assets/lr.png)
 
   #### Q1: 为什么学习率热身的时候可以刚好线性增加到 warmup_steps？
 
-  注意公式中只有 $\text{step\_num}$ 是变量，其余为固定的常数，因此可以分三种情况来讨论：
+  注意公式中只有 $`\text{step\_num}`$ 是变量，其余为固定的常数，因此可以分三种情况来讨论：
 
-  - 当 $\text{step\_num} < \text{warmup\_steps}$ 时，公式第二项 $ \text{step\_num} \cdot \text{warmup\_steps}^{-1.5} $ 的值小于第一项 $ \text{step\_num}^{-0.5} $，此时学习率等于 $d_{model}^{-0.5} \cdot \text{step\_num} \cdot \text{warmup\_steps}^{-1.5}$ ，随训练步数线性增加，直到 $\text{step\_num}$ 达到 $\text{warmup\_steps}$。
-  - 当 $\text{step\_num} = \text{warmup\_steps}$ 时，$\text{step\_num} \cdot \text{warmup\_steps}^{-1.5} = \text{step\_num} \cdot \text{step\_num}^{-1.5} = \text{step\_num}^{-0.5}$，此时，学习率刚好达到峰值 $d_{model}^{-0.5} \cdot \text{warmup\_steps}^{-0.5}$。
-  - 当 $\text{step\_num} > \text{warmup\_steps}$ 时，公式第一项 $ \text{step\_num}^{-0.5} $ 的值小于第二项 $ \text{step\_num} \cdot \text{warmup\_steps}^{-1.5} $，学习率等于 $d_{model}^{-0.5} \cdot \text{step\_nums}^{-0.5}$，按步数平方根倒数逐渐减小。
+  - 当 $`\text{step\_num} < \text{warmup\_steps}`$ 时，公式第二项 $`\text{step\_num} \cdot \text{warmup\_steps}^{-1.5}`$ 的值小于第一项 $`\text{step\_num}^{-0.5}`$，此时学习率等于 $`d_{model}^{-0.5} \cdot \text{step\_num} \cdot \text{warmup\_steps}^{-1.5}`$ ，随训练步数线性增加，直到 $`\text{step\_num}`$ 达到 $`\text{warmup\_steps}`$。
+  - 当 $`\text{step\_num} = \text{warmup\_steps}`$ 时，$`\text{step\_num} \cdot \text{warmup\_steps}^{-1.5} = \text{step\_num} \cdot \text{step\_num}^{-1.5} = \text{step\_num}^{-0.5}`$，此时，学习率刚好达到峰值 $`d_{model}^{-0.5} \cdot \text{warmup\_steps}^{-0.5}`$。
+  - 当 $`\text{step\_num} > \text{warmup\_steps}`$ 时，公式第一项 $`\text{step\_num}^{-0.5}`$ 的值小于第二项 $`\text{step\_num} \cdot \text{warmup\_steps}^{-1.5}`$，学习率等于 $`d_{model}^{-0.5} \cdot \text{step\_nums}^{-0.5}`$，按步数平方根倒数逐渐减小。
 
 **正则化方法**：
 
@@ -461,28 +442,36 @@ $$
   下面我们通过**公式**和**代码**来理解。
   
   对于一个具有 $C$ 个类别的分类任务，假设 $\mathbf{y}$ 是真实标签的 one-hot 编码，正确类别的概率为 1，其余类别的概率为 0：
-  $$
+  
+  $`
   \mathbf{y} = [0, 0, \ldots, 1, \ldots, 0]
-  $$
+  `$
   
   
   应用标签平滑后，目标标签的分布 $\mathbf{y}'$ 变为：
-  $$
+  
+  $`
   \mathbf{y}' = (1 - \epsilon_{ls}) \cdot \mathbf{y} + \frac{\epsilon_{ls}}{C}
-  $$
+  `$
   
   也就是说，对于正确类别 $i$，标签平滑后的概率为：
-  $$
+  
+  $`
   \mathbf{y}_i = 1 - \epsilon_{ls} + \frac{\epsilon_{ls}}{C}
-  $$
+  `$
+  
   对于其他类别 $j \neq i$，标签平滑后的概率为：
-  $$
+  
+  $`
   \mathbf{y}'_j = \frac{\epsilon_{ls}}{C}
-  $$
+  `$
+  
   标签平滑后的标签向量 $\mathbf{y}'$ 的形式为：
-  $$
+  
+  $`
   \mathbf{y}' = [\frac{\epsilon_{ls}}{C}, \frac{\epsilon_{ls}}{C}, \ldots, 1 - \epsilon_{ls} + \frac{\epsilon_{ls}}{C}, \ldots, \frac{\epsilon_{ls}}{C}]
-  $$
+  `$
+  
   **代码实现**：
   
   ```python
@@ -1838,7 +1827,7 @@ class LayerNorm(nn.Module):
 >    # 初始化的 shape 是二维的
 >    self.weight = nn.Parameter(torch.randn(out_features, in_features))  # 权重矩阵
 >    self.bias = nn.Parameter(torch.zeros(out_features))  # 偏置向量
->                                                                                                                   
+>                                                                                                                                     
 >    # 计算
 >    def forward(self, x):
 >    	return torch.matmul(x, self.weight.T) + self.bias
@@ -2337,6 +2326,80 @@ class TargetEmbedding(nn.Module):
         return self.positional_encoding(x)  # 加入位置编码
 ```
 
+注意到架构图中解码器的输入 Outputs 实际上做了额外的处理：shifted right。
+
+#### Q: 什么是右移（shifted right）？
+
+> ![mask](./assets/mask.png)
+
+“在预测序列的第一个位置时，当前的掩码只允许模型看到第一个位置。那么，此时解码器的输入应该是什么呢？”
+
+“等下，为什么预测第一个还能看第一个，这不就直接看到「答案」了吗？”
+
+“是的，如果没有提前处理的话会出现这个问题。所以，该怎么处理才能既看到第一个位置又不看到答案呢？”
+
+“那就...让第一个位置不是答案！右移一位，左边补「0」”
+
+“没错，计算机专业的同学应该很熟悉这种移位操作，也可以使用特殊的开始标记（`<sos>`）进行补位。“
+
+##### 数学表述
+
+目标输出序列 $Y = (y_1, y_2, ..., y_T)$ 向右移动一位，生成一个新的序列 $Y' = (0, y_1, y_2, ..., y_{T-1})$，其中第一个位置用填充标记（假设为 0 或特定的开始标记 `<sos>`）占位。
+
+需要注意的是，这个操作位于嵌入（Embedding）之前，可以将公式 $Y$ 中的元素当作 token id。
+
+##### 举例
+
+假设目标序列是 “I love NLP”，在右移之后得到输入序列：
+
+```python
+<sos> I love NLP
+```
+
+这样在训练时就能避免“偷看”当前位置，具体预测过程如下：
+
+- 输入 `<sos>` 预测 “I”
+- 输入 `<sos> I` 预测 “love”
+- 输入 `<sos> I love` 预测 “NLP”
+
+这是一个非常优雅的解决方案，与掩码协同工作，防止模型在训练时泄露未来信息。
+
+> [!tip]
+>
+> `<SOS>` 是 “Start of Sequence”的缩写，用于指示一个序列的开始，有时也使用另一个标记：`<BOS>`（“Beginning of Sequence”）。这些标记本身并没有什么意义，都是人为赋予的一个名字，使用自定义的标记作为序列开始是完全允许的。
+
+另外，右移操作通常不是在 Transformer 模型内部处理的，而是在数据传入模型之前的预处理阶段。例如，假设目标序列已经经过分词并添加了特殊标记：
+
+```python
+tgt = "<sos> I love NLP <eos>"
+```
+
+我们需要从这个序列获取输入和输出：
+
+```python
+
+tgt_input = tgt[:-1]  # "<sos> I love NLP"
+tgt_output = tgt[1:]  # "I love NLP <eos>"
+```
+
+在训练过程中，解码器将使用 `tgt_input` 来预测 `tgt_output`。具体过程如下：
+
+- 输入 `<sos>` 预测 “I”
+- 输入 `<sos> I` 预测 “love”
+- 输入 `<sos> I love` 预测 “NLP”
+- 输入 `<sos> I love NLP` 预测 `<eos>`
+
+> [!note]
+>
+> 当前的 `tgt` 是一维的字符串。如果要处理一个**批次（batch）**中的数据，需要对张量的每一维进行切片。例如，对于形状为 `(batch_size, seq_len)` 的张量 `tgt`：
+>
+> ```python
+> tgt_input = tgt[:, :-1]  # 去除每个序列的最后一个token
+> tgt_output = tgt[:, 1:]  # 去除每个序列的第一个token
+> ```
+> 
+> 这样，`tgt_input` 和 `tgt_output` 分别对应批次序列的输入和目标输出，用于模型训练。
+
 ## 掩码
 
 在 Transformer 模型中，掩码用于控制注意力机制中哪些位置需要被忽略，本文在[之前](#q-为什么需要-mask-机制)讲解过为什么需要掩码机制，在这里我们将分别实现它们。
@@ -2633,7 +2696,7 @@ class Decoder(nn.Module):
 
 ```
 
-## Transformer
+## 完整模型
 
 > ![模型架构图](./assets/20241023202539.png)
 
@@ -2971,46 +3034,73 @@ print(model)
 >
 > ![并行处理](./assets/image-20241026192000142.png)
 
-### Q4: 输入 Embedding 和模型过程中的 Embedding（e.g., in RAG）是一个东西吗？
+### Q4: 词嵌入 Word Embedding（输入处理）和句子嵌入 Sentence Embedding（e.g., in RAG）是同一回事吗？
 
-不是。虽然术语和表示形式一致，都是向量，但它们不是一个概念。
+> **推荐阅读**：
+>
+> - [Sentence Embeddings. Introduction to Sentence Embeddings](https://osanseviero.github.io/hackerllama/blog/posts/sentence_embeddings/)
+> - [The Art of Pooling Embeddings 🎨](https://blog.ml6.eu/the-art-of-pooling-embeddings-c56575114cf8)
 
-输入 Embedding 跟 token_id 概念一样，只不过现在用向量表示了对应的 token。而模型过程中的 Embedding 可以看成是这个序列所对应的 embedding。一个狭义一个广义，实际上 Transformer 中间自注意力的输出也可以视为 Embedding，取决于你想赋予的含义。
+不是。尽管二者都将文本转换为向量表示，但它们在概念和用途上有明显不同。
 
-#### 输入 Embedding
+- **词嵌入**（Word Embedding）
 
-- 将输入序列中的每个 token 转换为固定维度的向量表示，便于模型对文本数据进行数值处理。
-- 每个 token 独立映射到嵌入空间中，不考虑序列中其他 token 的上下文。
-- **形状**：`(batch_size, seq_len, d_model)`
+  - 以 Transformer 的输入处理中的 [Embeddings](#嵌入embeddings) 为例，用于表示单独的词或 token，将每个词映射到一个连续的向量空间。
 
-```python
-# 输入 token ID 序列，形状为 (batch_size, seq_len)
-input_tokens = [token1_id, token2_id, token3_id, ...]
+  - **形状**：`(batch_size, seq_len, d_model)`
 
-# 经过嵌入层，转换为嵌入向量，形状为 (batch_size, seq_len, d_model)
-input_embeddings = embedding_layer(input_tokens)
-```
+    ```python
+    # 输入 token ID 序列，形状为 (batch_size, seq_len)
+    input_tokens = [token1_id, token2_id, token3_id, ...]
+    
+    # 经过嵌入层，转换为嵌入向量，形状为 (batch_size, seq_len, d_model)
+    input_embeddings = embedding_layer(input_tokens)
+    ```
 
-#### 模型过程中的 Embedding
+- **句子嵌入**（Sentence Embedding）
 
-- 捕获文本（整个句子、段落或文档）的语义信息。
-- 表达序列整体的语义信息，而不仅仅是个别 token 的含义。
-- **形状**：通常为 `(embedding_dim,)` 表示句子/文档嵌入，或 `(batch_size, seq_len, d_model)` 表示每个 token 的上下文嵌入。
+  - 表示整个句子或文本的语义，捕获序列的整体含义，可用于下游任务（如检索增强生成 RAG、语义搜索、文本分类等）
 
-```python
-# 输入查询文本或文档文本
-query_text = "What is the capital of France?"
-document_text = "Paris is the capital city of France."
+  - **获取方式**：
 
-# 使用编码器将文本转换为嵌入向量
-query_embedding = encoder(query_text)       # 形状为 (embedding_dim,)
-document_embedding = encoder(document_text) # 形状为 (embedding_dim,)
+    - **使用编码器生成上下文相关的嵌入**：输入序列经过编码器，生成每个 token 的上下文嵌入，形状为 `(batch_size, seq_len, d_model)`。
 
-# 可以用于计算文本之间的相似性
-similarity = cosine_similarity(query_embedding, document_embedding)
-```
+    - **池化策略**：将 token 的上下文嵌入聚合为一个固定大小的向量，常见方法包括：
 
-# 附录
+      - **[CLS] 池化**：以 BERT 为例，可以使用 `[CLS]` token 的嵌入向量作为句子表示。
+      - **平均池化**：对所有 token 的嵌入取平均值。
+      - **最大池化**：取所有 token 嵌入的最大值。
+
+    - **形状**：`(batch_size, d_model)`
+
+      ```python
+      # 输入查询文本或文档文本
+      query_text = "What is RAG?"
+      
+      # 对文本进行分词和编码，得到 token ID 序列
+      input_ids = tokenizer.encode(query_text, return_tensors='pt')
+      
+      # 使用编码器将文本转换为上下文嵌入，形状为 (batch_size, seq_len, d_model)
+      token_embeddings = encoder(input_ids)
+      
+      # 提取句子嵌入，形状为 (batch_size, d_model)
+      # 方法一：使用 [CLS] token 的嵌入（适用于以 [CLS] 开头的模型，如 BERT）
+      sentence_embedding = token_embeddings[:, 0, :]
+      
+      # 方法二：平均池化
+      sentence_embedding = torch.mean(token_embeddings, dim=1)
+      
+      # 方法三：最大池化
+      sentence_embedding, _ = torch.max(token_embeddings, dim=1)
+      ```
+
+## 结语
+
+恭喜你完成了 Transformer 的学习！在这篇文章中，我们大致遵循自底向上的顺序，探索了 Transformer 的基本概念、架构及其核心机制，并解答了一些可能存在的疑惑。考虑到已有许多优秀的 PyTorch 项目可供参考，本文的代码将保留在 [Notebook 文件]()，方便读者快速查看和实践，而不拆分为独立的 Python 文件。
+
+希望本文对你有所帮助！
+
+## 附录
 
 `nn.Transformer()`：
 
