@@ -92,7 +92,11 @@
   论文随笔。
 
   - [**README.md**](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/tree/master/PaperNotes)
-    - 随笔目录索引。
+    - 目录索引。
+  - [对比学习论文随笔 1：正负样本](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/PaperNotes/对比学习论文随笔%201：正负样本.md)
+    - 涉及使用正负样本思想且优化目标一致的基础论文
+  - [Transformer 论文精读](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/PaperNotes/Transformer%20论文精读.md)
+    - 包含完整代码复现。
 
 - [**CodePlayground**](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/tree/master/CodePlayground)
 
@@ -200,9 +204,13 @@ conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvi
 
 ### 11月更新计划
 
-- [ ] 大模型基础论文（Transformer -> GPT -> Bert）
-- [ ] Bert 微调抽取式问答任务（在 Bert 论文随笔上传前会提供一个中文作业版本的基础微调代码以供学习，Bert 完成后会给出答案）
-- [ ] nn.Embedding vs nn.Linear 的区别（在 [Transformer](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/PaperNotes/Transformer.md#什么是-nnembedding和-nnlinear-的区别是什么) 论文随笔中有简单提到，考虑拆分出来供拓展阅读）
+- [x] 大模型基础论文（Transformer）
+  - [ ]  -> GPT -> Bert
+
+- [x] nn.Embedding vs nn.Linear 的区别
+  - [ ] 在 [Transformer 论文精读](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/PaperNotes/Transformer%20论文精读.md#q-什么是-nnembedding和-nnlinear-的区别是什么)中有简单提到，考虑拆分出来供拓展阅读
+
+- [ ] 【Doing】Bert 微调抽取式问答任务迁移（在 Bert 论文随笔上传前会提供一个中文作业版本的基础微调代码以供学习，Bert 完成后会给出答案）
 - [ ] LoRA 文生图的 🎡 命令行脚本制作上传
 - [ ] 更多有趣的实践项目与理论...
 
