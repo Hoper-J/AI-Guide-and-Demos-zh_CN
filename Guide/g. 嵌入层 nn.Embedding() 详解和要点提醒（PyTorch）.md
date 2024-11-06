@@ -5,6 +5,8 @@
 > “那么，如何让模型真正理解这些词语背后的含义呢？”
 >
 > “既然一维的 Token ID 无法提供足够的信息，那就将其转换成更高维的向量，使其承载更丰富的语义信息，这就是嵌入层（Embedding Layer）的作用。”
+>
+> [代码文件下载](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Demos/20.%20嵌入层%20nn.Embedding()%20代码示例.ipynb)
 
 ## 目录
 
@@ -12,11 +14,22 @@
   - [参数](#参数)
   - [属性](#属性)
   - [方法](#方法)
-    - [参数](#参数-1)
+     - [参数](#参数-1)
 - [数学公式](#数学公式)
 - [使用示例](#使用示例)
 - [要点提醒](#要点提醒)
 - [Q: 什么是语义？](#q-什么是语义)
+- [可视化](#可视化)
+   - [环境配置](#环境配置)
+   - [导入](#导入)
+   - [加载预训练模型](#加载预训练模型)
+   - [准备文本数据](#准备文本数据)
+   - [获取嵌入向量](#获取嵌入向量)
+   - [使用 t-SNE 降维](#使用-t-sne-降维)
+   - [画图](#画图)
+- [参考链接](#参考链接)
+- [附录](#附录)
+   - [可视化完整代码](#可视化完整代码)
 
 ## nn.Embedding 嵌入层
 
@@ -65,7 +78,8 @@
 $$
 E(x_i) = E_{x_i}
 $$
-其中，$E$ 是嵌入矩阵，$x_i$ 是输入的 token ID，$E(x_i)$ 是对应的嵌入向量。
+
+其中, $E$ 是嵌入矩阵, $x_i$ 是输入的 token ID, $E(x_i)$ 是对应的嵌入向量。
 
 ## 使用示例
 
@@ -144,7 +158,7 @@ tensor([[ 0.3367,  0.1288,  0.2345],
 
 3. **嵌入层与线性层的区别**
 
-   嵌入层的权重矩阵形状为 `(num_embeddings, embedding_dim)`，即 `(输入维度, 输出维度)`，而线性层的权重矩阵形状为形状为 `(output_dim, input_dim)`，即 `(输出维度, 输入维度)`，观察二者初始化时的差异：
+   嵌入层的权重矩阵形状为 `(num_embeddings, embedding_dim)`，即 `(输入维度, 输出维度)`，而线性层的权重矩阵形状为 `(output_dim, input_dim)`，即 `(输出维度, 输入维度)`，观察二者初始化时的差异：
 
    ```python
    # Embedding
@@ -160,16 +174,16 @@ tensor([[ 0.3367,  0.1288,  0.2345],
    嵌入层用于将离散的输入（如 Token ID）映射到连续的嵌入向量空间；线性层则进行线性变换。二者 `forward()` 的区别：
 
    ```python
-   # Embedding
-   def forward(self, input):
-   	return self.weight[input]
+       # Embedding
+       def forward(self, input):
+           return self.weight[input]
    
-   # Linear
-   def forward(self, input):
-   	torch.matmul(input, self.weight.T) + self.bias
+       # Linear
+       def forward(self, input):
+           torch.matmul(input, self.weight.T) + self.bias
    ```
 
-4. **`padding_idx` 的作用**。
+4. **`padding_idx` 的作用**
 
    假设在构造嵌入层时指定了 `padding_idx=0`，那么权重矩阵中第 0 行会被初始化为全零向量，并且在训练过程中不更新。
 
@@ -192,10 +206,10 @@ tensor([[ 0.3367,  0.1288,  0.2345],
    ```
    权重矩阵：
    tensor([[ 0.0000,  0.0000,  0.0000],
-           [ 0.1956,  0.5581,  0.2970],
-           [ 0.7451, -0.7572,  0.4318],
-           [-0.8126, -1.5802,  0.0849],
-           [ 0.1470,  1.2640,  0.5924]])
+           [-0.7658, -0.7506,  1.3525],
+           [ 0.6863, -0.3278,  0.7950],
+           [ 0.2815,  0.0562,  0.5227],
+           [-0.2384, -0.0499,  0.5263]])
    ```
 
    可以看到，第 0 行是全零向量。
@@ -204,6 +218,7 @@ tensor([[ 0.3367,  0.1288,  0.2345],
 
    ```python
    import torch
+   import torch.optim as optim
    
    # 注意之前设置了 padding_idx=0
    input_indices = torch.tensor([0, 2, 4])
@@ -214,13 +229,19 @@ tensor([[ 0.3367,  0.1288,  0.2345],
    # 目标值
    target = torch.randn(3, 3)
    
+   # 定义优化器
+   optimizer = optim.SGD(embedding.parameters(), lr=0.1)
+   
+   # 清空之前的梯度
+   optimizer.zero_grad()
+   
    # 前向传播
    output = embedding(input_indices)
    
    # 计算损失
    loss = loss_fn(output, target)
    
-   # 反向传播
+   # 反向传播，注意此时不会更新权重
    loss.backward()
    
    # 查看梯度
@@ -230,6 +251,13 @@ tensor([[ 0.3367,  0.1288,  0.2345],
    # 打印权重矩阵
    print("权重矩阵：")
    print(embedding.weight.data)
+   
+   # 更新权重
+   optimizer.step()
+   
+   # 打印权重矩阵更新后
+   print("权重矩阵更新后:")
+   print(embedding.weight.data)
    ```
 
    **输出**：
@@ -237,21 +265,27 @@ tensor([[ 0.3367,  0.1288,  0.2345],
    ```python
    梯度：
    tensor([[ 0.0000,  0.0000,  0.0000],
-           [-0.1260, -0.0122,  0.2425],
-           [ 0.3957, -0.0561,  0.1803],
-           [ 0.1066, -0.2989,  0.1756],
-           [ 0.2679,  0.3030,  0.2874]])
-   权重矩阵：
+           [ 0.0000,  0.0000,  0.0000],
+           [-0.0395,  0.1529,  0.3742],
+           [ 0.0000,  0.0000,  0.0000],
+           [-0.0863,  0.0353,  0.2030]])
+   原权重矩阵：
    tensor([[ 0.0000,  0.0000,  0.0000],
-           [ 0.1956,  0.5581,  0.2970],
-           [ 0.7451, -0.7572,  0.4318],
-           [-0.8126, -1.5802,  0.0849],
-           [ 0.1470,  1.2640,  0.5924]])
+           [-0.7658, -0.7506,  1.3525],
+           [ 0.6863, -0.3278,  0.7950],
+           [ 0.2815,  0.0562,  0.5227],
+           [-0.2384, -0.0499,  0.5263]])
+   权重矩阵更新后:
+   tensor([[ 0.0000,  0.0000,  0.0000],
+           [-0.7658, -0.7506,  1.3525],
+           [ 0.6903, -0.3430,  0.7576],
+           [ 0.2815,  0.0562,  0.5227],
+           [-0.2297, -0.0534,  0.5060]])
    ```
 
    可以看到，`padding_idx=0` 对应的梯度为零，即在训练过程中不会更新。
 
-5. **使用预训练的嵌入向量**。
+5. **使用预训练的嵌入向量**
 
    有时候，我们希望使用预训练的嵌入（如 GloVe、Word2Vec）来初始化嵌入层。这时候可以使用 `from_pretrained` 方法：
 
@@ -262,7 +296,7 @@ tensor([[ 0.3367,  0.1288,  0.2345],
    # 设置随机种子以确保结果可复现
    torch.manual_seed(42)
    
-   # 假设我们有一个预训练的嵌入矩阵
+   # 假设我们有一个预训练的嵌入矩阵，这里只是随机初始化
    pretrained_embeddings = torch.tensor(torch.randn(5, 3))
    
    # 使用 from_pretrained 方法创建嵌入层，不冻结权重层（默认冻结）
@@ -284,7 +318,7 @@ tensor([[ 0.3367,  0.1288,  0.2345],
            [ 1.1103, -1.6898, -0.9890]])
    ```
 
-   也可以设置 `padding_idx`：
+   现在设置一下 `padding_idx`：
 
    ```python
    embedding = nn.Embedding.from_pretrained(pretrained_embeddings, freeze=False, padding_idx=0)
@@ -307,10 +341,183 @@ tensor([[ 0.3367,  0.1288,  0.2345],
 
    **注意**：虽然指定了 `padding_idx=0`，但预训练的嵌入矩阵第 0 行不会自动变为零向量。
 
+---
+
+上文“狭义”地解读了与 Token IDs 一起出现的 Embedding，这个概念在自然语言处理（NLP）中有着更具体的称呼：**词嵌入**（Word Embedding）。
+
 ## Q: 什么是语义？
 
 举个简单的例子来理解“语义”关系：像“猫”和“狗”在向量空间中的表示应该非常接近，因为它们都是宠物；“男人”和“女人”之间的向量差异可能代表性别的区别。此外，不同语言的词汇，如“男人”（中文）和“man”（英文），如果在相同的嵌入空间中，它们的向量也会非常接近，反映出跨语言的语义相似性。同时，【“女人”和“woman”（中文-英文）】与【“男人”和“man”（中文-英文）】之间的向量差异也可能非常相似。
 
----
+## 可视化
 
-本文“狭义”地解读了与 Token IDs 一起出现的 Embedding，这个概念在自然语言处理（NLP）中有着更具体的称呼：**词嵌入**（Word Embedding）。
+### 环境配置
+
+假设已经安装好了 PyTorch。
+
+```bash
+pip install transformers scikit-learn matplotlib seaborn
+```
+
+### 导入
+
+```python
+import torch
+from transformers import AutoTokenizer, AutoModel
+import matplotlib.pyplot as plt
+import numpy as np
+import seaborn as sns
+from sklearn.manifold import TSNE
+```
+
+### 加载预训练模型
+
+```python
+# 选择预训练的 BERT 模型
+model_name = 'bert-base-uncased'  # 对于中文模型，可使用 'bert-base-chinese'
+
+# 加载分词器和模型
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModel.from_pretrained(model_name)
+```
+
+### 准备文本数据
+
+```python
+words = ['cat', 'dog', 'apple', 'orange', 'king', 'queen', 'man', 'woman']
+```
+
+对于中文模型：
+
+```python
+words = ['猫', '狗', '苹果', '橙子', '国王', '王后', '男人', '女人']
+```
+
+### 获取嵌入向量
+
+实际上可以从模型中获取两种 Embedding：词嵌入（Word Embedding）和 句子嵌入（Sentence Embedding），分别对应方法一和方法二。
+
+**方法一：使用 BERT 的输入嵌入层**
+
+```python
+def get_input_embeddings(tokenizer, model, words):
+    # 获取词表中的索引
+    word_ids = [tokenizer.convert_tokens_to_ids(word) for word in words]
+    # 从嵌入层提取对应的向量
+    embeddings = model.embeddings.word_embeddings.weight[word_ids]
+    return embeddings.detach().numpy()
+```
+
+**方法二：使用 BERT 的输出嵌入**
+
+```python
+def get_output_embeddings(tokenizer, model, words):
+    embeddings = []
+    for word in words:
+        inputs = tokenizer(word, return_tensors='pt')
+        outputs = model(**inputs)
+        # 获取 [CLS] 向量
+        cls_embedding = outputs.last_hidden_state[0][0]  # [CLS] 的向量
+        embeddings.append(cls_embedding.detach().numpy())
+    return np.array(embeddings)
+```
+
+这里我们使用方法一：
+
+```python
+embeddings = get_input_embeddings(tokenizer, model, words)
+```
+
+### 使用 t-SNE 降维
+
+```python
+# 设置 t-SNE 参数
+tsne = TSNE(n_components=2, perplexity=2, n_iter=1000, random_state=42)
+
+# 执行降维
+embeddings_2d = tsne.fit_transform(embeddings)
+```
+
+### 画图
+
+```python
+plt.figure(figsize=(10, 10))
+sns.scatterplot(x=embeddings_2d[:, 0], y=embeddings_2d[:, 1])
+
+# 添加注释
+for i, word in enumerate(words):
+    plt.text(embeddings_2d[i, 0]+0.5, embeddings_2d[i, 1]+0.5, word)
+
+plt.title('Word Embeddings Visualized using t-SNE')
+plt.xlabel('Dimension 1')
+plt.ylabel('Dimension 2')
+plt.show()
+```
+
+**输出**：
+
+![word_embeddings](./assets/20241106113916.png)
+
+## 参考链接
+[Embedding - Docs](https://pytorch.org/docs/stable/generated/torch.nn.Embedding.html)
+
+## 附录
+
+### 可视化完整代码
+
+```python
+import torch
+from transformers import AutoTokenizer, AutoModel
+import matplotlib.pyplot as plt
+import numpy as np
+import seaborn as sns
+from sklearn.manifold import TSNE
+
+# 选择预训练的 BERT 模型
+model_name = 'bert-base-uncased'  # 对于中文模型，可使用 'bert-base-chinese'
+
+# 加载分词器和模型
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModel.from_pretrained(model_name)
+
+# 要可视化的词语列表
+words = ['cat', 'dog', 'apple', 'orange', 'king', 'queen', 'man', 'woman']
+# words = ['猫', '狗', '苹果', '橙子', '国王', '王后', '男人', '女人']
+
+def get_input_embeddings(tokenizer, model, words):
+    # 获取词表中的索引
+    word_ids = [tokenizer.convert_tokens_to_ids(word) for word in words]
+    # 从嵌入层提取对应的向量
+    embeddings = model.embeddings.word_embeddings.weight[word_ids]
+    return embeddings.detach().numpy()
+
+def get_output_embeddings(tokenizer, model, words):
+    embeddings = []
+    for word in words:
+        inputs = tokenizer(word, return_tensors='pt')
+        outputs = model(**inputs)
+        # 获取 [CLS] 向量
+        cls_embedding = outputs.last_hidden_state[0][0]  # [CLS] 的向量
+        embeddings.append(cls_embedding.detach().numpy())
+    return np.array(embeddings)
+
+# 获取输入嵌入向量
+embeddings = get_input_embeddings(tokenizer, model, words)
+
+# 降维处理
+tsne = TSNE(n_components=2, perplexity=2, n_iter=1000, random_state=42)
+embeddings_2d = tsne.fit_transform(embeddings)
+
+# 可视化
+plt.figure(figsize=(10, 10))
+sns.scatterplot(x=embeddings_2d[:, 0], y=embeddings_2d[:, 1])
+
+for i, word in enumerate(words):
+    plt.text(embeddings_2d[i, 0]+0.5, embeddings_2d[i, 1]+0.5, word)
+
+plt.title('Word Embeddings Visualized using t-SNE')
+plt.xlabel('Dimension 1')
+plt.ylabel('Dimension 2')
+plt.show()
+```
+
