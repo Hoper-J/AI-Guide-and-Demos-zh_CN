@@ -139,6 +139,170 @@
 
 ## 环境准备
 
+**先安装必要的软件**：
+
+- **Git**：用于克隆代码仓库。
+- **Wget 和 Curl**：用于下载脚本和文件。
+- **Conda**：用于创建和管理虚拟环境。
+- **pip**：用于安装 Python 依赖包。
+
+### 安装Git
+
+- **Linux (Ubuntu)**：
+
+  ```bash
+  sudo apt-get update
+  sudo apt-get install git
+  ```
+
+- **macOS**：
+
+  - 先安装 Homebrew：
+
+    ```bash
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    ```
+
+  然后安装 Git。
+
+  ```bash
+  brew install git
+  ```
+
+- **Windows**：
+
+  从 [Git for Windows](https://gitforwindows.org/) 下载并安装。
+
+### 安装 Wget 和 Curl
+
+- **Linux (Ubuntu)**：
+
+  ```bash
+  sudo apt-get update
+  sudo apt-get install wget curl
+  ```
+
+- **macOS**：
+
+  ```bash
+  brew install wget curl
+  ```
+
+- **Windows**：
+
+  从 [Wget for Windows](https://eternallybored.org/misc/wget/) 和 [Curl 官方网站](https://curl.se/windows/) 下载并安装。
+
+### 安装 Conda
+
+#### 图形化界面
+
+访问 [Anaconda 官方网站](https://www.anaconda.com/products/distribution#Downloads)，输入邮箱地址后检查邮箱，你应该能看到：
+
+![Anaconda](./Guide/assets/image-20241106150105078.png)
+
+点击 `Download Now `，选择合适的版本并下载（Anaconda 和 Miniconda 都可以）：
+
+![Download](./Guide/assets/image-20241106150214043.png)
+
+#### 命令行安装
+
+- **Linux (Ubuntu)**：
+
+  - **安装 Anaconda**
+
+    访问 [repo.anaconda.com](https://repo.anaconda.com/archive/) 进行版本选择。
+
+    ```bash
+    # 下载 Anaconda 安装脚本（以最新版本为例）
+    wget https://repo.anaconda.com/archive/Anaconda3-2024.10-1-Linux-x86_64.sh
+    
+    # 运行安装脚本
+    bash Anaconda3-2024.10-1-Linux-x86_64.sh
+    
+    # 按照提示完成安装（先回车，空格一直翻页，翻到最后输入 yes，回车）
+    
+    # 安装完成后，刷新环境变量或者重新打开终端
+    source ~/.bashrc
+    ```
+
+  - **安装 Miniconda**（推荐）
+
+    访问 [repo.anaconda.com/miniconda](https://repo.anaconda.com/miniconda/) 进行版本选择。Miniconda 是一个精简版的 Anaconda，只包含 Conda 和 Python。
+
+    ```bash
+    # 下载 Miniconda 安装脚本
+    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+    
+    # 运行安装脚本
+    bash Miniconda3-latest-Linux-x86_64.sh
+    
+    # 按照提示完成安装（先回车，空格一直翻页，翻到最后输入 yes，回车）
+    
+    # 安装完成后，刷新环境变量或者重新打开终端
+    source ~/.bashrc
+    ```
+
+- **macOS**：
+
+  对应替换 Linux 命令中的网址。
+
+  - **安装 Anaconda**
+
+    访问 [repo.anaconda.com](https://repo.anaconda.com/archive/) 进行版本选择。
+
+  - **安装 Miniconda**（推荐）
+
+    访问 [repo.anaconda.com/miniconda](https://repo.anaconda.com/miniconda/) 进行版本选择。
+
+#### 验证安装
+
+在终端中输入以下命令，如果显示版本信息，则说明安装成功。
+
+```bash
+conda --version
+```
+
+### 安装 pip
+
+**注意**：如果已经安装了 Anaconda 或 Miniconda，系统中会包含 `pip`，无需额外安装。
+
+- **Linux (Ubuntu)**：
+
+  ```bash
+  sudo apt-get update
+  sudo apt-get install python3-pip
+  ```
+
+- **macOS**：
+
+  ```bash
+  brew install python3
+  ```
+
+- **Windows**：
+
+  1. 下载并安装 [Python](https://www.python.org/downloads/windows/)，确保勾选“Add Python to PATH”选项。
+
+  2. 打开命令提示符，输入：
+
+     ```bash
+     python -m ensurepip --upgrade
+     ```
+
+#### 验证安装
+
+在终端中输入以下命令，如果显示版本信息，则说明安装成功。
+
+```bash
+pip --version
+```
+
+#### 配置国内镜像源（可选，建议）
+
+```bash
+pip config set global.index-url https://mirrors.aliyun.com/pypi/simple
+```
+
 ### 克隆仓库项目
 
 通过以下命令拉取项目:
@@ -150,7 +314,7 @@ cd AI-Guide-and-Demos-zh_CN
 
 ### 虚拟环境（可选，推荐）
 
-版本不限制:
+版本不限制，可以更高:
 
 ```bash
 conda create -n aigc python=3.9
