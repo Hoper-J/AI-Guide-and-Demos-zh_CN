@@ -14,6 +14,10 @@
 >
 > 📑论文随笔位于 [PaperNotes](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/tree/master/PaperNotes)，将逐步上传大模型相关的基础论文。
 >
+> 如果倾向于在线学习或受限于显卡性能，阅读文章《[Kaggle：免费 GPU 使用指南，Colab 的理想替代方案](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/Kaggle：免费%20GPU%20使用指南，Colab%20的理想替代方案.md)》进行配置。
+>
+> （项目将在11.11号之前同步所有代码文件至 Kaggle以方便学习，届时删除该行。）
+>
 > 祝你旅途愉快！
 >
 
@@ -138,6 +142,8 @@
 **P.S. 中文镜像将完全实现作业代码的所有功能，Colab 链接对应于原作业，选择其中一个完成学习即可。**
 
 ## 环境准备
+
+> 如果倾向于在线学习或受限于显卡性能，阅读文章《[Kaggle：免费 GPU 使用指南，Colab 的理想替代方案](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/Kaggle：免费%20GPU%20使用指南，Colab%20的理想替代方案.md)》进行配置。
 
 **先安装必要的软件**：
 
