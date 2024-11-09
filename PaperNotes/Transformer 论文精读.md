@@ -47,6 +47,8 @@ Ashish Vaswan et al. | [arXiv 1706.03762](https://arxiv.org/pdf/1706.03762) | [C
 > 因为 Transformer 是一篇非常重要的基础论文，所以我决定尽量复现所有模块以供学习，另外，本文将附带曾经阅读论文时的困惑进行撰写，并尽可能地解答它们。不过，由于时间久远，有些我目前认为“显然”的内容可能没有特别说明，欢迎读者随时提出 issue，我会在闲暇时补充相关叙述。
 >
 > [代码文件下载](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/PaperNotes/Demos/动手实现%20Transformer.ipynb)
+>
+> 在线链接：[Kaggle](https://www.kaggle.com/code/aidemos/transformer) | [Colab](https://colab.research.google.com/drive/1BtYPNjEHw3dudw5KKFe9dBEsUsgkm1Vt?usp=sharing)
 
 ## 目录
 
@@ -1852,7 +1854,7 @@ class LayerNorm(nn.Module):
 >    # 初始化的 shape 是二维的
 >    self.weight = nn.Parameter(torch.randn(out_features, in_features))  # 权重矩阵
 >    self.bias = nn.Parameter(torch.zeros(out_features))  # 偏置向量
->                                                                                                                                                                      
+>                                                                                                                                                                            
 >    # 计算
 >    def forward(self, x):
 >    	return torch.matmul(x, self.weight.T) + self.bias

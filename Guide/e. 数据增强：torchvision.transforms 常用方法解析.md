@@ -5,6 +5,8 @@
 > 本文代码源自[官方文档: TRANSFORMING AND AUGMENTING IMAGES ](https://pytorch.org/vision/stable/transforms.html)中的 [Illustration of transforms](https://pytorch.org/vision/stable/auto_examples/transforms/plot_transforms_illustrations.html#sphx-glr-auto-examples-transforms-plot-transforms-illustrations-py)，参数介绍源自函数对应的官方文档。
 >
 > [代码文件下载](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Demos/18.%20数据增强：torchvision.transforms%20常用方法演示.ipynb)
+>
+> 在线链接：[Kaggle](https://www.kaggle.com/code/aidemos/18-torchvision-transforms) | [Colab](https://colab.research.google.com/drive/1cOy8LFMUVfDaBe7iV-YWxcZ1W2bFgg4w?usp=sharing)
 
 ## 目录
 
@@ -55,20 +57,30 @@ pip install numpy             # 数组和矩阵操作
 # pip install torch torchvision # 默认已正确安装
 ```
 
-## 定义绘图函数
+## 下载用于演示的图片
 
-样例图片（右键保存为 astronaut.jpg，放进新建的 assets 文件夹中)：
+命令行执行：
+
+```bash
+wget https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/raw/master/Guide/assets/astronaut.jpg
+mkdir -p assets
+mv astronaut.jpg assets
+```
+
+或右键保存为 astronaut.jpg，放进新建的 assets 文件夹中：
 
 <img src="./assets/20230401113653.jpg" alt="astronaut" style="zoom:33%;" />
 
-```bash
-from PIL import Image				# Image 处理图像
-from pathlib import Path			# Path 处理文件路径
-import matplotlib.pyplot as plt		# 绘图
-import numpy as np					# 处理数组和矩阵
+## 定义绘图函数
 
-import torch						# pytorch 深度学习
-import torchvision.transforms as T	# torchvision.transforms 用于对图像进行各种变换
+```bash
+from PIL import Image                # Image 处理图像
+from pathlib import Path            # Path 处理文件路径
+import matplotlib.pyplot as plt        # 绘图
+import numpy as np                    # 处理数组和矩阵
+
+import torch                        # pytorch 深度学习
+import torchvision.transforms as T    # torchvision.transforms 用于对图像进行各种变换
 
 # 设置一些绘图参数，savefig.bbox 用于控制图像保存时的边框大小
 plt.rcParams["savefig.bbox"] = 'tight'
@@ -81,11 +93,11 @@ torch.manual_seed(0)
 
 # 定义绘图函数
 def plot(imgs, with_orig=True, row_title=None, **imshow_kwargs):
-	# 判断 imgs 是否是一个二维列表，如果不是，则将其转换为二维列表
+    # 判断 imgs 是否是一个二维列表，如果不是，则将其转换为二维列表
     if not isinstance(imgs[0], list):
         imgs = [imgs]
-	
-	# 根据 with_orig 参数确定网格的列数
+    
+    # 根据 with_orig 参数确定网格的列数
     num_rows = len(imgs)
     num_cols = len(imgs[0]) + with_orig
     
@@ -99,8 +111,8 @@ def plot(imgs, with_orig=True, row_title=None, **imshow_kwargs):
             ax = axs[row_idx, col_idx]
             ax.imshow(np.asarray(img), **imshow_kwargs)
             ax.set(xticklabels=[], yticklabels=[], xticks=[], yticks=[])
-	
-	# 如果 with_orig 为真，则在第一列的子图上设置标题为 Original image
+    
+    # 如果 with_orig 为真，则在第一列的子图上设置标题为 Original image
     if with_orig:
         axs[0, 0].set(title='Original image')
         axs[0, 0].title.set_size(8)
@@ -109,8 +121,8 @@ def plot(imgs, with_orig=True, row_title=None, **imshow_kwargs):
     if row_title is not None:
         for row_idx in range(num_rows):
             axs[row_idx, 0].set(ylabel=row_title[row_idx])
-	
-	# 调整子图之间的间距
+    
+    # 调整子图之间的间距
     plt.tight_layout()
 ```
 
@@ -161,28 +173,28 @@ plot(demo)
 >         [ 1,  2,  3]
 >         [ 4,  5,  6]
 >         [ 7,  8,  9]
->             
+>                   
 >         填充模式为"constant"：
 >         [255,255,255,255,255]
 >         [255, 1,  2,  3,255]
 >         [255, 4,  5,  6,255]
 >         [255, 7,  8,  9,255]
 >         [255,255,255,255,255]
->             
+>                   
 >         填充模式为"edge"：
 >         [ 1,  1,  2,  3,  3]
 >         [ 1,  1,  2,  3,  3]
 >         [ 4,  4,  5,  6,  6]
 >         [ 7,  7,  8,  9,  9]
 >         [ 7,  7,  8,  9,  9]
->             
+>                   
 >         填充模式为"reflect"：
 >         [ 5,  4,  5,  6,  5]
 >         [ 2,  1,  2,  3,  2]
 >         [ 5,  4,  5,  6,  5]
 >         [ 8,  7,  8,  9,  8]
 >         [ 5,  4,  5,  6,  5]
->             
+>                   
 >         填充模式为"symmetric"：
 >         [ 1,  1,  2,  3,  3] 
 >         [ 1,  1,  2,  3,  3] 
