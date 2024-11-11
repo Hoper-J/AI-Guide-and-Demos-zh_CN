@@ -30,7 +30,7 @@
    - [管理包](#管理包-1)
 - [Git](#git)
    - [仓库状态与更新](#仓库状态与更新)
-   - [常用Git命令](#常用git命令)
+   - [常用 Git 命令](#常用-git-命令)
    - [配置](#配置)
 
 ---
@@ -349,10 +349,10 @@
   - `git pull`：获取远程仓库的更新并合并到当前分支。
     - 等同于`git fetch`加`git merge`。
 
-### 常用Git命令
+### 常用 Git 命令
 
 - **克隆仓库**
-  - `git clone https://github.com/user/repository.git`：将远程仓库克隆到本地。
+  - `git clone https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN.git`：将远程仓库克隆到本地。
 - **添加更改**
   - `git add file`：将`file`的更改添加到暂存区。
   - `git add -u`：将当前仓库已跟踪文件的更改添加到暂存区。
@@ -362,6 +362,7 @@
 - **查看差异**
   - `git diff`：查看工作目录和暂存区之间的差异。
   - `git diff --staged`：查看已暂存的更改与上次提交之间的差异。
+  - `git diff HEAD..origin/master`：查看本地分支和远程 `master` 分支之间的差异（先执行 `git fetch origin`）。
 - **撤销更改**
   - `git checkout -- file`：丢弃工作目录中对`file`的修改。
   - `git reset HEAD file`：取消暂存区中`file`的更改。

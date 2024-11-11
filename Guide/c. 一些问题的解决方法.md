@@ -181,12 +181,42 @@ grep -qxF 'export HF_HOME=/path/to/your/custom/cache' ~/.bashrc || echo 'export 
 - `grep -qxF 'export HF_HOME=/path/to/your/custom/cache' ~/.bashrc`：检查 `.bashrc` 文件中是否已经存在完全匹配的行。
   - `grep`：用于在文件中搜索文本。
   - `-q`：表示安静模式（silent mode），不输出任何匹配的结果，命令只返回一个退出状态码，0 表示找到匹配，1 表示没有找到匹配。
-  - `-x`：表示完全匹配整行。如果文件中有部分匹配的行，这个选项会确保只有完整的匹配行才会被认为是符合条件的。
+  - `-x`：表示完全匹配整行。这个选项确保在文件中找寻完整匹配的行，会忽略部分匹配的情况。
   - `-F`：表示将模式视为固定字符串，而不是正则表达式。
-  - `'export HF_HOME=/path/to/your/custom/cache'`：这是要搜索的字符串，表示你正在寻找文件中是否有该行。
-  - `./test`：要搜索的文件路径。此处表示你在当前目录下的 `test` 文件中查找。
+  - `'export HF_HOME=/path/to/your/custom/cache'`：这是要搜索的字符串，表示正在寻找文件中是否有该行。
+  - `~/.bashrc`：要搜索的文件路径，`.bashrc` 为 `bash` 的配置文件，如果使用的是 `zsh`，修改成 `~/.zshrc`。
 
-- `||`：逻辑操作符，表示 "OR" 操作。用于在前一个命令失败时执行下一个命令。
+- `||`：逻辑操作符，表示 "OR" 操作。用于在前一个命令失败时执行下一个命令：即如果配置不存在则添加。
+
+## 在线平台相关
+
+> 这是一个重复的知识，放在当前文件用于速查。
+
+### Kaggle 怎么开启 GPU？
+
+> [完整配置文件]()
+
+1. **设置 GPU**：在 Notebook 界面，点击左上角的 `Settings` 按钮，以 GPU T4 为例，在下拉菜单中点击 `Accelerator`，选择 `GPU T4 x2`。
+
+   ![选择 GPU](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/Guide/assets/20241107130851.png)
+
+2. **确认启用**：系统会提示每周有 30 小时的 GPU 使用时间，点击 `Turn on GPU T4 x2` 进行确认。
+
+   ![确认](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/Guide/assets/20241107130854.png)
+
+   - 用于日常学习是足够的，不够的话就多开 :)
+
+3. **查看使用时间**：在页面右边栏的 `Session Options` 中，可以查看剩余的 GPU 使用时间，也可以在此处修改计算资源。![查看右边栏](./assets/20241107130856.png)
+
+4. **节省时间**：在不需要 GPU 时，可将 `Accelerator` 设置为 `None`，以节省 GPU 时间。
+
+   ![节省时间](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/Guide/assets/20241107130859.png)
+
+### Colab 怎么开启 GPU？
+
+
+
+
 
 ### 参考链接
 
