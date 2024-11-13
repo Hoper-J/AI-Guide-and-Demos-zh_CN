@@ -14,6 +14,8 @@
 >
 > 📑论文随笔位于 [PaperNotes](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/tree/master/PaperNotes)，将逐步上传大模型相关的基础论文。
 >
+> 🚀 [基础镜像](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/tree/master#docker-快速部署)已经准备好，如果你还没有配置好属于自己的深度学习环境，不妨尝试一下 Docker。
+>
 > 祝你旅途愉快！
 >
 
@@ -75,6 +77,7 @@
 | [e. 数据增强：torchvision.transforms 常用方法解析](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/e.%20数据增强：torchvision.transforms%20常用方法解析.md) | - 了解常用的图像数据增强方法。<br />[Code](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Demos/18.%20数据增强：torchvision.transforms%20常用方法演示.ipynb) \| [Kaggle](https://www.kaggle.com/code/aidemos/18-torchvision-transforms) \| [Colab](https://colab.research.google.com/drive/1cOy8LFMUVfDaBe7iV-YWxcZ1W2bFgg4w?usp=sharing) |
 | [f. 交叉熵损失函数 nn.CrossEntropyLoss() 详解和要点提醒（PyTorch）](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/f.%20交叉熵损失函数%20nn.CrossEntropyLoss()%20详解和要点提醒（PyTorch）.md) | - 了解交叉熵损失的数学原理及 PyTorch 实现。<br />- 了解初次使用时需要注意的地方。 |
 | [g. 嵌入层 nn.Embedding() 详解和要点提醒（PyTorch）](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/g.%20嵌入层%20nn.Embedding()%20详解和要点提醒（PyTorch）.md) | - 了解嵌入层和词嵌入的概念。<br />- 使用预训练模型可视化 Embedding。<br />[Code](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Demos/20.%20嵌入层%20nn.Embedding()%20代码示例.ipynb) \| [Kaggle](https://www.kaggle.com/code/aidemos/20-nn-embedding) \| [Colab](https://colab.research.google.com/drive/1BLgmxasxOD1HQGrI0L1sPlYG40iba9SY?usp=sharing) |
+| [h. 使用 Docker 快速配置深度学习环境（Linux）](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/使用%20Docker%20快速配置深度学习环境（Linux）.md)<br />[h. Docker 基础命令介绍和常见报错解决](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/Docker%20基础命令介绍和常见报错解决.md) | - 使用两行命令配置好深度学习环境<br />- Docker 基础命令介绍<br />- 解决使用时的三个常见报错 |
 
 **文件夹解释：**
 
@@ -148,18 +151,132 @@
 
 **P.S. 中文镜像将完全实现作业代码的所有功能（本地运行），Kaggle 是国内可直连的在线平台（阅读[配置文章](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/Kaggle：免费%20GPU%20使用指南，Colab%20的理想替代方案.md)），中文 Colab 和 Kaggle 内容一致，英文 Colab 链接对应于原作业，选择其中一个完成学习即可。**
 
-## 环境准备
+## Docker 快速部署
+
+> 如果没有安装 Docker，阅读文章《[使用 Docker 快速配置深度学习环境（Linux）](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/使用%20Docker%20快速配置深度学习环境（Linux）.md)》进行配置。另外，建议初学者阅读《[Docker 基础命令介绍和常见报错解决](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/Docker%20基础命令介绍和常见报错解决.md)》。
+>
+
+镜像基于 [pytorch/pytorch:2.5.1-cuda11.8-cudnn9-devel](https://hub.docker.com/layers/pytorch/pytorch/2.5.1-cuda11.8-cudnn9-devel/images/sha256-676c7b7423d7e726b814b98cfd5b702e1b32016b2e0ef0270f6202a6c660c419?context=explore)，默认 `python` 版本为 3.11.10，可以通过 `conda install python==版本号` 直接修改版本。预装了 `sudo`、`pip`、`conda`、`wget`、`curl` 和 `vim` 等常用工具，并已经配置好 `pip` 和 `conda` 的国内镜像源。同时，集成了基础的 `zsh` 和一些实用的命令行插件，如命令自动补全和 `z` 跳转等。此外，已预装`jupyter lab`，方便进行深度学习开发，容器内的中文显示已优化，不会出现乱码问题。
+
+**Base** 镜像适合用于本项目的学习，或作为深度学习的起点，其中仅包含非常基础的软件。
+
+### 安装清单
+
+<details>
+    <summary> <strong>Base</strong> </summary>
+
+
+**Apt 安装**：
+
+- `wget` 和 `curl`：命令行下载工具。
+- `vim` 和 `nano`：文本编辑器。
+- `git`：版本控制工具。
+- `zip` 和 `unzip`：文件压缩和解压缩工具，用于 `.zip` 文件的压缩和解压。
+- `htop`：系统监控工具，显示内存、CPU、进程等资源使用情况。
+- `tmux` 和 `screen`：会话管理工具，在远程服务器上使用 SSH 时保持会话活跃。
+- `build-essential`：包含了 `gcc`、`g++`、`make` 等基本的编译工具，方便编译源码。
+- `net-tools`：包括网络工具如 `ifconfig`，用于检查网络连接。
+- `ssh`：安装 SSH 客户端以便远程连接。
+- `rsync`：文件同步工具。
+- `tree`：以树状结构显示文件和目录。
+- `lsof`：用于查看当前系统打开的文件。
+
+**pip 安装**：
+
+- `jupyter notebook`：交互式笔记本环境。
+- `jupyter lab`：Jupyter Notebook 的增强版本，提供更丰富的功能和模块化界面。
+- `virtualenv`：Python 虚拟环境管理工具，便于隔离和管理项目依赖，也可以直接用 conda。
+- `tensorboard`：深度学习可视化工具，用于实时监控训练过程中的损失、准确率等指标。
+
+**插件**：
+
+- `zsh-autosuggestions`：提供命令自动补全建议。
+- `zsh-syntax-highlighting`：提供语法高亮功能，便于查看输入的命令是否正确。
+- `z`: 目录跳转工具。
+
+</details>
+
+后续计划（16号之前）上传贯穿整个项目的 Docker 镜像，以便跳过所有文章中库的繁琐安装，因为镜像文件大小为 15 GB，压缩版也有 7 GB，重复的工作总会让人厌烦，或许你可以等待最终项目版本的上传。
+
+注意，所有镜像都不会提前[拉取仓库](#克隆仓库项目)。
+
+### 获取镜像（三选一）
+
+假设你已经安装并配置好了 Docker，那么只需两行命令即可完成深度学习的环境配置，以 **Base** 镜像为例，拉取：
+
+#### 国内镜像版
+
+```bash
+docker pull dockerpull.org/hoperj/quickstart:base-torch2.5.1-cuda11.8-cudnn9-devel
+```
+
+#### 🪜科学上网版
+
+```bash
+docker pull hoperj/quickstart:base-torch2.5.1-cuda11.8-cudnn9-devel
+```
+
+#### 本地（网盘下载）
+
+> 可以通过[百度云盘](https://pan.baidu.com/s/1RJDfc5ouTDeBFhOdbIAHNg?pwd=bdka)下载文件（阿里云盘不支持分享大的压缩文件）。
+>
+> 同名文件内容相同，`.tar.gz` 为压缩版本，下载后通过以下命令解压：
+>
+> ```bash
+> gzip -d base.tar.gz
+> ```
+
+假设 `base.tar` 被下载到了 `~/Downloads` 中，那么切换至对应目录：
+
+```bash
+cd ~/Downloads
+```
+
+然后加载镜像：
+
+```bash
+docker load -i base.tar
+```
+
+### 运行容器
+
+```bash
+docker run --gpus all -it --name ai -p 8888:8888 hoperj/quickstart:base-torch2.5.1-cuda11.8-cudnn9-devel /bin/zsh
+```
+
+### 克隆仓库
+
+```bash
+git clone https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN.git
+cd AI-Guide-and-Demos-zh_CN
+```
+
+### 安装并启动 Jupyter Lab
+
+```bash
+jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root
+```
+
+![image-20241113224059114](./Guide/assets/image-20241113224059114.png)
+
+对于图形化界面，Windows/Linux 摁住 `Ctrl`，mac 按住 `Command`，然后点击链接可以直接跳转。
+
+现在可以跳过本地环境部分，直接开始项目的学习。
+
+
+## 本地环境
 
 > 如果倾向于在线学习或受限于显卡性能，阅读文章《[Kaggle：免费 GPU 使用指南，Colab 的理想替代方案](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/Kaggle：免费%20GPU%20使用指南，Colab%20的理想替代方案.md)》进行配置。
 
-**先安装必要的软件**：
+<details>
+    <summary> <strong> 安装必要的软件 </strong> </summary>
 
 - **Git**：用于克隆代码仓库。
 - **Wget 和 Curl**：用于下载脚本和文件。
 - **Conda**：用于创建和管理虚拟环境。
 - **pip**：用于安装 Python 依赖包。
 
-### 安装Git
+### 安装 Git
 
 - **Linux (Ubuntu)**：
 
@@ -176,7 +293,7 @@
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     ```
 
-  然后安装 Git。
+  然后运行：
 
   ```bash
   brew install git
@@ -213,7 +330,7 @@
 
 ![Anaconda](./Guide/assets/image-20241106150105078.png)
 
-点击 `Download Now `，选择合适的版本并下载（Anaconda 和 Miniconda 都可以）：
+点击 `Download Now`，选择合适的版本并下载（Anaconda 和 Miniconda 都可以）：
 
 ![Download](./Guide/assets/image-20241106150214043.png)
 
@@ -275,6 +392,27 @@
 conda --version
 ```
 
+#### 配置国内镜像源（可选，建议）
+
+```bash
+cat <<'EOF' > ~/.condarc
+channels:
+  - defaults
+show_channel_urls: true
+default_channels:
+  - https://mirror.nju.edu.cn/anaconda/pkgs/main
+  - https://mirror.nju.edu.cn/anaconda/pkgs/r
+  - https://mirror.nju.edu.cn/anaconda/pkgs/msys2
+custom_channels:
+  conda-forge: https://mirror.nju.edu.cn/anaconda/cloud
+  pytorch: https://mirror.nju.edu.cn/anaconda/cloud
+EOF
+```
+
+> [!note]
+>
+> 很多去年可用的镜像源已经不可用，目前其余镜像站配置可以参考南大这个非常 nice 的文档：[镜像使用帮助](https://mirror.nju.edu.cn/mirrorz-help/anaconda/?mirror=NJU)。
+
 ### 安装 pip
 
 **注意**：如果已经安装了 Anaconda 或 Miniconda，系统中会包含 `pip`，无需额外安装。
@@ -316,6 +454,8 @@ pip --version
 pip config set global.index-url https://mirrors.aliyun.com/pypi/simple
 ```
 
+</details>
+
 ### 克隆仓库项目
 
 通过以下命令拉取项目:
@@ -339,7 +479,25 @@ conda create -n aigc python=3.9
 conda activate aigc
 ```
 
-### 基础配置
+### 依赖安装
+
+接下来需要进行基础的依赖安装，参考[PyTorch官网](https://pytorch.org/get-started/locally/)，以 CUDA 11.8 为例（如果显卡不支持11.8，需要更换命令），二选一进行安装：
+
+```bash
+# pip
+pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+
+# conda
+conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia
+```
+
+现在我们成功配置好了所有需要的环境，准备开始学习 :) 其余依赖在每个文章中会单独列出。
+
+> [!note]
+>
+> Docker 镜像已经预装了依赖，不用重新安装。
+
+### 安装并启动 Jupyter Lab
 
 先安装 `jupyter-lab`，这比 `jupyter notebook` 好用很多。
 
@@ -355,23 +513,9 @@ jupyter-lab
 
 ![image-20240928110805693](./Guide/assets/image-20240928110805693.png)
 
-现在你将可以通过弹出的链接进行访问，一般位于8888端口。对于图形化界面，Windows/Linux 摁住 `Ctrl`，mac 按住 `Command`，然后点击链接可以直接跳转。至此，你将获得项目的全貌：
+现在你将可以通过弹出的链接进行访问，一般位于 8888 端口。对于图形化界面，Windows/Linux 摁住 `Ctrl`，mac 按住 `Command`，然后点击链接可以直接跳转。至此，你将获得项目的全貌：
 
 ![image-20240928115726301](./Guide/assets/image-20240928115726301.png)
-
-### 依赖安装
-
-接下来需要进行基础的依赖安装，参考[PyTorch官网](https://pytorch.org/get-started/locally/)，以 CUDA 11.8 为例（如果显卡不支持11.8，需要更换命令），二选一进行安装：
-
-```bash
-# pip
-pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
-
-# conda
-conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia
-```
-
-现在，你已经成功配置好了所有需要的环境，准备开始学习 :) 其余依赖在每个文章中会单独列出。
 
 ## 当前规划
 
@@ -382,13 +526,18 @@ conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvi
 
 ### 11月更新计划
 
-- [x] 大模型基础论文（Transformer）
-  - [ ]  -> GPT -> Bert
+- [ ] 大模型基础论文
+  - [x]  Transformer
+  - [ ]  -> GPT -> Bert 
 - [x] nn.Embedding
 - [x] 上传并测试在线平台代码的可运行性
-- [x] Bert 微调下游任务：抽取式问答 (Extractive Question Answering)
+- [ ] Bert 微调下游任务：抽取式问答 (Extractive Question Answering)
   - [x] 提供一个中文版本的基础微调代码以供学习
   - [ ] 引导文章
+
+- [ ] Docker 镜像制作和引导文章撰写
+  - [x] 基础版本
+  - [ ] 项目版本
 
 - [ ] LoRA 文生图的 🎡 命令行脚本制作上传
 - [ ] 更多有趣的实践项目与理论...
