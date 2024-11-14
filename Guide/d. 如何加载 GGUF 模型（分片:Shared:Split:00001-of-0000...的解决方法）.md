@@ -64,7 +64,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 model_id = "Qwen/Qwen2.5-7B-Instruct-GGUF"
 filename = "qwen2.5-7b-instruct-q3_k_m.gguf"
 
-tokenizer = AutoTokenizer.from_pretrained(model_id, gguf_file=gguf_file, clean_up_tokenization_spaces=True)
+tokenizer = AutoTokenizer.from_pretrained(model_id, gguf_file=filename, clean_up_tokenization_spaces=True)
 model = AutoModelForCausalLM.from_pretrained(model_id, gguf_file=filename)
 ```
 
@@ -95,7 +95,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 model_id = "Qwen/Qwen2.5-7B-Instruct-GGUF"
 filename = "qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf"
 
-tokenizer = AutoTokenizer.from_pretrained(model_id, gguf_file=gguf_file, clean_up_tokenization_spaces=True)
+tokenizer = AutoTokenizer.from_pretrained(model_id, gguf_file=filename, clean_up_tokenization_spaces=True)
 model = AutoModelForCausalLM.from_pretrained(model_id, gguf_file=filename)
 ```
 
