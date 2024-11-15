@@ -2,7 +2,9 @@
 
 > 快速了解项目运行过程中可能用到的命令，如果运行时报错，查看文末的[常见报错](#解决常见报错)。
 >
-> 命令以 **Base** 镜像为基础。
+> 命令以适用于深度学习的 [dl 镜像](https://hub.docker.com/repository/docker/hoperj/quickstart/general)为例进行演示。
+>
+> Docker 安装见《[使用 Docker 快速配置深度学习环境（Linux）](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/使用%20Docker%20快速配置深度学习环境（Linux）.md)》
 
 ## 目录
 
@@ -72,7 +74,7 @@ docker pull <image_name>:<tag>
 例如：
 
 ```bash
-docker pull hoperj/quickstart:base-torch2.5.1-cuda11.8-cudnn9-devel
+docker pull hoperj/quickstart:dl-torch2.5.1-cuda11.8-cudnn9-devel
 ```
 
 > [!note]
@@ -92,7 +94,7 @@ docker rmi <image_id_or_name>
 以当前使用的命令为例：
 
 ```bash
-docker run --gpus all -it hoperj/quickstart:base-torch2.5.1-cuda11.8-cudnn9-devel
+docker run --gpus all -it hoperj/quickstart:dl-torch2.5.1-cuda11.8-cudnn9-devel
 ```
 
 先来解释一下 `--gpus all` 和 `-it` 的作用：
@@ -113,7 +115,7 @@ docker run --gpus all -it hoperj/quickstart:base-torch2.5.1-cuda11.8-cudnn9-deve
 1. **卷挂载**
 
    ```bash
-   docker run --gpus all -it -v my_volume:container_path hoperj/quickstart:base-torch2.5.1-cuda11.8-cudnn9-devel
+   docker run --gpus all -it -v my_volume:container_path hoperj/quickstart:dl-torch2.5.1-cuda11.8-cudnn9-devel
    ```
 
    - `my_volume`：Docker 卷的名称。
@@ -121,30 +123,54 @@ docker run --gpus all -it hoperj/quickstart:base-torch2.5.1-cuda11.8-cudnn9-deve
 
    这样，保存在该路径的数据在容器删除后仍会保存在 `my_volume` 中。
 
-2. **绑定主机目录到容器中**
+2. **挂载主机目录到容器中**
 
    ```bash
-   docker run --gpus all -it -v /home/your_username/data:/workspace/data hoperj/quickstart:base-torch2.5.1-cuda11.8-cudnn9-devel
+   docker run --gpus all -it -v /home/your_username/data:/workspace/data hoperj/quickstart:dl-torch2.5.1-cuda11.8-cudnn9-devel
    ```
 
    - `/home/your_username/data`：主机上的目录路径。
    - `/workspace/data`：容器内的挂载点。
 
-### 在容器中启动 Jupyter Lab
+#### 用例
 
-映射端口以在主机浏览器中访问 Jupyter Lab：
+以当前项目为例，假设已经在主机的 `~/Downloads` 文件夹克隆了项目并做了一些修改，那么所需要同步的目录为 `~/Downloads/AI-Guide-and-Demos-zh_CN`，想同步到容器的同名文件夹中，对应命令：
 
 ```bash
-docker run --gpus all -it -p 8888:8888 hoperj/quickstart:base-torch2.5.1-cuda11.8-cudnn9-devel
+docker run --gpus all -it -v ~/Downloads/AI-Guide-and-Demos-zh_CN:/workspace/AI-Guide-and-Demos-zh_CN hoperj/quickstart:dl-torch2.5.1-cuda11.8-cudnn9-devel
 ```
 
-在容器内运行：
+容器中的 `/workspace/AI-Guide-and-Demos-zh_CN` 会与主机上的 `~/Downloads/AI-Guide-and-Demos-zh_CN` 目录同步，所有更改都会反映到主机的目录中。
+
+建议初次使用的同学创建新的文件夹进行实验，避免可能的误操作覆盖。
+
+### 在容器中启动 Jupyter Lab
+
+如果需要在容器内启动 Jupyter Lab，并通过主机的浏览器进行访问，可以使用 `-p` 参数映射端口。Jupyter Lab 默认使用 8888 端口，使用以下命令：
+
+```bash
+docker run --gpus all -it -p 8888:8888 -v ~/Downloads/AI-Guide-and-Demos-zh_CN:/workspace/AI-Guide-and-Demos-zh_CN hoperj/quickstart:dl-torch2.5.1-cuda11.8-cudnn9-devel
+```
+
+- `-p 8888:8888` 将容器内的 8888 端口映射到主机的 8888 端口。
+
+然后在容器内运行：
 
 ```bash
 jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root
 ```
 
-然后在主机浏览器中访问 `http://localhost:8888`。
+现在可以在主机浏览器中访问 `http://localhost:8888`。
+
+如果需要映射多个端口，比如 7860，那么命令对应如下：
+
+```bash
+docker run --gpus all -it --name ai -p 8888:8888 -p 7860:7860 ...（后续一致）
+```
+
+- `7860` 端口一般对应于 Gradio。
+
+你可以根据实际情况重新指定端口号。
 
 ## 停止容器
 
@@ -218,7 +244,7 @@ docker exec -it <container_id_or_name> /bin/bash
 在创建容器时，可以使用 `--name` 参数为容器指定一个名称。例如：
 
 ```bash
-docker run --gpus all -it --name ai hoperj/quickstart:base-torch2.5.1-cuda11.8-cudnn9-devel
+docker run --gpus all -it --name ai hoperj/quickstart:dl-torch2.5.1-cuda11.8-cudnn9-devel
 ```
 
 容器被命名为 `ai`，以后可通过该名称管理容器，不需要记住容器的 ID。

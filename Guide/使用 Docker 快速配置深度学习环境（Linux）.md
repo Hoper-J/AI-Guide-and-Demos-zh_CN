@@ -1,8 +1,13 @@
 # 使用 Docker 快速配置深度学习环境（Linux）
 
-> 在编写项目配置文档时，随着必装软件的增多，文档变得冗长而复杂。经过一番思考，我决定制作一个基础的镜像文件，供大家快速安装使用。
+> 深度学习环境的配置过于繁琐，所以我制作了两个基础的镜像，希望可以帮助大家节省时间，你可以选择其中一种进行安装，版本说明：
 >
-> 本文仅介绍命令行的配置和安装，图形界面的逻辑是一致的。
+> - **base** 版本基于 `pytorch/pytorch:2.5.1-cuda11.8-cudnn9-devel`，默认 `python` 版本为 3.11.10，可以通过 `conda install python==版本号` 直接修改版本。
+> - **dl** 版本在 **base** 基础上，额外安装了深度学习框架和常用工具，具体查看[安装清单](#安装)。
+>
+> 如果你已经配置好了Docker，只需两行命令即可完成深度学习环境的搭建。对于没有 Docker 的同学，也不用担心，本文将提供详细的安装指引，帮助你一步步完成环境配置（仅介绍命令行的配置和安装，图形界面的逻辑是一致的）。
+>
+> P.S. 命令在 Ubuntu 18.04/20.04/22.04 下可以顺利执行，其余系统可通过文内链接跳转安装。
 
 ## 目录
 
@@ -24,51 +29,86 @@
 
 ## 镜像介绍
 
-所有版本都预装了 `sudo`、`pip`、`conda`、`wget`、`curl` 和 `vim` 等常用工具，并已经配置好 `pip` 和 `conda` 的国内镜像源。同时，集成了基础的 `zsh` 和一些实用的命令行插件，如命令自动补全和 `z` 跳转等。此外，已预装 `jupyter notebook` 和 `jupyter lab`，方便进行深度学习开发，容器内的中文显示已优化，不会出现乱码问题。
-
-**Base** 版本基于 [pytorch/pytorch:2.5.1-cuda11.8-cudnn9-devel](https://hub.docker.com/layers/pytorch/pytorch/2.5.1-cuda11.8-cudnn9-devel/images/sha256-676c7b7423d7e726b814b98cfd5b702e1b32016b2e0ef0270f6202a6c660c419?context=explore)，默认 `python` 版本为 3.11.10，可以通过 `conda install python==版本号` 直接修改版本。界面如下：
-
-<img src="./assets/image-20241113182021540.png" alt="image-20241113182021540" style="zoom: 33%;" />
+所有版本都预装了 `sudo`、`pip`、`conda`、`wget`、`curl` 和 `vim` 等常用工具，且已经配置好 `pip` 和 `conda` 的国内镜像源。同时，集成了 `zsh` 和一些实用的命令行插件（命令自动补全、语法高亮、以及目录跳转工具 `z`）。此外，已预装 `jupyter notebook` 和 `jupyter lab`，设置了其中的默认终端为 `zsh`，方便进行深度学习开发，并优化了容器内的中文显示，避免出现乱码问题。其中还预配置了 Hugging Face 的国内镜像地址。
 
 > 如果想修改命令行风格，基于关键词「oh-my-zsh」进行搜寻。
 
 **链接**：
 
 - [quickstart](https://hub.docker.com/repository/docker/hoperj/quickstart/general)，位于 Docker Hub，对应于下方的 pull 命令。
-- [base.tar - 百度云盘](https://pan.baidu.com/s/1RJDfc5ouTDeBFhOdbIAHNg?pwd=bdka)，直接下载，跳过科学版的命令进行配置。
+- [百度云盘](https://pan.baidu.com/s/1RJDfc5ouTDeBFhOdbIAHNg?pwd=bdka)，直接下载对应的版本，跳过科学版的命令进行配置。
 
 ### 安装清单
 
-<details>
-    <summary> <strong>Base</strong> </summary>
+<details> <summary> <strong>base</strong> </summary>
+**基础环境**：
+
+- python 3.11.10
+- torch 2.5.1 + cuda 11.8 + cudnn 9
 
 **Apt 安装**：
 
-- `wget` 和 `curl`：命令行下载工具。
-- `vim` 和 `nano`：文本编辑器。
-- `git`：版本控制工具。
-- `zip` 和 `unzip`：文件压缩和解压缩工具，用于 `.zip` 文件的压缩和解压。
-- `htop`：系统监控工具，显示内存、CPU、进程等资源使用情况。
-- `tmux` 和 `screen`：会话管理工具，在远程服务器上使用 SSH 时保持会话活跃。
-- `build-essential`：包含了 `gcc`、`g++`、`make` 等基本的编译工具，方便编译源码。
-- `net-tools`：包括网络工具如 `ifconfig`，用于检查网络连接。
-- `ssh`：安装 SSH 客户端以便远程连接。
-- `rsync`：文件同步工具。
-- `tree`：以树状结构显示文件和目录。
-- `lsof`：用于查看当前系统打开的文件。
+- `wget`、`curl`：命令行下载工具
+- `vim`、`nano`：文本编辑器
+- `git`：版本控制工具
+- `git-lfs`：Git LFS（大文件存储）
+- `zip`、`unzip`：文件压缩和解压工具
+- `htop`：系统监控工具
+- `tmux`、`screen`：会话管理工具
+- `build-essential`：编译工具（如 `gcc`、`g++`）
+- `iputils-ping`、`iproute2`、`net-tools`：网络工具（提供 `ping`、`ip`、`ifconfig`、`netstat` 等命令）
+- `ssh`：远程连接工具
+- `rsync`：文件同步工具
+- `tree`：显示文件和目录树
+- `lsof`：查看当前系统打开的文件
+- `aria2`：多线程下载工具
+- `libssl-dev`：OpenSSL 开发库
 
 **pip 安装**：
 
-- `jupyter notebook`：交互式笔记本环境。
-- `jupyter lab`：Jupyter Notebook 的增强版本，提供更丰富的功能和模块化界面。
-- `virtualenv`：Python 虚拟环境管理工具，便于隔离和管理项目依赖，也可以直接用 conda。
-- `tensorboard`：深度学习可视化工具，用于实时监控训练过程中的损失、准确率等指标。
+- `jupyter notebook`、`jupyter lab`：交互式开发环境
+- `virtualenv`：Python 虚拟环境管理工具，可以直接用 conda
+- `tensorboard`：深度学习训练可视化工具
+- `ipywidgets`：Jupyter 小部件库，用以正确显示进度条
 
 **插件**：
 
-- `zsh-autosuggestions`：提供命令自动补全建议。
-- `zsh-syntax-highlighting`：提供语法高亮功能，便于查看输入的命令是否正确。
-- `z`: 目录跳转工具。
+- `zsh-autosuggestions`：命令自动补全
+- `zsh-syntax-highlighting`：语法高亮
+- `z`：快速跳转目录
+
+</details>
+
+<details> <summary> <strong>DL</strong> </summary>
+
+**dl**（Deep Learning）版本在 **base** 基础上，额外安装了深度学习可能用到的基础工具和库：
+
+**Apt 安装**：
+
+- `ffmpeg`：音视频处理工具
+- `libgl1-mesa-glx`：图形库依赖（解决一些深度学习框架图形相关问题）
+
+**pip 安装**：
+
+- **数据科学库**：
+  - `numpy`、`scipy`：数值计算和科学计算
+  - `pandas`：数据分析
+  - `matplotlib`、`seaborn`：数据可视化
+  - `scikit-learn`：机器学习工具
+- **深度学习框架**：
+  - `tensorflow`、`tensorflow-addons`：另一种流行的深度学习框架
+  - `tf-keras`：Keras 接口的 TensorFlow 实现
+- **NLP 相关库**：
+  - `transformers`、`datasets`：Hugging Face 提供的 NLP 工具
+  - `nltk`、`spacy`：自然语言处理工具
+
+如果需要额外的库，可以通过以下命令手动安装：
+
+```bash
+pip install --timeout 120 <替换成库名>
+```
+
+这里 `--timeout 120` 设置了 120 秒的超时时间，确保在网络不佳的情况下仍然有足够的时间进行安装。如果不进行设置，在国内的环境下可能会遇到安装包因下载超时而失败的情况。
 
 </details>
 
@@ -78,18 +118,18 @@
 
 ### 1. 获取镜像（三选一）
 
-假设你已经安装并配置好了 Docker，那么只需两行命令即可完成深度学习的环境配置，以 **Base** 镜像为例，拉取：
+假设你已经安装并配置好了 Docker，那么只需两行命令即可完成深度学习的环境配置，以 **dl** 镜像为例，拉取：
 
 #### 国内镜像版
 
 ```bash
-sudo docker pull dockerpull.org/hoperj/quickstart:base-torch2.5.1-cuda11.8-cudnn9-devel
+sudo docker pull dockerpull.org/hoperj/quickstart:dl-torch2.5.1-cuda11.8-cudnn9-devel
 ```
 
 #### 🪜科学上网版（直连）
 
 ```bash
-sudo docker pull hoperj/quickstart:base-torch2.5.1-cuda11.8-cudnn9-devel
+sudo docker pull hoperj/quickstart:dl-torch2.5.1-cuda11.8-cudnn9-devel
 ```
 
 > [!note]
@@ -99,8 +139,14 @@ sudo docker pull hoperj/quickstart:base-torch2.5.1-cuda11.8-cudnn9-devel
 #### 本地（网盘下载）
 
 > 通过[百度云盘](https://pan.baidu.com/s/1RJDfc5ouTDeBFhOdbIAHNg?pwd=bdka)下载文件（阿里云盘不支持分享大的压缩文件）。
+>
+> 同名文件内容相同，`.tar.gz` 为压缩版本，下载后通过以下命令解压：
+>
+> ```bash
+> gzip -d dl.tar.gz
+> ```
 
-假设 `base.tar` 被下载到了 `~/Downloads` 中，那么切换至对应目录：
+假设 `dl.tar` 被下载到了 `~/Downloads` 中，那么切换至对应目录：
 
 ```bash
 cd ~/Downloads
@@ -109,21 +155,31 @@ cd ~/Downloads
 然后加载镜像：
 
 ```bash
-sudo docker load -i base.tar
+sudo docker load -i dl.tar
 ```
 
 ### 2. 运行容器
 
 ```bash
-sudo docker run --gpus all -it --name ai hoperj/quickstart:base-torch2.5.1-cuda11.8-cudnn9-devel /bin/zsh
+sudo docker run --gpus all -it --name ai hoperj/quickstart:dl-torch2.5.1-cuda11.8-cudnn9-devel /bin/zsh
 ```
 
 如果需要使用 Jupyter，可以使用以下命令：
 
 ```bash
-sudo docker run --gpus all -it --name ai -p 8888:8888 hoperj/quickstart:base-torch2.5.1-cuda11.8-cudnn9-devel /bin/zsh
+sudo docker run --gpus all -it --name ai -p 8888:8888 hoperj/quickstart:dl-torch2.5.1-cuda11.8-cudnn9-devel /bin/zsh
 ```
 
+> [!tip]
+>
+> **常用操作提前看**：
+>
+> - **启动容器**：`docker start <容器名>`
+> - **运行容器**：`docker exec -it <容器名> /bin/zsh`
+>   - **容器内退出**：`Ctrl + D` 或 `exit`。
+> - **停止容器**：`docker stop <容器名>`
+> - **删除容器**：`docker rm <容器名>`
+> 
 ---
 
 **如果还没有安装 Docker，继续阅读，可以根据实际情况通过目录快速跳转。**
@@ -154,7 +210,7 @@ for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker c
 
 首次安装 Docker Engine 之前，需要设置 Docker 的 `apt` 仓库。
 
-1. **设置 Docker 的 `apt` 仓库。**
+1. **设置 Docker 的 `apt` 仓库**
 
    ```bash
    # 添加 Docker 的官方 GPG 密钥：
@@ -175,14 +231,21 @@ for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker c
    > [!note]
    >
    > 如果你使用的是 Ubuntu 的衍生发行版，例如 Linux Mint，可能需要使用 `UBUNTU_CODENAME` 而不是 `VERSION_CODENAME`。
+   >
+   > 如果 `sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc` 执行失败，可以尝试以下命令：
+   >
+   > ```bash
+   >sudo wget -qO- https://download.docker.com/linux/ubuntu/gpg | sudo tee /etc/apt/keyrings/docker.asc
+   > ```
 
-2. **安装 Docker 包。**
+
+2. **安装 Docker 包**
 
    ```console
    sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
    ```
 
-3. **通过运行 `hello-world` 镜像来验证安装是否成功：**
+3. **通过运行 `hello-world` 镜像来验证安装是否成功**
 
    ```console
    sudo docker run hello-world
@@ -241,22 +304,22 @@ for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker c
    sudo systemctl restart docker
    ```
 
-## 拉取并运行 PyTorch Docker 镜像
+## 拉取并运行深度学习 Docker 镜像
 
-> 以下是项目最初镜像的配置命令，提供简单的流程供参考。
+> 现在可以拉取深度学习（[dl](https://hub.docker.com/repository/docker/hoperj/quickstart/general)）镜像，命令和之前一致。
 
 1. **拉取镜像**
 
    ```bash
-   sudo docker pull pytorch/pytorch:2.0.1-cuda11.8-cudnn8-devel
+   sudo docker pull hoperj/quickstart:dl-torch2.5.1-cuda11.8-cudnn9-devel
    ```
 
-   ![image-20241112115024313](./assets/image-20241112115214858.png)
+   ![image-20241115163216096](./assets/image-20241115163216096.png)
 
 2. **运行镜像**
 
    ```bash
-   sudo docker run --gpus all -it pytorch/pytorch:2.0.1-cuda11.8-cudnn8-devel
+   sudo docker run --gpus all -it hoperj/quickstart:dl-torch2.5.1-cuda11.8-cudnn9-devel
    ```
 
 3. **检查 GPU**
