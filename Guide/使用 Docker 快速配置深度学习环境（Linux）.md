@@ -1,6 +1,6 @@
 # 使用 Docker 快速配置深度学习环境（Linux）
 
-> 深度学习环境的配置过于繁琐，所以我制作了两个基础的镜像，希望可以帮助大家节省时间，你可以选择其中一种进行安装，版本说明：
+> 深度学习环境的配置过于繁琐，所以我制作了两个基础的镜像，希望可以帮助你节省时间，根据需要选择其中一种进行安装，版本说明：
 >
 > - **base** 版本基于 `pytorch/pytorch:2.5.1-cuda11.8-cudnn9-devel`，默认 `python` 版本为 3.11.10，可以通过 `conda install python==版本号` 直接修改版本。
 > - **dl** 版本在 **base** 基础上，额外安装了深度学习框架和常用工具，具体查看[安装清单](#安装)。
@@ -30,8 +30,6 @@
 ## 镜像介绍
 
 所有版本都预装了 `sudo`、`pip`、`conda`、`wget`、`curl` 和 `vim` 等常用工具，且已经配置好 `pip` 和 `conda` 的国内镜像源。同时，集成了 `zsh` 和一些实用的命令行插件（命令自动补全、语法高亮、以及目录跳转工具 `z`）。此外，已预装 `jupyter notebook` 和 `jupyter lab`，设置了其中的默认终端为 `zsh`，方便进行深度学习开发，并优化了容器内的中文显示，避免出现乱码问题。其中还预配置了 Hugging Face 的国内镜像地址。
-
-> 如果想修改命令行风格，基于关键词「oh-my-zsh」进行搜寻。
 
 **链接**：
 
@@ -79,7 +77,7 @@
 
 </details>
 
-<details> <summary> <strong>DL</strong> </summary>
+<details> <summary> <strong>dl</strong> </summary>
 
 **dl**（Deep Learning）版本在 **base** 基础上，额外安装了深度学习可能用到的基础工具和库：
 
