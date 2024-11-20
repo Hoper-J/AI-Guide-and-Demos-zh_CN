@@ -34,13 +34,15 @@ Jacob Devlin et al. | [arXiv 1810.04805](https://arxiv.org/pdf/1810.04805) | [Co
 
 ## 前言
 
-在计算机视觉（Computer Vision, CV）领域，很早就可以通过卷积神经网络（Convolutional Neural Network, CNN）在大型数据集上进行预训练（pre-training），然后迁移到其他任务中以提升性能。但在自然语言处理（Natural Language Processing, NLP）领域，长期以来并没有类似的通用深度神经网络模型，这时候很多研究都是“各自为战”，为特定任务训练专属的模型，导致计算资源重复利用，研究成果难以共享，整体效率较低，重复的“造轮子”。
+在计算机视觉（Computer Vision, CV）领域，很早就可以通过卷积神经网络（Convolutional Neural Network, CNN）在大型数据集上进行预训练（Pre-training），然后迁移到其他任务中以提升性能。但在自然语言处理（Natural Language Processing, NLP）领域，长期以来并没有类似的通用深度神经网络模型，这时候很多研究都是“各自为战”，为特定任务训练专属的模型，导致计算资源重复利用，研究成果难以共享，整体效率较低，重复的“造轮子”。
 
 Transformer 架构的提出为这一状况带来了曙光，BERT 的出现更是彻底改变了 NLP 的研究格局。BERT 将 Transformer 架构从翻译任务推广到了其他的 NLP 任务中，刷新了 11 项任务的 SOTA（State of the Art），证明了其架构的通用性和有效性，也开启了预训练语言模型（Pre-trained Language Models, PLMs）研究的新时代。
 
 > [!tip]
 >
-> BERT 的名字来源于美国经典儿童节目《芝麻街》（Sesame Street）的角色，论文中对应的全称为 **B**idirectional **E**ncoder **R**epresentations from **T**ransformer，即“基于 Transformer 架构的双向编码器表示”。是的，“硬凑名字”，类似地，BERT 的“前辈” **ELMo**（Embeddings from Language Models）也是如此，“学术严肃与幽默并存” :)
+> BERT 的名字来源于美国经典儿童节目《芝麻街》（Sesame Street）的角色，论文中对应的全称为 **B**idirectional **E**ncoder **R**epresentations from **T**ransformer，即“基于 Transformer 架构的双向编码器表示”。是的，“硬凑名字”，类似地，BERT 的“前辈” **ELMo**（Embeddings from Language Models）[^1]也是如此。“学术严肃与幽默并存” :)
+
+[^1]: [Deep contextualized word representations](https://arxiv.org/pdf/1802.05365).
 
 ## 贡献
 
@@ -48,7 +50,7 @@ BERT 的主要贡献如下：
 
  - **双向上下文建模（Bidirectional Contextual Representation）**
 
-   过去的语言模型（如 GPT）大多采用单向建模，即只利用从左到右的上下文信息来预测下一个词（token），无法充分利用句子的全局信息。BERT 引入掩码语言模型（Masked Language Model，MLM），随机遮掩输入序列中的部分词，迫使模型基于上下文来预测它（类似于完形填空），实现了深度的双向表征学习。
+   过去的语言模型（如 GPT[^2]）大多采用单向建模，即只利用从左到右的上下文信息来预测下一个词（token），无法充分利用句子的全局信息。BERT 引入掩码语言模型（Masked Language Model，MLM），随机遮掩输入序列中的部分词，迫使模型基于上下文来预测它（类似于完形填空），实现了深度的双向表征学习。
 
    在此之前也有研究（如 ELMo）将从左到右和从右到左两个单向模型的表示拼接在一起，以达到双向的目的，不过 BERT 对双向信息的利用更好。
 
@@ -56,7 +58,11 @@ BERT 的主要贡献如下：
 
    BERT 是**第一个**使用预训练与微调范式在一系列 NLP 任务（句子层面和词元层面）都达到 **SOTA** 的模型，可以说是全面验证了该方法的有效性。
    
-   尽管这种思想并非由 BERT 首次提出，但却是因为 BERT 才广为人知，毕竟谁不喜欢架构简单、模型开源、结果还 SOTA 的研究呢？截止 2024.11，BERT 的引用量已经超过 118K，大量的研究摸着 BERT 过河。
+   尽管这种思想并非由 BERT 首次提出，但却是因为 BERT 才广为人知，毕竟谁不喜欢架构简单、模型开源、结果还 SOTA 的研究呢？截止 2024.11，BERT 的引用量已经超过 118K[^3]，大量的研究摸着 BERT 过河。
+   
+[^2]: [Improving Language Understanding by Generative Pre-Training](https://cdn.openai.com/research-covers/language-unsupervised/language_understanding_paper.pdf).
+
+[^3]: 引用次数数据来源于 Google Scholar。
 
 ### Q1: 什么是预训练（Pre-training）？什么是微调（Fine-tuning）？
 
