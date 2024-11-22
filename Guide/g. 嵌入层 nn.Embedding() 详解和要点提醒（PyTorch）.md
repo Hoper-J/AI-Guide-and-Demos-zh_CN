@@ -6,7 +6,7 @@
 >
 > “既然一维的 Token ID 无法提供足够的信息，那就将其转换成更高维的向量，使其承载更丰富的语义信息，这就是嵌入层（Embedding Layer）的作用。”
 >
-> [代码文件下载](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Demos/20.%20嵌入层%20nn.Embedding()%20代码示例.ipynb)
+> [代码文件下载](../Demos/20.%20嵌入层%20nn.Embedding()%20代码示例.ipynb)
 >
 > 在线链接：[Kaggle](https://www.kaggle.com/code/aidemos/20-nn-embedding) | [Colab](https://colab.research.google.com/drive/1BLgmxasxOD1HQGrI0L1sPlYG40iba9SY?usp=sharing)
 

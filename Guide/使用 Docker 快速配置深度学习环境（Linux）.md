@@ -112,7 +112,7 @@ pip install --timeout 120 <替换成库名>
 
 ## 快速配置环境（两行命令）
 
-> 如果遇到报错，查阅《[Docker 基础命令介绍和常见报错解决](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/Docker%20基础命令介绍和常见报错解决.md#解决常见报错)》。
+> 如果遇到报错，查阅《[Docker 基础命令介绍和常见报错解决](../Guide/Docker%20基础命令介绍和常见报错解决.md#解决常见报错)》。
 
 ### 1. 获取镜像（三选一）
 
@@ -328,5 +328,5 @@ for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker c
    nvidia-smi
    ```
 
-   如果正确显示代表成功。不过对于实际使用来说，还需要了解基础命令和报错的解决方法。使用 `Ctrl + D` 或者命令行输入 `exit` 并回车退出容器，继续阅读《[Docker 基础命令介绍和常见报错解决](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/Docker%20基础命令介绍和常见报错解决.md)》。
+   如果正确显示代表成功。不过对于实际使用来说，还需要了解基础命令和报错的解决方法。使用 `Ctrl + D` 或者命令行输入 `exit` 并回车退出容器，继续阅读《[Docker 基础命令介绍和常见报错解决](../Guide/Docker%20基础命令介绍和常见报错解决.md)》。
 

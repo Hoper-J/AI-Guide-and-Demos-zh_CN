@@ -4,7 +4,7 @@
 >
 > 本文代码源自[官方文档: TRANSFORMING AND AUGMENTING IMAGES ](https://pytorch.org/vision/stable/transforms.html)中的 [Illustration of transforms](https://pytorch.org/vision/stable/auto_examples/transforms/plot_transforms_illustrations.html#sphx-glr-auto-examples-transforms-plot-transforms-illustrations-py)，参数介绍源自函数对应的官方文档。
 >
-> [代码文件下载](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Demos/18.%20数据增强：torchvision.transforms%20常用方法演示.ipynb)
+> [代码文件下载](../Demos/18.%20数据增强：torchvision.transforms%20常用方法演示.ipynb)
 >
 > 在线链接：[Kaggle](https://www.kaggle.com/code/aidemos/18-torchvision-transforms) | [Colab](https://colab.research.google.com/drive/1cOy8LFMUVfDaBe7iV-YWxcZ1W2bFgg4w?usp=sharing)
 
@@ -173,28 +173,28 @@ plot(demo)
 >         [ 1,  2,  3]
 >         [ 4,  5,  6]
 >         [ 7,  8,  9]
->                   
+>                      
 >         填充模式为"constant"：
 >         [255,255,255,255,255]
 >         [255, 1,  2,  3,255]
 >         [255, 4,  5,  6,255]
 >         [255, 7,  8,  9,255]
 >         [255,255,255,255,255]
->                   
+>                      
 >         填充模式为"edge"：
 >         [ 1,  1,  2,  3,  3]
 >         [ 1,  1,  2,  3,  3]
 >         [ 4,  4,  5,  6,  6]
 >         [ 7,  7,  8,  9,  9]
 >         [ 7,  7,  8,  9,  9]
->                   
+>                      
 >         填充模式为"reflect"：
 >         [ 5,  4,  5,  6,  5]
 >         [ 2,  1,  2,  3,  2]
 >         [ 5,  4,  5,  6,  5]
 >         [ 8,  7,  8,  9,  8]
 >         [ 5,  4,  5,  6,  5]
->                   
+>                      
 >         填充模式为"symmetric"：
 >         [ 1,  1,  2,  3,  3] 
 >         [ 1,  1,  2,  3,  3] 

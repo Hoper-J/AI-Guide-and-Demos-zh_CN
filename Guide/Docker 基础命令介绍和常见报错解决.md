@@ -4,7 +4,7 @@
 >
 > 命令以适用于深度学习的 [dl 镜像](https://hub.docker.com/repository/docker/hoperj/quickstart/general)为例进行演示。
 >
-> Docker 安装见《[使用 Docker 快速配置深度学习环境（Linux）](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/使用%20Docker%20快速配置深度学习环境（Linux）.md)》
+> Docker 安装见《[使用 Docker 快速配置深度学习环境（Linux）](../Guide/使用%20Docker%20快速配置深度学习环境（Linux）.md)》
 
 ## 目录
 

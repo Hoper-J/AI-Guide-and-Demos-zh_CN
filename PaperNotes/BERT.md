@@ -491,16 +491,16 @@ $$
 >
 >       - **代码实现**（伪代码）：
 >
->        ```python
+>       ```python
 >       # 假设 encoder_output 是模型的输出，形状为 (batch_size, seq_length, hidden_size)
 >       # 定义一个线性层，将 hidden_size 映射到 2（分别用于预测 start 和 end 位置），当然，可以定义两个线性层分别进行预测，因为线性层每个位置的处理是相互独立的
 >       classifier = nn.Linear(hidden_size, 2)
->                                                 
+>                                                                   
 >       logits = classifier(encoder_output)  # 形状为 (batch_size, seq_length, 2)
 >       start_logits, end_logits = logits.split(1, dim=-1)  # 每个的形状为 (batch_size, seq_length, 1)
 >       start_logits = start_logits.squeeze(-1)  # 形状为 (batch_size, seq_length)
 >       end_logits = end_logits.squeeze(-1)      # 形状为 (batch_size, seq_length)
->        ```
+>       ```
 >
 
 

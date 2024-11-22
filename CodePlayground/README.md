@@ -58,7 +58,7 @@
 
 <details> <summary> <strong>1. AI Summarizer</strong> </summary>
 
-> [15. 0 基础也能轻松实现 AI 视频摘要](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/15.%200%20基础也能轻松实现%20AI%20视频摘要.md)
+> [15. 用 API 实现 AI 视频摘要：动手制作属于你的 AI 视频助手](../Guide/15.%20用%20API%20实现%20AI%20视频摘要：动手制作属于你的%20AI%20视频助手.md)
 
 **Summarizer** 是一个 AI 摘要工具，用于从视频或音频文件中提取字幕并生成视频摘要，也可以直接处理现有的字幕文件。它集成了 Whisper 模型和 OpenAI API 来自动化这些过程。
 
@@ -89,7 +89,7 @@ python summarizer.py file_path [--api_key YOUR_API_KEY] [--output_dir OUTPUT_DIR
    - `file_path`：替换为要处理的文件路径，可以是视频、音频或字幕文件。
    - `--api_key`：可选参数，指定 OpenAI API 密钥。如果配置文件中已有密钥，则可以省略此参数。当不传入时，会要求输入，验证后会自动更新 config.yaml。
    - `--output_dir`：可选参数，指定生成文件保存的目录，默认为 `./output/` 文件夹。
-   - 其他参数见[配置文件](#配置管理)或使用 `--help` 进行查看
+   - 其他参数见[配置管理](#配置管理)或使用 `--help` 进行查看
 
    以上命令会从样例视频中提取音频，生成字幕并自动生成摘要。
 
@@ -102,7 +102,7 @@ python summarizer.py file_path [--api_key YOUR_API_KEY] [--output_dir OUTPUT_DIR
 
 脚本支持从 `config.yaml` 文件中读取默认配置，你可以通过编辑该文件来自定义参数，避免每次运行脚本时手动指定。
 
-[配置文件](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/CodePlayground/config.yaml)示例：
+[配置文件](./config.yaml)示例：
 
    ```yaml
 summarizer:
@@ -137,9 +137,9 @@ summarizer:
 
 </details> <details> <summary> <strong>2. AI Chat</strong> </summary>
 
-> [19a. 从加载到对话：使用 Transformers 本地运行量化 LLM 大模型（GPTQ & AWQ）](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/19a.%20从加载到对话：使用%20Transformers%20本地运行量化%20LLM%20大模型（GPTQ%20%26%20AWQ）.md)
+> [19a. 从加载到对话：使用 Transformers 本地运行量化 LLM 大模型（GPTQ & AWQ）](../Guide/19a.%20从加载到对话：使用%20Transformers%20本地运行量化%20LLM%20大模型（GPTQ%20%26%20AWQ）.md)
 >
-> [19b. 从加载到对话：使用 Llama-cpp-python 本地运行量化 LLM 大模型（GGUF）](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/19b.%20从加载到对话：使用%20Llama-cpp-python%20本地运行量化%20LLM%20大模型（GGUF）.md)
+> [19b. 从加载到对话：使用 Llama-cpp-python 本地运行量化 LLM 大模型（GGUF）](../Guide/19b.%20从加载到对话：使用%20Llama-cpp-python%20本地运行量化%20LLM%20大模型（GGUF）.md)
 >
 > 建议阅读文章进行配置。
 
@@ -178,7 +178,7 @@ python chat.py <model_path> [--no_stream] [--max_length 512] [--io history.json]
 - `--remote`：**仅适用于 GGUF 模型文件**，从 `<model_path>` 解析出 `repo_id` 和 `model_name` 进行远程模型文件的加载。
 - 其他参数使用 `--help` 进行查看。
 
-[配置文件](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/CodePlayground/config.yaml)示例：
+[配置文件](./config.yaml)示例：
 
 ```yaml
 chat:

@@ -46,7 +46,7 @@ Ashish Vaswan et al. | [arXiv 1706.03762](https://arxiv.org/pdf/1706.03762) | [C
 >
 > 因为 Transformer 是一篇非常重要的基础论文，所以我决定尽量复现所有模块以供学习，另外，本文将附带曾经阅读论文时的困惑进行撰写，并尽可能地解答它们。不过，由于时间久远，有些我目前认为“显然”的内容可能没有特别说明，欢迎读者随时提出 issue，我会在闲暇时补充相关叙述。
 >
-> [代码文件下载](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/PaperNotes/Demos/动手实现%20Transformer.ipynb)
+> [代码文件下载](../PaperNotes/Demos/动手实现%20Transformer.ipynb)
 >
 > 在线链接：[Kaggle](https://www.kaggle.com/code/aidemos/transformer) | [Colab](https://colab.research.google.com/drive/1BtYPNjEHw3dudw5KKFe9dBEsUsgkm1Vt?usp=sharing)
 
@@ -258,7 +258,7 @@ Transformer 模型基于**编码器**（左）- **解码器**（右）架构（�
 
   将**输入序列**（Inputs）的 Tokens 转换为固定维度的向量表示（Input embedding），使模型能够处理文本数据。
 
-  - 关于 Token 可以阅读文章《[21. BPE vs WordPiece：理解 Tokenizer 的工作原理与子词分割方法](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/21.%20BPE%20vs%20WordPiece：理解%20Tokenizer%20的工作原理与子词分割方法.md)》。
+  - 关于 Token 可以阅读文章《[21. BPE vs WordPiece：理解 Tokenizer 的工作原理与子词分割方法](../Guide/21.%20BPE%20vs%20WordPiece：理解%20Tokenizer%20的工作原理与子词分割方法.md)》。
 
 - **位置编码（Positional Encoding）**
 
@@ -303,11 +303,11 @@ Transformer 模型基于**编码器**（左）- **解码器**（右）架构（�
 
     - **束搜索（Beam Search）**：保留多个可能的候选路径，以优化最终结果（Transformer 使用的就是 beam search，参数设置：波束大小 $\text{beam size}=4$, 长度惩罚 $\text{length penalty } \alpha = 0.6$）。
 
-      阅读文章《[09. 深入理解 Beam Search：原理, 示例与代码实现](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/09.%20深入理解%20Beam%20Search：原理%2C%20示例与代码实现.md)》。
+      阅读文章《[09. 深入理解 Beam Search：原理, 示例与代码实现](../Guide/09.%20深入理解%20Beam%20Search：原理%2C%20示例与代码实现.md)》。
 
     - **Top-K 和 Top-P 采样**：从概率分布中随机采样，以增加生成的多样性。
 
-      阅读文章《[10. 什么是 Top-K 和 Top-P 采样？Temperature 如何影响生成结果？](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/10.%20Top-K%20vs%20Top-P：生成式模型中的采样策略与%20Temperature%20的影响.md)》。
+      阅读文章《[10. 什么是 Top-K 和 Top-P 采样？Temperature 如何影响生成结果？](../Guide/10.%20Top-K%20vs%20Top-P：生成式模型中的采样策略与%20Temperature%20的影响.md)》。
 
 ## 呈现
 
@@ -456,7 +456,7 @@ $$
 
   #### Q2: 什么是标签平滑（Label Smoothing）？
 
-  > 修改自拓展阅读《[f. 交叉熵损失函数 nn.CrossEntropyLoss() 详解和要点提醒（PyTorch）](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/f.%20交叉熵损失函数%20nn.CrossEntropyLoss()%20详解和要点提醒（PyTorch）.md#标签平滑label_smoothing)》。
+  > 修改自拓展阅读《[f. 交叉熵损失函数 nn.CrossEntropyLoss() 详解和要点提醒（PyTorch）](../Guide/f.%20交叉熵损失函数%20nn.CrossEntropyLoss()%20详解和要点提醒（PyTorch）.md#标签平滑label_smoothing)》。
 
   标签平滑（Label Smoothing）是一种与“硬标签”（hard label）相对的概念，我们通常使用的标签都是硬标签，即正确类别的概率为1，其他类别的概率为0。这种方式直观且常用，但在语言模型训练时可能会过于“极端”：在 softmax 中，只有当 logit 值无限大时，概率才能逼近 1。
   
@@ -1854,7 +1854,7 @@ class LayerNorm(nn.Module):
 >    # 初始化的 shape 是二维的
 >    self.weight = nn.Parameter(torch.randn(out_features, in_features))  # 权重矩阵
 >    self.bias = nn.Parameter(torch.zeros(out_features))  # 偏置向量
->                                                                                                                                                                            
+>                                                                                                                                                                               
 >    # 计算
 >    def forward(self, x):
 >    	return torch.matmul(x, self.weight.T) + self.bias
@@ -2015,7 +2015,7 @@ class Embeddings(nn.Module):
 
 > [!note]
 >
-> Tokenization 的操作其实就是常用的 tokenizer，对 vocab 感兴趣的话可以进一步阅读这篇文章：《[21. BPE vs WordPiece：理解 Tokenizer 的工作原理与子词分割方法](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/21.%20BPE%20vs%20WordPiece：理解%20Tokenizer%20的工作原理与子词分割方法.md)》。
+> Tokenization 的操作其实就是常用的 tokenizer，对 vocab 感兴趣的话可以进一步阅读这篇文章：《[21. BPE vs WordPiece：理解 Tokenizer 的工作原理与子词分割方法](../Guide/21.%20BPE%20vs%20WordPiece：理解%20Tokenizer%20的工作原理与子词分割方法.md)》。
 >
 > ### Q: 什么是 nn.Embedding()？和 nn.Linear() 的区别是什么？
 >
@@ -2154,7 +2154,7 @@ $$
 
 > ![Logits](./assets/image-20241030171356109.png)
 
-都可以，这一点并不重要，取决于选择哪种损失函数，如果使用的是交叉熵损失，那么Transformer 的输出是 **logits**，即未经过 Softmax 的原始输出，或者说最后一层线性层的输出（如图示）。这是因为在计算交叉熵损失时，使用的是带有 `log_softmax` 的 **`nn.CrossEntropyLoss()`**，该损失函数内部会自动对 logits 进行 Softmax 处理，并计算对数概率（详细可阅读《[f. 交叉熵损失函数 nn.CrossEntropyLoss() 详解和要点提醒（PyTorch）](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/f.%20交叉熵损失函数%20nn.CrossEntropyLoss()%20详解和要点提醒（PyTorch）.md)》。
+都可以，这一点并不重要，取决于选择哪种损失函数，如果使用的是交叉熵损失，那么Transformer 的输出是 **logits**，即未经过 Softmax 的原始输出，或者说最后一层线性层的输出（如图示）。这是因为在计算交叉熵损失时，使用的是带有 `log_softmax` 的 **`nn.CrossEntropyLoss()`**，该损失函数内部会自动对 logits 进行 Softmax 处理，并计算对数概率（详细可阅读《[f. 交叉熵损失函数 nn.CrossEntropyLoss() 详解和要点提醒（PyTorch）](../Guide/f.%20交叉熵损失函数%20nn.CrossEntropyLoss()%20详解和要点提醒（PyTorch）.md)》。
 
 模型输出**概率**（即经过 Softmax 后）同样可以做交叉熵损失，这时需要用 **`nn.NLLLoss()`**（负对数似然损失）来计算。与 `nn.CrossEntropyLoss()` 不同的是，`nn.NLLLoss()` 直接接收对数概率，因此在使用之前，需要先对概率输出调用 `torch.log()` ，示例：
 
@@ -3123,7 +3123,7 @@ print(model)
 
 ## 结语
 
-恭喜你完成了 Transformer 的学习！在这篇文章中，我们大致遵循自底向上的顺序，探索了 Transformer 的基本概念、架构及其核心机制，并解答了一些可能存在的疑惑。考虑到已有许多优秀的 PyTorch 项目可供参考，本文的代码将保留在 [Notebook 文件](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/PaperNotes/Demos/动手实现%20Transformer.ipynb)，方便读者快速查看和实践，而不拆分为独立的 Python 文件。
+恭喜你完成了 Transformer 的学习！在这篇文章中，我们大致遵循自底向上的顺序，探索了 Transformer 的基本概念、架构及其核心机制，并解答了一些可能存在的疑惑。考虑到已有许多优秀的 PyTorch 项目可供参考，本文的代码将保留在 [Notebook 文件](../PaperNotes/Demos/动手实现%20Transformer.ipynb)，方便读者快速查看和实践，而不拆分为独立的 Python 文件。
 
 希望本文对你有所帮助！
 
