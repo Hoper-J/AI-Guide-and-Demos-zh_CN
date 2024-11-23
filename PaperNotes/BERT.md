@@ -43,19 +43,20 @@ Jacob Devlin et al. | [arXiv 1810.04805](https://arxiv.org/pdf/1810.04805) | [Co
 > 完成后删除此模块。
 
 - ... - 2024.11.20：完成论文基本的介绍，理清架构
-- 2024.11.21完成模型架构部分，给出完整的参数量计算方法，以 $\text{BERT}_\text{BASE}$ 为例进行演示，复刻论文表达。
+- 2024.11.21 完成模型架构部分，给出完整的参数量计算方法，以 $\text{BERT}_\text{BASE}$ 为例进行演示，复刻论文表达。
+- 2024.11.22 解释表 1 中 GLUE 的子任务
 
 TODO: 思考是否有必要从零开始实现 BERT，在代码上没有太多新的东西。
 
 ## 前言
 
-在计算机视觉（Computer Vision, CV）领域，很早就可以通过卷积神经网络（Convolutional Neural Network, CNN）在大型数据集上进行预训练（Pre-training），然后迁移到其他任务中提升性能。但在自然语言处理（Natural Language Processing, NLP）领域，长期以来并没有类似的通用深度神经网络模型，这时候很多研究都是“各自为战”，为特定任务训练专属的模型，导致计算资源重复利用，研究成果难以共享，常常重复的“造轮子”。
+在计算机视觉（Computer Vision, CV）领域，很早就开始利用卷积神经网络（Convolutional Neural Network, CNN）在大型数据集上进行预训练（Pre-training），然后迁移到其他任务中提升性能。但在自然语言处理（Natural Language Processing, NLP）领域，长期以来并没有类似的通用深度神经网络模型，许多研究都是“各自为战”，为特定任务训练专属的模型，导致计算资源重复利用，研究成果难以共享，常常重复“造轮子”。
 
-Transformer 架构的提出为 NLP 带来了新的可能，BERT 的出现更是彻底改变了 NLP 的研究格局。BERT 将 Transformer 架构从翻译任务推广到了其他的 NLP 任务，并刷新了 11 项任务的 SOTA（State of the Art），证明了其架构的通用性和强大性能，同时开启了预训练语言模型（Pre-trained Language Models, PLMs）研究的浪潮，对 NLP 研究格局产生了深远影响。
+Transformer 架构的提出为 NLP 带来了新的可能，BERT 的出现更是彻底改变了 NLP 的研究格局。BERT 将 Transformer 架构从翻译任务推广到了其他的 NLP 任务，并刷新了 11 项任务的 SOTA（State of the Art），证明了其架构的通用性和有效性，同时开启了预训练语言模型（Pre-trained Language Models, PLMs）研究的浪潮，对整个领域产生了深远影响。
 
 > [!tip]
 >
-> BERT 的名字来源于美国经典儿童节目《芝麻街》（Sesame Street）的角色，论文中对应的全称为 **B**idirectional **E**ncoder **R**epresentations from **T**ransformer，即“基于 Transformer 架构的双向编码器表示”。是的，“硬凑名字”，类似地，BERT 的“前辈” **ELMo**（Embeddings from Language Models）[^1]也是如此。“学术严肃与幽默并存” :)
+> BERT 的名字来源于美国经典儿童节目《芝麻街》（Sesame Street）的角色。论文中对应的全称为 **B**idirectional **E**ncoder **R**epresentations from **T**ransformer，即“基于 Transformer 架构的双向编码器表示”。是的，“硬凑名字”，类似地，BERT 的“前辈” **ELMo**（Embeddings from Language Models）[^1]也是如此。“学术严肃与幽默并存” :)
 
 [^1]: [Deep contextualized word representations](https://arxiv.org/pdf/1802.05365).
 
@@ -71,9 +72,9 @@ BERT 的主要贡献如下：
 
  - **预训练与微调框架（Pre-training & Fine-tuning）**
 
-   BERT 是**第一个**使用预训练与微调范式在一系列 NLP 任务（句子层面和词元层面）都达到 **SOTA** 的模型，可以说是全面验证了该方法的有效性。
+   BERT 是**第一个**使用预训练与微调范式在一系列 NLP 任务（句子层面和词元层面）都达到 **SOTA** 的模型，全面验证了该方法的有效性。
    
-   尽管这种思想并非由 BERT 首次提出，但却是因为 BERT 才广为人知，毕竟谁不喜欢架构简单、模型开源、结果还 SOTA 的研究呢？截止 2024.11，BERT 的引用量已经超过 118K[^3]，大量的研究摸着 BERT 过河。
+   尽管这种思想并非由 BERT 首次提出，但却是因为 BERT 才广为人知。毕竟，谁不喜欢架构简单、模型开源、结果还 SOTA 的研究呢？截至 2024 年 11 月，BERT 的引用量已经超过 118K[^3]，大量的研究以 BERT 为基础进行发展（摸着 BERT 过河）。
    
 [^2]: [Improving Language Understanding by Generative Pre-Training](https://cdn.openai.com/research-covers/language-unsupervised/language_understanding_paper.pdf).
 
@@ -114,7 +115,7 @@ BERT 的主要贡献如下：
 
 **微调（fine-tuning）方法**：
 
-- **预训练模型的参数在下游任务中继续更新**，对预训练模型进行**端到端的训练**，论文中提到的是全量微调，不过现在实际应用中微调也分很多种。
+- **预训练模型的参数在下游任务中继续更新**，对预训练模型进行**端到端的训练**，论文中提到的是全量微调。
 - 下游任务中，只需在预训练模型顶部添加少量的任务特定参数（如分类层）。
 
 ## 模型架构
@@ -123,7 +124,7 @@ BERT 的主要贡献如下：
 
 > ![时间线](./assets/%E6%97%B6%E9%97%B4%E7%BA%BF.png)
 
-Transformer 原始架构由**编码器**（Encoder）和**解码器**（Decoder）组成，GPT 在 BERT 之前发表，仅用了 Transformer 架构的解码器部分（GPT 也被称之为 “Decoder-Only” 模型），或许 BERT 正是受启发于 GPT，所以才用了 Transformer 架构的另一半，也就是编码器部分（BERT 也被称之为 “Encoder-Only” 模型）。
+Transformer 原始架构由**编码器**（Encoder）和**解码器**（Decoder）组成。GPT 在 BERT 之前发表，仅用了 Transformer 架构的解码器（因此 GPT 也被称之为 “Decoder-Only” 模型），或许 BERT 正是受启发于 GPT，所以才用了 Transformer 架构的另一半：编码器（因此 BERT 也被称之为 “Encoder-Only” 模型）。
 
 读到这里可能会有疑问：**这能说明什么？**
 
@@ -135,7 +136,7 @@ Transformer 原始架构由**编码器**（Encoder）和**解码器**（Decoder�
   - **自注意力机制是单向的**：通过对未来位置进行掩码，输入序列中的每个位置只能关注到它之前的词（从左到右）。
     - **未来掩码**：训练时，防止模型在生成当前位置的词时看到未来的信息（答案）。
 
-因此，GPT 是**单向模型**，因为采用了解码器架构，通过从左到右的方式生成文本；而 BERT 是**双向模型**，因为采用了编码器架构，能同时利用左侧和右侧的上下文信息进行建模。值得注意的是，所谓单向和双向建模，本质上取决于是否对输入序列添加未来掩码，编码器和解码器的实现机制实际上非常相似，详见 Transformer 的[代码实现](https://www.kaggle.com/code/aidemos/transformer#子层模块)。
+因此，GPT 是**单向模型**，因为采用了解码器架构，从左到右生成文本；而 BERT 是**双向模型**，因为采用了编码器架构，能同时利用左侧和右侧的信息（上下文）进行建模。值得注意的是，所谓单向和双向建模，本质上取决于是否对输入序列添加未来掩码，编码器和解码器的实现机制实际上非常相似，详见 Transformer 的[代码实现](https://www.kaggle.com/code/aidemos/transformer#子层模块)。
 
 所以，与其说是从单向过渡到双向，不如说 BERT 选择了 Transformer 架构的编码器部分，来实现双向的表征学习。
 
@@ -153,11 +154,11 @@ Transformer 原始架构由**编码器**（Encoder）和**解码器**（Decoder�
 
 > ![图 2](./assets/image-20241121142839104.png)
 
-BERT 的输入由三个嵌入层组成：**Token Embeddings**、**Segment Embeddings** 和 **Position Embeddings**。它们分别提供了词汇、句子区分和位置信息，和 Transformer 的不同之处在于位置嵌入可学习且多了段嵌入。
+BERT 的输入由三个嵌入层组成：**Token Embeddings**、**Segment Embeddings** 和 **Position Embeddings**，和 Transformer 的不同之处在于，BERT 的位置嵌入是可学习的，并且多了分段嵌入。
 
 - **Token Embeddings（词嵌入）**：
 
-  BERT 使用 WordPiece[^4] 构造词汇表，将输入文本拆分为子词单元（subword units），每个子词最终都对应一个嵌入向量。
+  BERT 使用 WordPiece[^4] 构造词汇表，将输入文本拆分为子词单元（subword units），每个子词最终对应一个嵌入向量。
   
   > 对 WordPiece 感兴趣的同学可以进一步阅读《[21. BPE vs WordPiece：理解 Tokenizer 的工作原理与子词分割方法](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/21.%20BPE%20vs%20WordPiece：理解%20Tokenizer%20的工作原理与子词分割方法.md#wordpiece)》。
   >
@@ -166,7 +167,7 @@ BERT 的输入由三个嵌入层组成：**Token Embeddings**、**Segment Embedd
   > ![image-20241121205633276](./assets/image-20241121205633276.png)
 - **Segment Embeddings（段嵌入）**：
 
-  为了区分输入中的不同句子，每个词都会加上一个段标识（Segment ID），标识它属于句子 A 还是句子 B。比如，句子 A 的 Segment ID 设为 0，句子 B 的 Segment ID 设为 1。
+  为了区分输入中的不同句子，每个词都会加上一个分段标识（Segment ID），标识它属于句子 A 还是句子 B。比如，句子 A 的 Segment ID 设为 0，句子 B 的 Segment ID 设为 1。
 
   > BERT 的[官方代码](https://github.com/google-research/bert/blob/eedf5716ce1268e56f0a50264a88cafad334ac61/modeling.py#L472)中将这一概念称为词元类型 IDs（Token Type IDs），结合下图[^5]来理解：
   >
@@ -176,8 +177,6 @@ BERT 的输入由三个嵌入层组成：**Token Embeddings**、**Segment Embedd
 
   编码器本身无法直接感知输入序列的顺序，因此需要对输入数据进行额外的位置信息补充。BERT 通过添加可学习的位置嵌入帮助模型捕获序列的顺序关系。
 
-**注意**，嵌入层相加后需要过一次 Layer Norm，见[官方代码](https://github.com/google-research/bert/blob/eedf5716ce1268e56f0a50264a88cafad334ac61/modeling.py#L520)。
-
 另外，这里的嵌入层**都是可学习的**，接受的输入分别是 ：
 
 - **Token ID**（词元标识，用于映射词嵌入）
@@ -185,6 +184,18 @@ BERT 的输入由三个嵌入层组成：**Token Embeddings**、**Segment Embedd
 - **Position ID**（位置信息，用于捕获序列顺序）
 
 可以通过拓展文章《[g. 嵌入层 nn.Embedding() 详解和要点提醒（PyTorch）](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/g.%20嵌入层%20nn.Embedding()%20详解和要点提醒（PyTorch）.md)》进一步了解什么是嵌入层。
+
+**注意**，这三个嵌入层相加后还需要过一次 Layer Norm 和 Dropout，见[官方代码](https://github.com/google-research/bert/blob/eedf5716ce1268e56f0a50264a88cafad334ac61/modeling.py#L520)：
+
+```python
+output = input_tensor
+...
+output += token_type_embeddings
+...
+output += position_embeddings
+
+output = layer_norm_and_dropout(output, dropout_prob)
+```
 
 [^4]: [Google’s Neural Machine Translation System: Bridging the Gap between Human and Machine Translation](https://arxiv.org/pdf/1609.08144).
 [^5]: [Segment Embeddings 的图源](https://speech.ee.ntu.edu.tw/~hylee/ml/ml2023-course-data/HW07.pdf)
@@ -200,7 +211,7 @@ BERT 使用了两个预训练任务：
 
 #### 掩码语言模型（Masked Language Model，MLM）
 
-随机遮掩输入序列中的部分词元（也称为标记, Token），让模型根据上下文预测被遮掩的词元。
+随机遮掩输入序列中的部分词元（Token，标记），让模型根据上下文预测被遮掩的词元。
 
 > 单向模型的任务很简单，就是预测下一个词。那么，有什么任务可以同时利用上下文的信息呢？
 >
@@ -210,19 +221,21 @@ BERT 使用了两个预训练任务：
 
 - 在每个训练样本中，随机选择 **15%** 的词元进行遮掩处理。
 
-- 如果直接将选中的词元全部替换为 `[MASK]`，会导致预训练和微调看到的数据会不一样，因为后续微调的时候的输入是没有遮掩的。为了缓解这个问题，BERT 对于被选中的词元采用了三种处理方式。假设句子为 `my dog is hairy`，在随机遮掩过程中选择了第 4 个词元（对应于 `hairy`），具体的遮掩处理如下：
+- 如果直接将选中的词元全部替换为 `[MASK]`，会导致预训练和微调看到的数据会不一样，因为后续微调的时候的输入是没有遮掩的。为了缓解这个问题，BERT 对于被选中的词元采用了三种处理方式。
 
+  假设句子为 `my dog is hairy`，在随机遮掩过程中选择了第 4 个词元（对应于 `hairy`），具体的遮掩处理如下：
+  
   - **80% 的情况下**：将选中的词元替换为 `[MASK]`，例如：
      `my dog is hairy → my dog is [MASK]`
-
+  
   - **10% 的情况下**：将选中的词元替换为一个随机词，例如：
      `my dog is hairy → my dog is apple`
-
+  
   - **10% 的情况下**：保持选中的词元不变，但模型依旧需要预测它，例如：
      `my dog is hairy → my dog is hairy`
 
     此时输入和微调时看到的一样。
-
+  
   > The advantage of this procedure is that the Transformer encoder does not know which words it will be asked to predict or which have been re- placed by random words, so it is forced to keep a distributional contextual representation of every input token. 
   >
   > 这个过程的优点是，Transformer 编码器不知道它将被要求预测哪些单词，或者哪些单词已经被随机单词替换了，因此它被迫保持每个输入标记的分布上下文表示。
@@ -240,10 +253,13 @@ BERT 使用了两个预训练任务：
 
 **实现细节**：
 
-- **50%** 的训练样本为相邻句子对（标签为 "IsNext"），例如：
-  - `[CLS] the man went to [MASK] store [SEP] he bought a gallon [MASK] milk [SEP]`
-- **50%** 的训练样本为非相邻句子对（标签为 "NotNext"），例如：
-  - `[CLS] the man [MASK] to the store [SEP] penguin [MASK] are flight ##less birds [SEP]`
+- **50%** 的训练样本为相邻句子对（标签为 "IsNext"）。
+
+  例如：`[CLS] the man went to [MASK] store [SEP] he bought a gallon [MASK] milk [SEP]`
+
+- **50%** 的训练样本为非相邻句子对（标签为 "NotNext"）。
+  
+  例如：`[CLS] the man [MASK] to the store [SEP] penguin [MASK] are flight ##less birds [SEP]`
 
 #### 数据集
 
@@ -252,7 +268,7 @@ BERT 的预训练数据集包含大量未标注文本，主要来自：
 1. **书籍语料库（BooksCorpus[^6]）**：包含超过 11,000 本英文小说的全文，约 8 亿词元。
 2. **英文维基百科（English Wikipedia）**：包含海量的高质量文本，约 25 亿词元。
 
-论文指出应该用文档层面（Document-Level）的数据集而非随机打乱的句子。
+论文指出应该用文档级别（Document-Level）的数据集而非随机打乱的句子（shuffled sentence-level corpus）。
 
 [^6]: [Aligning Books and Movies: Towards Story-like Visual Explanations by Watching Movies and Reading Books](https://arxiv.org/pdf/1506.06724)
 #### 超参数设置
@@ -278,7 +294,7 @@ BERT 的模型架构基于 **Transformer** 的编码器结构。需要注意的�
 
 #### Q: BERT 模型总参数量怎么计算？
 
-主要来自以下几个部分：
+模型参数来自以下几个部分：
 
 1. **嵌入层参数**：
 
@@ -429,7 +445,7 @@ $$
 >
 > - **特殊词元/标记**：
 >
->   - `[CLS]`（Classification Token）：在每个输入序列的开头添加，由于编码器的自注意力机制会计算 `[CLS]` 与序列中所有其他词的关系，因此 `[CLS]` 的输出向量可以有效地表示整个序列的上下文信息。因此，`[CLS]` 向量常作为句子级别（Sentence-Level）的 **embedding**，被应用于句子分类、情感分析、文本分类等任务。
+>   - `[CLS]`（Classification Token）：在每个输入序列的开头添加。编码器的自注意力机制会计算 `[CLS]` 与序列中所有其他词的关系，因此，`[CLS]` 的输出向量可以有效地表示整个序列的上下文信息。`[CLS]` 向量常作为句子级别（Sentence-Level）的 **embedding**，被应用于句子分类、情感分析、文本分类等任务。
 >   - `[SEP]`（Separator Token）：用于分隔不同的句子或表示序列的结束。
 >
 >   举个例子，如果我们有两个句子：
@@ -439,7 +455,7 @@ $$
 >
 >   它们会被处理成：`[CLS] BERT is great. [SEP] It works well. [SEP]`
 >
-> - **下游任务示例**：
+> - **下游任务示例（上图右侧）**：
 >
 >   - **MNLI（Multi-Genre Natural Language Inference）**：
 >
@@ -495,13 +511,51 @@ $$
 >       # 假设 encoder_output 是模型的输出，形状为 (batch_size, seq_length, hidden_size)
 >       # 定义一个线性层，将 hidden_size 映射到 2（分别用于预测 start 和 end 位置），当然，可以定义两个线性层分别进行预测，因为线性层每个位置的处理是相互独立的
 >       classifier = nn.Linear(hidden_size, 2)
->                                                                   
+>                   
 >       logits = classifier(encoder_output)  # 形状为 (batch_size, seq_length, 2)
 >       start_logits, end_logits = logits.split(1, dim=-1)  # 每个的形状为 (batch_size, seq_length, 1)
 >       start_logits = start_logits.squeeze(-1)  # 形状为 (batch_size, seq_length)
 >       end_logits = end_logits.squeeze(-1)      # 形状为 (batch_size, seq_length)
 >       ```
 >
+
+## 呈现
+
+### 表 1
+
+> ![表 1](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/image-20241121211508022.png)
+>
+> [BERT 论文逐段精读【论文精读】 37:11 - 38:10 部分](https://www.bilibili.com/video/BV1PL411M7eQ/?share_source=copy_web&vd_source=e46571d631061853c8f9eead71bdb390&t=2231)
+>
+> $\text{BERT}_\text{BASE}$ 和 GPT 的可学习的参数量接近，对比结果 BERT 的提升还是比较大的。
+>
+> - 表头中每个任务名称下的数字表示该任务对应的训练样本数量。
+>
+> - “Average”（平均分）列展示了模型在各任务上的综合表现，这里计算的平均分与 GLUE 官方的 **GLUE Score** 略有不同，因为它**排除了 WNLI（Winograd NLI）任务**，这个任务被认为存在问题。
+>
+> - 表中的结果**排除了任何使用 BERT 作为组成部分的模型**。
+>
+>   注意，这句话并非 18 年初版 [arXiv 1810.04805v1](https://arxiv.org/abs/1810.04805v1) 中的叙述，而是新版 [arXiv 1810.04805v2](https://arxiv.org/abs/1810.04805v2) 增加的。如果你读到这句话产生了疑惑：“**怎么 BERT 还没发表就被用来当组件了？**”，不妨访问一下它们。
+
+作为拓展了解一下 GLUE（General Language Understanding Evaluation），这是一个用于评估模型性能的基准数据集，由多个子任务[^7][^8]组成（仅列举表格中存在的）：
+
+| **任务**        | 全称                                   | **任务类型**                                                 | **评价指标**          | 训练样本数量 | 备注                                                  |
+| --------------- | -------------------------------------- | ------------------------------------------------------------ | --------------------- | ------------ | ----------------------------------------------------- |
+| **MNLI-(m/mm)** | MultiNLI Matched/MultiNLI Mismatched   | 自然语言推理（Natural Language Inference, NLI），三分类（蕴涵、矛盾、中立） | 准确率（匹配/不匹配） | 392k         | 包含匹配（in-domain）和不匹配（cross-domain）两个部分 |
+| **QQP**         | Quora Question Pairs                   | 语义等价判断（二分类）                                       | F1分数 & 准确率       | 363k         | 判断问题对是否等价，数据来自 Quora                    |
+| **QNLI**        | Question NLI                           | 自然语言推理（二分类）                                       | 准确率                | 108k         | 由 SQuAD 改造而来，判断句子是否包含问题的答案         |
+| **SST-2**       | The Stanford Sentiment Treebank        | 句子情感分类（二分类）                                       | 准确率                | 67k          | 基于电影评论的句子情感分析                            |
+| **CoLA**        | The Corpus of Linguistic Acceptability | 语法正确性判断（二分类）                                     | Matthew相关系数       | 8.5k         | 判断句子是否为合法的英语句子（0 不合法，1 合法）      |
+| **STS-B**       | Semantic Textual Similarity Benchmark  | 语义文本相似度（回归）                                       | Spearman相关系数      | 5.7k         | 预测句子对的语义相似度得分（1-5分）                   |
+| **MRPC**        | Microsoft Research Paraphrase Corpus   | 语义等价判断（二分类）                                       | F1分数 & 准确率       | 3.5k         | 判断句子对是否为同义改写                              |
+| **RTE**         | Recognizing Textual Entailment         | 自然语言推理（二分类）                                       | 准确率                | 2.5k         | 由多个 RTE 数据集合并，简化为二分类任务               |
+
+[^7]: [GLUE Tasks](https://gluebenchmark.com/tasks)
+[^8]: [Dataset Card for GLUE](https://huggingface.co/datasets/nyu-mll/glue#dataset-card-for-glue)
+
+
+
+
 
 
 
