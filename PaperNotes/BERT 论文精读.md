@@ -5,6 +5,10 @@ Jacob Devlin et al. | [arXiv 1810.04805](https://arxiv.org/pdf/1810.04805) | [Co
 
 > **学习 & 参考资料**
 >
+> - **前置文章**
+>
+>   - [Transformer 论文精读](../PaperNotes/Transformer%20论文精读.md)
+>
 > - **机器学习**
 >
 >   —— 李宏毅老师的 B 站搬运视频
@@ -34,19 +38,40 @@ Jacob Devlin et al. | [arXiv 1810.04805](https://arxiv.org/pdf/1810.04805) | [Co
 >
 >     需要注意的是网页端演示的不是传统的 Transformer 架构，而是 GPT-2（Decoder-Only），不过 BERT 的架构中也包含 Self-Attention，通过 GPT-2 理解相同的部分是完全足够的。
 >
-> - **前置文章**
+> ---
 >
->   - [Transformer 论文精读](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/PaperNotes/Transformer%20论文精读.md)
+> **写在前面**，在对 BERT 有了基础认知之后，可以尝试这份作业：[BERT 微调抽取式问答](../Guide/22.%20作业%20-%20Bert%20微调抽取式问答.md)。
 
-## 时间线
+## 目录
 
-> 完成后删除此模块。
-
-- ... - 2024.11.20：完成论文基本的介绍，理清架构
-- 2024.11.21 完成模型架构部分，给出完整的参数量计算方法，以 $\text{BERT}_\text{BASE}$ 为例进行演示，复刻论文表达。
-- 2024.11.22 解释表 1 中 GLUE 的子任务
-
-TODO: 思考是否有必要从零开始实现 BERT，在代码上没有太多新的东西。
+- [前言](#前言)
+- [贡献](#贡献)
+   - [Q1: 什么是预训练（Pre-training）？什么是微调（Fine-tuning）？](#q1-什么是预训练pre-training什么是微调fine-tuning)
+   - [Q2: 什么是自监督学习？](#q2-什么是自监督学习)
+   - [Q3: 论文提到将预训练表示应用到下游任务有两种策略：基于特征（feature-based）和微调（fine-tuning），二者有什么区别？](#q3-论文提到将预训练表示应用到下游任务有两种策略基于特征feature-based和微调fine-tuning二者有什么区别)
+- [模型架构](#模型架构)
+   - [输入处理](#输入处理)
+- [训练细节](#训练细节)
+   - [预训练（Pre-training）](#预训练pre-training)
+      - [掩码语言模型（Masked Language Model，MLM）](#掩码语言模型masked-language-modelmlm)
+      - [下一句预测（Next Sentence Prediction，NSP）](#下一句预测next-sentence-predictionnsp)
+      - [数据集](#数据集)
+      - [超参数设置](#超参数设置)
+      - [Q: BERT 模型的参数量怎么计算？](#q-bert-模型的参数量怎么计算)
+   - [微调（Fine-tuning）](#微调fine-tuning)
+- [呈现](#呈现)
+   - [表 1](#表-1)
+   - [认识问答任务：抽取式和生成式](#认识问答任务抽取式和生成式)
+      - [Q: 模型怎么完成抽取式问答任务？输出是什么？](#q-模型怎么完成抽取式问答任务输出是什么)
+         - [代码示例](#代码示例)
+- [拓展](#拓展)
+   - [BERT 中的池化层](#bert-中的池化层)
+   - [争议：关于 NSP 任务](#争议关于-nsp-任务)
+      - [Q: 什么是 SOP？](#q-什么是-sop)
+- [附录](#附录)
+   - [参数量](#参数量)
+      - [1. bert-base-uncased, 110M parameters](#1-bert-base-uncased-110m-parameters)
+      - [2. bert-large-uncased, 340M parameters](#2-bert-large-uncased-340m-parameters)
 
 ## 前言
 
@@ -148,7 +173,7 @@ Transformer 原始架构由**编码器**（Encoder）和**解码器**（Decoder�
 
 > [!tip]
 >
-> 如果并不了解 Transformer/Encoder/Decoder 是什么，推荐先阅读《[Transformer 论文精读](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/PaperNotes/Transformer%20论文精读.md)》。
+> 如果并不了解 Transformer/Encoder/Decoder 是什么，推荐先阅读《[Transformer 论文精读](../PaperNotes/Transformer%20论文精读.md)》。
 
 ### 输入处理
 
@@ -160,11 +185,11 @@ BERT 的输入由三个嵌入层组成：**Token Embeddings**、**Segment Embedd
 
   BERT 使用 WordPiece[^4] 构造词汇表，将输入文本拆分为子词单元（subword units），每个子词最终对应一个嵌入向量。
   
-  > 对 WordPiece 感兴趣的同学可以进一步阅读《[21. BPE vs WordPiece：理解 Tokenizer 的工作原理与子词分割方法](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/21.%20BPE%20vs%20WordPiece：理解%20Tokenizer%20的工作原理与子词分割方法.md#wordpiece)》。
+  > 对 WordPiece 感兴趣的同学可以进一步阅读《[21. BPE vs WordPiece：理解 Tokenizer 的工作原理与子词分割方法](../Guide/21.%20BPE%20vs%20WordPiece：理解%20Tokenizer%20的工作原理与子词分割方法.md#wordpiece)》。
   >
   > 尝试 [The Tokenizer Playground](https://huggingface.co/spaces/Xenova/the-tokenizer-playground)，选择 `bert-base-cased` ：
   >
-  > ![image-20241121205633276](./assets/image-20241121205633276.png)
+  > ![Tokenizer 可视化](./assets/image-20241121205633276.png)
 - **Segment Embeddings（段嵌入）**：
 
   为了区分输入中的不同句子，每个词都会加上一个分段标识（Segment ID），标识它属于句子 A 还是句子 B。比如，句子 A 的 Segment ID 设为 0，句子 B 的 Segment ID 设为 1。
@@ -183,7 +208,7 @@ BERT 的输入由三个嵌入层组成：**Token Embeddings**、**Segment Embedd
 - **Segment ID / Token Type ID**（段标识，用于区分句子）
 - **Position ID**（位置信息，用于捕获序列顺序）
 
-可以通过拓展文章《[g. 嵌入层 nn.Embedding() 详解和要点提醒（PyTorch）](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/g.%20嵌入层%20nn.Embedding()%20详解和要点提醒（PyTorch）.md)》进一步了解什么是嵌入层。
+可以通过拓展文章《[g. 嵌入层 nn.Embedding() 详解和要点提醒（PyTorch）](../Guide/g.%20嵌入层%20nn.Embedding()%20详解和要点提醒（PyTorch）.md)》进一步了解什么是嵌入层。
 
 **注意**，这三个嵌入层相加后还需要过一次 Layer Norm 和 Dropout，见[官方代码](https://github.com/google-research/bert/blob/eedf5716ce1268e56f0a50264a88cafad334ac61/modeling.py#L520)：
 
@@ -273,7 +298,7 @@ BERT 的预训练数据集包含大量未标注文本，主要来自：
 [^6]: [Aligning Books and Movies: Towards Story-like Visual Explanations by Watching Movies and Reading Books](https://arxiv.org/pdf/1506.06724)
 #### 超参数设置
 
-> ![image-20241121143148199](./assets/image-20241121143148199.png)
+> ![模型架构相关表述](./assets/image-20241121143148199.png)
 
 BERT 的模型架构基于 **Transformer** 的编码器结构。需要注意的是，BERT 的 **BASE** 和 **LARGE** 模型的超参数设置并不对应于 Transformer 论文中的 **base** 和 **big** 模型。
 
@@ -292,7 +317,7 @@ BERT 的模型架构基于 **Transformer** 的编码器结构。需要注意的�
 
   - **总参数量**：约 340M。
 
-#### Q: BERT 模型总参数量怎么计算？
+#### Q: BERT 模型的参数量怎么计算？
 
 模型参数来自以下几个部分：
 
@@ -321,7 +346,7 @@ BERT 的模型架构基于 **Transformer** 的编码器结构。需要注意的�
 
    > ![Encoder](./assets/image-20241028204711949.png)
    >
-   > 代码修改自《[Transformer 论文精读](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/PaperNotes/Transformer%20论文精读.md#代码实现-3)》。
+   > 代码修改自《[Transformer 论文精读](../PaperNotes/Transformer%20论文精读.md#代码实现-3)》。
 
    每个编码器层包含以下参数：
 
@@ -470,8 +495,8 @@ $$
 >       - **代码实现**（伪代码）：
 >
 >        ```python
->        # 假设 encoder_output 是模型的输出，维度为 (batch_size, seq_length, hidden_size)
->        cls_embedding = encoder_output[:, 0, :]  # 获取 [CLS] 的嵌入表示，维度为 (batch_size, hidden_size)
+>        # 假设 sequence_output 是模型的输出，维度为 (batch_size, seq_length, hidden_size)
+>        cls_embedding = sequence_output[:, 0, :]  # 获取 [CLS] 的嵌入表示，维度为 (batch_size, hidden_size)
 >        classifier = nn.Linear(hidden_size, num_labels)  # 分类层
 >        logits = classifier(cls_embedding)  # 预测结果，维度为 (batch_size, num_labels)
 >        ```
@@ -489,8 +514,8 @@ $$
 >       - **代码实现**（伪代码）：
 >
 >        ```python
->        # 假设 encoder_output 是模型的输出，维度为 (batch_size, seq_length, hidden_size)
->        token_embeddings = encoder_output[:, 1:-1, :]  # 排除 [CLS] 和 [SEP]，维度为 (batch_size, seq_length - 2, hidden_size)
+>        # 假设 sequence_output 是模型的输出，维度为 (batch_size, seq_length, hidden_size)
+>        token_embeddings = sequence_output[:, 1:-1, :]  # 排除 [CLS] 和 [SEP]，维度为 (batch_size, seq_length - 2, hidden_size)
 >        tagger = nn.Linear(hidden_size, num_entity_labels)  # 标注层
 >        logits = tagger(token_embeddings)  # 预测结果，维度为 (batch_size, seq_length - 2, num_entity_labels)
 >        ```
@@ -508,11 +533,11 @@ $$
 >       - **代码实现**（伪代码）：
 >
 >       ```python
->       # 假设 encoder_output 是模型的输出，形状为 (batch_size, seq_length, hidden_size)
+>       # 假设 sequence_output 是模型的输出，形状为 (batch_size, seq_length, hidden_size)
 >       # 定义一个线性层，将 hidden_size 映射到 2（分别用于预测 start 和 end 位置），当然，可以定义两个线性层分别进行预测，因为线性层每个位置的处理是相互独立的
->       classifier = nn.Linear(hidden_size, 2)
->                   
->       logits = classifier(encoder_output)  # 形状为 (batch_size, seq_length, 2)
+>       qa_outputs = nn.Linear(hidden_size, 2)
+>                                                                   
+>       logits = qa_outputs(sequence_output)  # 形状为 (batch_size, seq_length, 2)
 >       start_logits, end_logits = logits.split(1, dim=-1)  # 每个的形状为 (batch_size, seq_length, 1)
 >       start_logits = start_logits.squeeze(-1)  # 形状为 (batch_size, seq_length)
 >       end_logits = end_logits.squeeze(-1)      # 形状为 (batch_size, seq_length)
@@ -523,7 +548,7 @@ $$
 
 ### 表 1
 
-> ![表 1](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/image-20241121211508022.png)
+> ![表 1](./assets/image-20241121211508022.png)
 >
 > [BERT 论文逐段精读【论文精读】 37:11 - 38:10 部分](https://www.bilibili.com/video/BV1PL411M7eQ/?share_source=copy_web&vd_source=e46571d631061853c8f9eead71bdb390&t=2231)
 >
@@ -555,9 +580,192 @@ $$
 
 
 
+### 认识问答任务：抽取式和生成式
 
+在 BERT 的实验中，使用了 **SQuAD**（Stanford Question Answering Dataset），这是斯坦福大学发布的一个问答数据集。这里的“问答”特指**抽取式问答（Extractive Question Answering）**，即模型需要根据「给定的问题」和「**包含**答案的文本」，从中**抽取**出对应的答案片段，**不需要生成新的词语**。
 
+**举例说明**：
 
+- **文本**：`BERT 是由 Google 提出的预训练语言模型，它在多个 NLP 任务上取得了 SOTA 的成绩。`
+- **问题**：`谁提出了 BERT？`
+- **答案**：`Google`
+
+> 如果去掉“抽取式”的限定，广义上的“问答”更接近于**生成式问答（Generative Question Answering）**，即答案并非固定的文本片段，模型基于理解进行**生成**，最终的答案不拘泥于特定的文本。
+>
+> **举例说明**：
+>
+> - **文本**：同上。
+> - **问题**：同上。
+> - **答案**：`BERT 是由 Google 提出的预训练语言模型。具体来说，它是由 Jacob Devlin 等研究人员在 2018 年的论文《BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding》中首次介绍的。BERT 在多个 NLP 任务上取得了 SOTA（State-of-the-Art）的成绩，推动了自然语言处理领域的快速发展。`（该答案由 GPT-4o 生成）
+>
+> 生成式问答涉及到另一篇基础论文：GPT，后续会上传解读文章，这里就不“喧宾夺主”了，我们来思考下面的问题。
+
+#### Q: 模型怎么完成抽取式问答任务？输出是什么？
+
+停下来思考一下，是直接生成答案对应的词或句子吗？
+
+**不是**，输出的是**答案在文本中的起始和结束位置**。通过下图[^9]进行理解：
+
+> ![Extractive-QA-model](./assets/Extractive-QA-model.png.webp)
+
+模型的最终输出为两个向量：起始位置得分向量 $\mathbf{s} \in \mathbb{R}^N$ 和结束位置得分向量 $\mathbf{e} \in \mathbb{R}^N$，其中 $N$ 是输入序列的长度。
+
+对于每个位置 $i$，模型计算其作为答案起始位置和结束位置的得分：
+
+$`
+\begin{aligned}
+s_i &= \mathbf{w}_{\text{start}} \mathbf{h}_i + b_{\text{start}} \\
+e_i &= \mathbf{w}_{\text{end}} \mathbf{h}_i + b_{\text{end}}
+\end{aligned}
+`$
+
+其中, $`\mathbf{h}_i \in \mathbb{R}^H`$ 是编码器在位置 $i$ 的隐藏状态输出 ($\mathbf{h}$ 就是 BERT 模型的最终输出), $H$ 是隐藏层的维度。$`\mathbf{w}_{\text{start}} \in \mathbb{R}^H`$ 和 $`\mathbf{w}_{\text{end}} \in \mathbb{R}^H`$ 是权重向量（对应于 `nn.Linear(H, 1)`，这里写成了常见的数学形式，了解线性层代码的同学可以当做 $`\mathbf{h}\mathbf{w}^\top`$）, $b_{\text{start}}$ 和 $b_{\text{end}}$ 是偏置项。
+
+然后，对得分向量进行 softmax 操作，得到每个位置作为起始和结束位置的概率分布：
+
+$$
+\begin{aligned}
+P_{\text{start}}(i) &= \frac{e^{s_i}}{\sum_{j=1}^{N} e^{s_j}} \\
+P_{\text{end}}(i) &= \frac{e^{e_i}}{\sum_{j=1}^{N} e^{e_j}}
+\end{aligned}
+$$
+
+在推理时，选择具有最高概率的起始位置 $\hat{s}$ 和结束位置 $\hat{e}$。为了保证答案的合理性，通常要求 $\hat{s} \leq \hat{e}$，并且答案的长度不超过预设的最大长度 $L_{\text{max}}$。此时的行为称为后处理（Postprocessing），根据实际需求进行。
+
+最终，答案就是输入序列中从位置 $\hat{s}$ 到 $\hat{e}$ 的片段，即：
+
+$$
+\text{Answer} = \text{Input}[\hat{s}:\hat{e}]
+$$
+
+那么，对应到代码是什么样的呢？
+
+##### 代码示例
+
+> **写在前面**，前文数学符号与代码变量名的对应关系：
+>
+> - $H$: `hidden_size`
+> - $N$: `batch_size`
+> - $\mathbf{h}$: `outputs.last_hidden_state`
+> - $s, e$: `start_logits`, `end_logits`（可以当做得分）
+> - $P_{\text{start}}, P_{\text{end}}$: `start_probs`, `end_probs`
+> - $\text{Answer}, \text{Input}$: `answer`, `input_ids`
+
+```python
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+class BertForQuestionAnswering(nn.Module):
+    def __init__(self, bert_model):
+        super(BertForQuestionAnswering, self).__init__()
+        self.bert = bert_model  # 预训练的 BERT 模型
+        self.qa_outputs = nn.Linear(self.bert.config.hidden_size, 2)  # 输出层
+
+    def forward(self, input_ids, attention_mask=None, token_type_ids=None):
+        # 获取 BERT 的输出
+        outputs = self.bert(input_ids,
+                            attention_mask=attention_mask,
+                            token_type_ids=token_type_ids)
+        sequence_output = outputs.last_hidden_state  # (batch_size, seq_length, hidden_size)
+
+        # 通过线性层得到起始和结束位置的 logits
+        logits = self.qa_outputs(sequence_output)  # (batch_size, seq_length, 2)
+        start_logits, end_logits = logits.split(1, dim=-1)  # 每个的形状为 (batch_size, seq_length, 1)
+        start_logits = start_logits.squeeze(-1)  # (batch_size, seq_length)
+        end_logits = end_logits.squeeze(-1)      # (batch_size, seq_length)
+
+        # 返回起始和结束位置的 logits
+        return start_logits, end_logits
+
+# 示例推理过程
+# 假设我们有 input_ids、attention_mask、token_type_ids，以及预训练的 bert_model 和 tokenizer
+model = BertForQuestionAnswering(bert_model)
+start_logits, end_logits = model(input_ids, attention_mask, token_type_ids)
+
+# 对 logits 应用 softmax，得到概率分布（可选）
+start_probs = F.softmax(start_logits, dim=-1)  # (batch_size, seq_length)
+end_probs = F.softmax(end_logits, dim=-1)
+
+# 获取起始和结束位置的索引（其实直接对 logits 用 argmax 就可以了，除非需要根据概率进行更复杂的后处理）
+start_indices = torch.argmax(start_probs, dim=-1)  # (batch_size,)
+end_indices = torch.argmax(end_probs, dim=-1)
+
+# 为了确保起始位置不超过结束位置，可以进行如下处理
+for i in range(start_indices.size(0)):
+    if start_indices[i] > end_indices[i]:
+        start_indices[i], end_indices[i] = end_indices[i], start_indices[i]
+
+# 从输入序列中提取答案（以 batch_size=1 为例），在 Python 中，列表切片是左闭右开区间，因此需要加 1
+answer = input_ids[0, start_indices[0]:end_indices[0]+1]  # 提取答案的 token_ids
+# 将 token IDs 转换为文本
+answer = tokenizer.decode(answer_ids, skip_special_tokens=True)
+print("答案：", answer)
+```
+
+> 可以进一步尝试完成作业：《[BERT 微调抽取式问答](../Guide/22.%20作业%20-%20Bert%20微调抽取式问答.md)》。
+
+[^9]: [What Is Extractive Question Answering?](https://www.ontotext.com/knowledgehub/fundamentals/what-is-extractive-question-answering/)
+
+## 拓展
+
+### BERT 中的池化层
+
+这个池化层并不存在于 Transformer 的原始架构中，以下为参考[官方代码](https://github.com/google-research/bert/blob/eedf5716ce1268e56f0a50264a88cafad334ac61/modeling.py#L224)的 PyTorch 实现：
+
+```python
+class BertPooler(nn.Module):
+    def __init__(self, hidden_size):
+        super(BertPooler, self).__init__()
+        # 全连接层
+        self.dense = nn.Linear(hidden_size, hidden_size)
+        # 激活函数，使用 tanh
+        self.activation = nn.Tanh()
+
+    def forward(self, sequence_output):
+        """
+        参数:
+            sequence_output: BERT 的最后一层输出, shape [batch_size, seq_length, hidden_size]
+        
+       返回:
+            pooled_output: 池化后的输出, shape [batch_size, hidden_size]
+        """
+        # 取出序列中第一个 token ([CLS]) 的隐藏状态，或者说向量
+        first_token_tensor = sequence_output[:, 0]  # shape [batch_size, hidden_size]
+        # 应用全连接层和激活函数
+        pooled_output = self.activation(self.dense(first_token_tensor))
+        return pooled_output
+```
+
+### 争议：关于 NSP 任务
+
+在后续的研究中，NSP 任务去除后（即仅使用 MLM 任务进行预训练）也可以取得不错的表现，下图来自 RoBERTa[^10] 的表 2：
+
+![表 2 - RoBERTa](./assets/image-20241125213000435.png)
+
+但 ALBERT[^11] 引入的类似任务 SOP 似乎又说明了对句子顺序进行预测是一个有用的任务。那么，NSP 不那么有效可能在于负样本的句子对经常并非同一主题，所以 NSP 可能做的并非逻辑上的顺序预测，而是预测两句话的主题是否一致[^12]。
+
+#### Q: 什么是 SOP？
+
+> 通过两张非常棒的图[^12]来直观理解：
+>
+> - **NSP**:
+>
+>   ![bert-nsp](./assets/bert-nsp.png)
+>
+> - **SOP**:
+>
+>   ![sentence-order-prediction](./assets/sentence-order-prediction.png)
+
+句子顺序预测（Sentence Order Prediction），负样本从随机的两个不相邻的句子（NSP）变成了原来顺序相邻的句子交换位置。修改自 BERT NSP：
+
+- 正样本（相邻句子对）：`[CLS] the man went to [MASK] store [SEP] he bought a gallon [MASK] milk [SEP]`
+
+- 负样本（相邻句子对交换位置）：`[CLS] he bought a gallon [MASK] milk [SEP] the man [MASK] to the store [SEP]`
+
+[^10]: [RoBERTa: A Robustly Optimized BERT Pretraining Approach](https://arxiv.org/pdf/1907.11692).
+[^11]: [ALBERT: A LITE BERT FOR SELF-SUPERVISED LEARNING OF LANGUAGE REPRESENTATIONS](https://arxiv.org/pdf/1909.11942).
+[^12]: [A Visual Guide to ALBERT (A Lite BERT)](https://amitness.com/posts/albert-visual-summary).
 
 ## 附录
 

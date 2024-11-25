@@ -60,7 +60,7 @@
 | [19a. 从加载到对话：使用 Transformers 本地运行量化 LLM 大模型（GPTQ & AWQ）](./Guide/19a.%20从加载到对话：使用%20Transformers%20本地运行量化%20LLM%20大模型（GPTQ%20%26%20AWQ）.md)<br />[19b. 从加载到对话：使用 Llama-cpp-python 本地运行量化 LLM 大模型（GGUF）](./Guide/19b.%20从加载到对话：使用%20Llama-cpp-python%20本地运行量化%20LLM%20大模型（GGUF）.md) | LLM       | 你将在自己的电脑上部署一个拥有 70 亿（7B）参数的量化模型，注意，这篇文章没有显卡要求。<br />[19 a](./Guide/19a.%20从加载到对话：使用%20Transformers%20本地运行量化%20LLM%20大模型（GPTQ%20%26%20AWQ）.md) 使用 Transformers，涉及 GPTQ 和 AWQ 格式的模型加载。<br />[19 b](./Guide/19b.%20从加载到对话：使用%20Llama-cpp-python%20本地运行量化%20LLM%20大模型（GGUF）.md) 使用 Llama-cpp-python，涉及 GGUF 格式的模型加载。<br />另外，你还将完成本地的大模型对话交互功能。 | [Code - Transformers](./Demos/16a.%20使用%20Transformers%20加载量化后的%20LLM%20大模型（GPTQ%20%26%20AWQ）.ipynb)<br />[Code - Llama-cpp-python](./Demos/16b.%20使用%20Llama-cpp-python%20加载量化后的%20LLM%20大模型（GGUF）.ipynb)<br />[🎡脚本]( ./CodePlayground/chat.py) |  |
 | [20. RAG 入门实践：从文档拆分到向量数据库与问答构建](./Guide/20.%20RAG%20入门实践：从文档拆分到向量数据库与问答构建.md) | LLM       | RAG 的相关实践。<br />了解文本分块的递归工作原理。           | [Code](./Demos/17.%20使用%20LangChain%20实现%20RAG.ipynb) |  |
 | [21. BPE vs WordPiece：理解 Tokenizer 的工作原理与子词分割方法](./Guide/21.%20BPE%20vs%20WordPiece：理解%20Tokenizer%20的工作原理与子词分割方法.md) | ---       | Tokenizer 的基本操作。<br />了解常见的子词分割方法：BPE 和 WordPiece。<br />了解注意力掩码（Attention Mask）和词元类型 ID （Token Type IDs）。 | [Code](./Demos/19.%20BPE%20vs%20WordPiece：理解%20Tokenizer%20的工作原理与子词分割方法.ipynb) | [Kaggle](https://www.kaggle.com/code/aidemos/19-bpe-vs-wordpiece-tokenizer)<br />[Colab](https://colab.research.google.com/drive/1J6QN0QbuoWBDIIrBe-TJ6Hi5rnzTSovM?usp=sharing) |
-| [22. 作业 - Bert 微调抽取式问答](./Guide/22.%20作业%20-%20Bert%20微调抽取式问答.md) |  | 这是一个使用 BERT 微调下游问答任务的作业，你可以尝试它并尝试加入 Kaggle 的"比赛"，一周后会给出所有提示相关的引导文章，可以选择现在进行学习也可以留待以后。<br />引导文章不会覆盖作业表述，到时候会上传两版代码以供学习，所以不用担心。<br />这里不会存在 Deadline。<br /> | [Code - 作业](./Demos/21.%20Bert%20微调抽取式问答任务%20-%20作业样例代码.ipynb) | [Kaggle](https://www.kaggle.com/code/aidemos/21-bert)<br />[Colab](https://colab.research.google.com/drive/1zHR2Cztmo49j3yrdT3GgkzNcAcHd7M0M?usp=sharing) |
+| [22. 作业 - Bert 微调抽取式问答](./Guide/22.%20作业%20-%20Bert%20微调抽取式问答.md) |  | 这是一个使用 BERT 微调下游问答任务的作业，你可以尝试它并尝试加入 Kaggle 的"比赛"，一周后会给出所有提示相关的引导文章，可以选择现在进行学习也可以留待以后。<br />引导文章不会覆盖作业表述，到时候会上传两版代码以供学习，所以不用担心。<br />这里不会存在 Deadline。<br /> | [BERT 论文精读](./PaperNotes/BERT%20论文精读.md)<br />[Code - 作业](./Demos/21.%20Bert%20微调抽取式问答任务%20-%20作业样例代码.ipynb) | [Kaggle](https://www.kaggle.com/code/aidemos/21-bert)<br />[Colab](https://colab.research.google.com/drive/1zHR2Cztmo49j3yrdT3GgkzNcAcHd7M0M?usp=sharing) |
 
 > [!TIP]
 >
@@ -112,6 +112,11 @@
   - [Transformer 论文精读](./PaperNotes/Transformer%20论文精读.md)
     - 从零开始复现 Transformer（PyTorch），并对各组件进行解读。
     - [Code](./PaperNotes/Demos/动手实现%20Transformer.ipynb) | [Kaggle](https://www.kaggle.com/code/aidemos/transformer) | [Colab](https://colab.research.google.com/drive/1BtYPNjEHw3dudw5KKFe9dBEsUsgkm1Vt?usp=sharing)
+  - [BERT 论文精读](./PaperNotes/BERT%20论文精读.md)
+    - 预训练任务 MLM 和 NSP
+    - BERT 模型的输入和输出，以及一些与 Transformer 不同的地方
+    - 以 $\text{BERT}_\text{BASE}$ 为例，计算模型的总参数量
+    - [作业 - BERT 微调抽取式问答](../Guide/22.%20作业%20-%20Bert%20微调抽取式问答.md)
 
 - [**CodePlayground**](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/tree/master/CodePlayground)
 
