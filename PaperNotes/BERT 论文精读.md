@@ -40,7 +40,7 @@ Jacob Devlin et al. | [arXiv 1810.04805](https://arxiv.org/pdf/1810.04805) | [Co
 >
 > ---
 >
-> **写在前面**，在对 BERT 有了基础认知之后，可以尝试这份作业：[BERT 微调抽取式问答](../Guide/22.%20作业%20-%20Bert%20微调抽取式问答.md)。
+> **写在前面**，在对 BERT 有了基础认知之后，可以尝试这份作业：[BERT 微调抽取式问答](../Guide/22b.%20作业%20-%20Bert%20微调抽取式问答.md)。
 
 ## 目录
 
@@ -536,7 +536,7 @@ $$
 >       # 假设 sequence_output 是模型的输出，形状为 (batch_size, seq_length, hidden_size)
 >       # 定义一个线性层，将 hidden_size 映射到 2（分别用于预测 start 和 end 位置），当然，可以定义两个线性层分别进行预测，因为线性层每个位置的处理是相互独立的
 >       qa_outputs = nn.Linear(hidden_size, 2)
->                                                                   
+>                                                                                           
 >       logits = qa_outputs(sequence_output)  # 形状为 (batch_size, seq_length, 2)
 >       start_logits, end_logits = logits.split(1, dim=-1)  # 每个的形状为 (batch_size, seq_length, 1)
 >       start_logits = start_logits.squeeze(-1)  # 形状为 (batch_size, seq_length)
@@ -606,7 +606,7 @@ $$
 
 **不是**，输出的是**答案在文本中的起始和结束位置**。通过下图[^9]进行理解：
 
-> ![Extractive-QA-model](./assets/Extractive-QA-model.png.webp)
+> ![Extractive-QA-model](./assets/Extractive-QA-model.png)
 
 模型的最终输出为两个向量：起始位置得分向量 $\mathbf{s} \in \mathbb{R}^N$ 和结束位置得分向量 $\mathbf{e} \in \mathbb{R}^N$，其中 $N$ 是输入序列的长度。
 
@@ -703,7 +703,7 @@ answer = tokenizer.decode(answer_ids, skip_special_tokens=True)
 print("答案：", answer)
 ```
 
-> 可以进一步尝试完成作业：《[BERT 微调抽取式问答](../Guide/22.%20作业%20-%20Bert%20微调抽取式问答.md)》。
+> 可以进一步尝试完成作业：《[BERT 微调抽取式问答](../Guide/22b.%20作业%20-%20Bert%20微调抽取式问答.md)》。
 
 [^9]: [What Is Extractive Question Answering?](https://www.ontotext.com/knowledgehub/fundamentals/what-is-extractive-question-answering/)
 
