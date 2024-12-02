@@ -1,12 +1,19 @@
-# 这里是一个 Toy Chat，祝你玩的开心，这里没有显卡要求
-# 出现错误欢迎提出 Issue，记得贴上操作系统环境和可复现的命令。
+# ===============================================================
+# 这是一个 Toy Chat，祝你玩的开心，这里没有显卡要求
+# 如果遇到错误，欢迎通过 Issue 或 Discussion 提交反馈。为了更快解决问题，请尽可能附上运行环境和可复现的命令。
+
 # 对应文章：《19a. 从加载到对话：使用 Transformers 本地运行量化 LLM 大模型（GPTQ & AWQ）》
 # https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/19a.%20从加载到对话：使用%20Transformers%20本地运行量化%20LLM%20大模型（GPTQ%20%26%20AWQ）.md
 # 以及文章：《19b. 从加载到对话：使用 Llama-cpp-python 本地运行量化 LLM 大模型（GGUF）》
 # https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/19b.%20从加载到对话：使用%20Llama-cpp-python%20本地运行量化%20LLM%20大模型（GGUF）.md
-# 使用方法：python chat.py <model_path> [可选参数]
-# 示例：python chat.py neuralmagic/Mistral-7B-Instruct-v0.3-GPTQ-4bit
+
+# 使用方法：
+#   python chat.py <model_path> [可选参数]
+# 示例：
+#   python chat.py neuralmagic/Mistral-7B-Instruct-v0.3-GPTQ-4bit
+
 # 查看完整帮助：使用 -h 或 --help
+# ===============================================================
 
 # ===== 严格检查所有的环境并给出安装指引，如果仅下载了 chat.py，注释以下两行来避免 utils 的报错 ======
 from utils.environment_manager import EnvironmentManager

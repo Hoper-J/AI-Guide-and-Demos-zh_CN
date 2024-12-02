@@ -1,13 +1,18 @@
-# 这里是一个 Toy Summarizer. 祝你玩的开心。
+# ===============================================================
+# 这里是一个 Toy Summarizer，祝你玩的开心。
 # 它会保留中间转换的文件，因为这或许对你有用。
-# 出现错误欢迎提出 Issue，记得贴上操作系统环境和可复现的命令。
+# 如果遇到错误，欢迎通过 Issue 或 Discussion 提交反馈。为了更快解决问题，请尽可能附上运行环境和可复现的命令。
 
 # 对应文章：《15. 用 API 实现 AI 视频摘要：动手制作属于你的 AI 视频小助手》
 # https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/15.%20用%20API%20实现%20AI%20视频摘要：动手制作属于你的%20AI%20视频助手.md
 
-# 使用方法：python summarizer.py <file_path> [可选参数]
-# 示例：python summarizer.py ./examples/summarizer.mp4
+# 使用方法：
+#   python summarizer.py <file_path> [可选参数]
+# 示例：
+#   python summarizer.py ./examples/summarizer.mp4
+
 # 查看完整帮助：使用 -h 或 --help
+# ===============================================================
 
 import os
 import sys
