@@ -1,8 +1,6 @@
 import os
 import yaml
 
-from openai import OpenAI
-
 
 def load_config(config_file='config.yaml', script_name='summarizer') -> dict:
     """
@@ -59,6 +57,8 @@ def get_api_key(config, config_file='config.yaml', script_name='summarizer') -> 
     返回:
     - str: 验证后的 API 密钥。
     """
+    from openai import OpenAI
+
     api_key = config.get('api_key')
     base_url = config.get('api_base_url', "https://dashscope.aliyuncs.com/compatible-mode/v1")
 
