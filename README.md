@@ -54,7 +54,7 @@
 | [13. 了解人工智能可能存在的偏见](./Guide/13.%20了解人工智能可能存在的偏见.md) | LLM       | 不需要理解代码，可以当作休闲时的一次有趣探索。               | [Code](./Demos/11.%20了解人工智能可能存在的偏见.ipynb) | [Kaggle](https://www.kaggle.com/code/aidemos/11-bias)<br />[Colab](https://colab.research.google.com/drive/10nHzBO9uiQWdGLnp551n_MYjnK3n-R0D?usp=sharing) |
 | [14. PEFT：在大模型中快速应用 LoRA](./Guide/14.%20PEFT：在大模型中快速应用%20LoRA.md) | ---       | 学习如何在导入模型后增加 LoRA 层。                         | [Code](./Demos/12.%20应用%20LoRA%20到大模型的简单示例（PEFT）.ipynb) | [Kaggle](https://www.kaggle.com/code/aidemos/12-lora-peft)<br />[Colab](https://colab.research.google.com/drive/1-gWfn9xslSq6WlYDS9cinnyDEhBhjte4?usp=sharing) |
 | [15. 用 API 实现 AI 视频摘要：动手制作属于你的 AI 视频助手](./Guide/15.%20用%20API%20实现%20AI%20视频摘要：动手制作属于你的%20AI%20视频助手.md) | API & LLM | 你将了解到常见的 AI 视频总结小助手背后的原理，并动手实现 AI 视频摘要。 | [Code - 完整版](./Demos/13a.%20轻松开始你的第一次%20AI%20视频总结（API%20版）%20-%20完整版.ipynb)<br />[Code - 精简版](./Demos/13b.%20轻松开始你的第一次%20AI%20视频总结（API%20版）-%20精简版.ipynb)<br />[🎡脚本]( ./CodePlayground/summarizer.py) | [Kaggle](https://www.kaggle.com/code/aidemos/13b-ai-api)<br />[Colab](https://colab.research.google.com/drive/1yh2J4_Cy45fqvydH34LLtDpw10kuWutO?usp=sharing) |
-| [16. 用 LoRA 微调 Stable Diffusion：拆开炼丹炉，动手实现你的第一次 AI 绘画](./Guide/16.%20用%20LoRA%20微调%20Stable%20Diffusion：拆开炼丹炉，动手实现你的第一次%20AI%20绘画.md) | SD        | 使用 LoRA 进行文生图模型的微调，现在你也能够为别人提供属于你的 LoRA 文件。 | [Code](./Demos/14a.%20尝试使用%20LoRA%20微调%20Stable%20Diffusion%20模型.ipynb)<br />[Code - 精简版](./Demos/14b.%20尝试使用%20LoRA%20微调%20Stable%20Diffusion%20模型%20-%20精简版.ipynb) | [Kaggle](https://www.kaggle.com/code/aidemos/14b-lora-stable-diffusion)<br />[Colab](https://colab.research.google.com/drive/1idmnaQZwRhjUPw7ToEXlVo82Mihfl_aA?usp=sharing) |
+| [16. 用 LoRA 微调 Stable Diffusion：拆开炼丹炉，动手实现你的第一次 AI 绘画](./Guide/16.%20用%20LoRA%20微调%20Stable%20Diffusion：拆开炼丹炉，动手实现你的第一次%20AI%20绘画.md) | SD        | 使用 LoRA 进行文生图模型的微调，现在你也能够为别人提供属于你的 LoRA 文件。 | [Code](./Demos/14a.%20尝试使用%20LoRA%20微调%20Stable%20Diffusion%20模型.ipynb)<br />[Code - 精简版](./Demos/14b.%20尝试使用%20LoRA%20微调%20Stable%20Diffusion%20模型%20-%20精简版.ipynb)<br />[🎡 脚本](./CodePlayground/sd_lora.py) | [Kaggle](https://www.kaggle.com/code/aidemos/14b-lora-stable-diffusion)<br />[Colab](https://colab.research.google.com/drive/1idmnaQZwRhjUPw7ToEXlVo82Mihfl_aA?usp=sharing) |
 | [17. 浅谈 RTN 模型量化：非对称 vs 对称.md](./Guide/17.%20浅谈%20RTN%20模型量化：非对称%20vs%20对称.md) | ---       | 更进一步地了解 RTN 模型量化的行为，文章以 INT8 为例进行讲解。 | [Code](./Demos/15.%20探究非对称量化和对称量化%20-%20INT8.ipynb) | [Kaggle](https://www.kaggle.com/code/aidemos/15-int8)<br />[Colab](https://colab.research.google.com/drive/1aFlUL8jQZEAO2ZsMXJxbUqlIXGb0m0hC?usp=sharing) |
 | [18. 模型量化技术概述及 GGUF/GGML 文件格式解析](./Guide/18.%20模型量化技术概述及%20GGUF%3AGGML%20文件格式解析.md) | ---       | 这是一个概述文章，或许可以解决一些你在使用 GGUF/GGML 时的疑惑。 |                                                              |      |
 | [19a. 从加载到对话：使用 Transformers 本地运行量化 LLM 大模型（GPTQ & AWQ）](./Guide/19a.%20从加载到对话：使用%20Transformers%20本地运行量化%20LLM%20大模型（GPTQ%20%26%20AWQ）.md)<br />[19b. 从加载到对话：使用 Llama-cpp-python 本地运行量化 LLM 大模型（GGUF）](./Guide/19b.%20从加载到对话：使用%20Llama-cpp-python%20本地运行量化%20LLM%20大模型（GGUF）.md) | LLM       | 你将在自己的电脑上部署一个拥有 70 亿（7B）参数的量化模型，注意，这篇文章没有显卡要求。<br />[19 a](./Guide/19a.%20从加载到对话：使用%20Transformers%20本地运行量化%20LLM%20大模型（GPTQ%20%26%20AWQ）.md) 使用 Transformers，涉及 GPTQ 和 AWQ 格式的模型加载。<br />[19 b](./Guide/19b.%20从加载到对话：使用%20Llama-cpp-python%20本地运行量化%20LLM%20大模型（GGUF）.md) 使用 Llama-cpp-python，涉及 GGUF 格式的模型加载。<br />另外，你还将完成本地的大模型对话交互功能。 | [Code - Transformers](./Demos/16a.%20使用%20Transformers%20加载量化后的%20LLM%20大模型（GPTQ%20%26%20AWQ）.ipynb)<br />[Code - Llama-cpp-python](./Demos/16b.%20使用%20Llama-cpp-python%20加载量化后的%20LLM%20大模型（GGUF）.ipynb)<br />[🎡脚本]( ./CodePlayground/chat.py) |  |
@@ -116,7 +116,7 @@
     - 预训练任务 MLM 和 NSP
     - BERT 模型的输入和输出，以及一些与 Transformer 不同的地方
     - 以 $\text{BERT}_\text{BASE}$ 为例，计算模型的总参数量
-    - [作业 - BERT 微调抽取式问答](./Guide/22b.%20作业%20-%20Bert%20微调抽取式问答.md)
+    - [作业 - BERT 微n调抽取式问答](./Guide/22b.%20作业%20-%20Bert%20微调抽取式问答.md)
 
 - [**CodePlayground**](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/tree/master/CodePlayground)
 
@@ -129,6 +129,10 @@
     - **summarizer.py** [🎡脚本](./CodePlayground/summarizer.py)
     
       AI 视频/音频/字幕摘要。
+      
+    - **sd_lora.py** [🎡 脚本](./CodePlayground/sd_lora.py)
+    
+      AI 绘画。
       
     - **chat.py** [🎡脚本]( ./CodePlayground/chat.py)
     
@@ -653,7 +657,7 @@ jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root
 - [ ] 基础拓展文章《关于梯度累积的正确使用》（待定）
   - [ ] 进一步讲解 epoch，batch，step... 之间的对应关系
 
-- [ ] LoRA 文生图的 🎡 命令行脚本制作上传（待定）
+- [x] LoRA 文生图的 🎡 命令行脚本制作上传
 - [ ] 补充 Docker 基础命令（待定）
 - [ ] 更多有趣的实践项目与理论...
 
