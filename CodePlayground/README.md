@@ -53,6 +53,12 @@
    pip install openai-whisper openai pyyaml librosa srt certifi
    pip install numpy==1.26.4  # >= 2.0.0 会无法正常执行 summarizer.py
    ```
+   
+   ### SD LoRA 依赖
+   
+   ```bash
+   pip install transformers diffusers peft tqdm numpy pyyaml pillow
+   ```
 
 ## 当前的玩具
 
@@ -60,7 +66,7 @@
 
 > [15. 用 API 实现 AI 视频摘要：动手制作属于你的 AI 视频助手](../Guide/15.%20用%20API%20实现%20AI%20视频摘要：动手制作属于你的%20AI%20视频助手.md)
 
-**Summarizer** 是一个 AI 摘要工具，用于从视频或音频文件中提取字幕并生成视频摘要，也可以直接处理现有的字幕文件。它集成了 Whisper 模型和 OpenAI API 来自动化这些过程。
+**[summarizer.py](./summarizer.py)** 是一个 AI 摘要工具，用于从视频或音频文件中提取字幕并生成视频摘要，也可以直接处理现有的字幕文件。它集成了 Whisper 模型和 OpenAI API 来自动化这些过程。
 
 #### 功能
 
@@ -68,7 +74,6 @@
 - **音频转录**：使用 Whisper 模型将音频转录为文本字幕。
 - **字幕生成**：生成 SRT 格式的字幕文件。
 - **视频摘要**：使用 OpenAI 的模型生成视频内容的摘要。
-- **配置管理**：支持从 `config.yaml` 文件中读取和保存配置。
 
 #### 快速使用
 
@@ -102,7 +107,7 @@ python summarizer.py file_path [--api_key YOUR_API_KEY] [--output_dir OUTPUT_DIR
 
 脚本支持从 `config.yaml` 文件中读取默认配置，你可以通过编辑该文件来自定义参数，避免每次运行脚本时手动指定。
 
-[配置文件](./config.yaml)示例：
+[config.yaml](./config.yaml) 示例：
 
    ```yaml
 summarizer:
@@ -110,7 +115,7 @@ summarizer:
   language: "zh"
   whisper_temperature: 0.2
   llm_temperature: 0.2
-  timestamped: false
+  timestamped: False
   max_tokens: 1000
   output_dir: "./output"
   api_key:
@@ -135,7 +140,181 @@ summarizer:
 - **中间文件保留**：默认情况下，summarizer.py 会保留所有中间转换文件，如音频和字幕文件。如果你需要删除这些中间文件，可以在脚本中进行相应修改。
 - **模型选择**：在 `model_name` 中选择 Whisper 模型时注意，模型越大对显存的占用越高，建议在显存充足的环境下使用。
 
-</details> <details> <summary> <strong>2. AI Chat</strong> </summary>
+</details>
+
+<details> <summary> <strong>2. SD LoRA</strong> </summary>
+
+> [16. 用 LoRA 微调 Stable Diffusion：拆开炼丹炉，动手实现你的第一次 AI 绘画](../Guide/16.%20用%20LoRA%20微调%20Stable%20Diffusion：拆开炼丹炉，动手实现你的第一次%20AI%20绘画.md)
+
+**[sd_lora.py](./sd_lora.py)** 是一个 AI 绘画工具，对于指定数据集和 Stable Diffusion 模型，自动应用 LoRA 微调并生成图像。
+
+### 功能
+
+- **模型微调**：使用 LoRA 对预训练的 Stable Diffusion 模型进行简单的微调，适应特定的数据集或风格。
+- **图像生成**：在训练完成后，使用微调后的模型根据文本提示生成图像。
+
+### 使用方法
+
+你可以通过命令行运行 `sd_lora.py`，并根据需要指定参数：
+
+```bash
+python sd_lora.py [可选参数]
+```
+
+默认使用 `config.yaml` 中的配置进行训练和图像生成。
+
+### 示例
+
+1. **准备样例数据集[^1]**：
+
+   ```bash
+   wget https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/raw/refs/heads/master/Demos/data/14/Datasets.zip
+   unzip Datasets.zip
+   ```
+
+2. **使用指定的数据集和提示文件**：
+
+   ```bash
+   # 因为已经在 config.yaml 中配置，所以可以不指定参数
+   python sd_lora.py
+   # python sd_lora.py -d ./Datasets/Brad -gp ./Datasets/prompts/validation_prompt.txt
+   ```
+
+   - `-d` 或 `--dataset_path`：数据集路径。
+   - `-gp` 或 `--prompts_path`：生成图像时使用的文本提示文件路径。
+
+3. **跳过训练，仅生成图像**，使用 `--no-train` 参数：
+
+   ```bash
+   python sd_lora.py --no-train
+   ```
+
+   请确保在 `args.model_path` 指定的路径下存在已微调的模型权重。
+
+4. **跳过图像生成，仅进行训练**，使用 `--no-generate` 参数：
+
+   ```bash
+   python sd_lora.py --no-generate
+   ```
+
+5. **指定其他参数**：
+
+   ```bash
+   python sd_lora.py -e 500 -b 4 -u 1e-4 -t 1e-5
+   ```
+
+   - `-e` 或 `--max_train_steps`：总训练步数。
+   - `-b` 或 `--batch_size`：训练批次大小。
+   - `-u` 或 `--unet_learning_rate`：UNet 的学习率。
+   - `-t` 或 `--text_encoder_learning_rate`：文本编码器的学习率。
+   - 其他参数使用 `--help` 进行查看。
+
+### 配置管理
+
+脚本支持从 `config.yaml` 文件中读取默认配置，避免每次运行时手动指定所有参数。
+
+[config.yaml](./config.yaml) 示例：
+
+```bash
+train:
+  root: "./SD"
+  dataset_path: "./Datasets/Brad"
+  captions_folder: # 存放文本标注的路径，默认和 dataset_path 一致
+  model_path: # checkpoint-last 路径默认为 root + dataset_name + 'logs/checkpoint-last'，如果使用了 --no-train，需要确保 model_path 路径存在
+  pretrained_model_name_or_path: "digiplay/AnalogMadness-realistic-model-v7"
+  resume: False
+  batch_size: 2
+  max_train_steps: 200
+  unet_learning_rate: 1e-4
+  text_encoder_learning_rate: 1e-4
+  seed: 1126
+  weight_dtype: "torch.bfloat16"
+  snr_gamma: 5
+  lr_scheduler_name: "cosine_with_restarts"
+  lr_warmup_steps: 100
+  num_cycles: 3
+
+generate:
+  save_folder: # 图像保存路径默认为 root + train.dataset_name + '/inference'
+  prompts_path: "./Datasets/prompts/validation_prompt.txt"
+  num_inference_steps: 50
+  guidance_scale: 7.5
+```
+
+**配置说明**
+
+- **train**
+  - `root`：项目的根路径，用于组织模型和输出文件。
+  - `dataset_path`：数据集路径，包含图像和对应的文本描述。
+  - `captions_folder`: 存放文本标注的路径，默认和 `dataset_path` 一致。
+  - `model_path`：模型检查点路径，默认根据 `root` 和 `dataset_name` 自动生成。如果使用 `--no-train`，需要确保该路径存在已微调的模型。
+  - `pretrained_model_name_or_path`：预训练的 Stable Diffusion 模型名称或本地路径。
+  - `resume`: 是否从上一次训练中恢复，默认为否。
+  - `batch_size`：训练批次大小。
+  - `max_train_steps`：总训练步数。
+  - `unet_learning_rate`：UNet 的学习率。
+  - `text_encoder_learning_rate`：文本编码器的学习率。
+  - `seed`：随机数种子，确保结果可复现。
+  - `weight_dtype`：模型权重的数据类型，如 `"torch.bfloat16"`、`"torch.float32"` 等。
+  - `snr_gamma`：信噪比 (SNR) 参数，用于调整训练过程中的损失计算。
+  - `lr_scheduler_name`：学习率调度器的名称。
+  - `lr_warmup_steps`：学习率预热步数。
+  - `num_cycles`：学习率调度器的周期数量。
+- **generate**
+  - `save_folder`：生成的图像保存路径，默认为 `root + dataset_name + '/inference'`。
+  - `prompts_path`：文本提示文件路径，每行一个提示。
+  - `num_inference_steps`：生成图像时的推理步骤数。
+  - `guidance_scale`：生成图像时的指导尺度。
+
+### 注意事项
+
+- **显存需求**：微调和生成过程对显存有一定要求。
+- **数据集准备**：确保数据集中图像和对应的文本描述数量一致，且文件名对应，可以选择修改 `Text2ImageDataset` 类来适配特定格式的数据。
+
+### 目录结构
+
+在样例数据集上运行脚本后：
+
+```
+CodePlayground/
+│
+├── Datasets/                   # 数据集文件夹
+│   ├── Brad/                   # 示例数据集文件夹（样例数据集中，文本描述与图片在同一个文件夹下）
+│   │   ├── image_001.jpg       # 示例图片
+│   │   ├── image_001.txt       # 示例图片的文本描述
+│   │   ├── image_002.jpg
+│   │   ├── image_002.txt
+│   │   └── ...
+│   └── prompts/                # 文本提示文件夹
+│       ├── validation_prompt.txt # 生成图像时使用的提示
+│
+├── SD/                         # 默认输出路径
+│   ├── Brad/                   # 使用的数据集名称，自动生成
+│   │   ├── logs/               # 模型训练检查点
+│   │   │   ├── checkpoint-last/ # 最后保存的微调模型
+│   │   │   │   ├── unet/       # 微调后的 UNet 模型
+│   │   │   │   ├── text_encoder/ # 微调后的文本编码器
+│   │   │   ├── checkpoint-100/  # 中间检查点（步数命名）
+│   │   │   │   ├── unet/
+│   │   │   │   ├── text_encoder/
+│   │   │   └── ...
+│   │   ├── inference/          # 生成的图像文件夹
+│   │   │   ├── generated_1.png # 示例生成图像
+│   │   │   ├── generated_2.png
+│   │   │   └── ...
+│   │   └── ...
+│   └── ...
+│
+├── sd_lora.py                  # 微调和生成图像的主脚本
+└── config.yaml                 # 配置文件
+```
+
+
+[^1]: [Celebrity Face Image Dataset](https://www.kaggle.com/datasets/vishesh1412/celebrity-face-image-dataset/data).
+
+</details>
+
+</details> <details> <summary> <strong>3. AI Chat</strong> </summary>
 
 > [19a. 从加载到对话：使用 Transformers 本地运行量化 LLM 大模型（GPTQ & AWQ）](../Guide/19a.%20从加载到对话：使用%20Transformers%20本地运行量化%20LLM%20大模型（GPTQ%20%26%20AWQ）.md)
 >
@@ -143,12 +322,12 @@ summarizer:
 >
 > 建议阅读文章进行配置。
 
-**Chat** 是一个 LLM 对话工具，用于与量化的大模型（LLM）进行对话。支持 GPTQ、AWQ 和 GGUF 格式的模型加载与推理。
+**[chat.py](./chat.py)** 是一个 LLM 对话工具，用于与量化的大模型（LLM）进行对话。支持 GPTQ、AWQ 和 GGUF 格式的模型加载与推理。
 
 #### 功能
 
 - **与 LLM 对话**：支持从模型路径加载不同格式的大语言模型，并根据配置与之进行交互。
-- **配置管理**：现在支持初步的环境检测是否符合脚本运行条件（待进一步测试）。
+- **配置管理**：现在支持初步的环境检测是否符合脚本运行条件。
 - **聊天历史保存**：自动保存聊天记录并支持从历史记录中加载。
 
 #### 快速使用
@@ -159,9 +338,9 @@ python chat.py <model_path>
 
 替换 `<model_path>` 为 GPTQ、AWQ 或 GGUF 格式模型的路径，即可开始与模型进行交互。
 
-**注意，暂时仅支持拥有 `tokenizer.chat_template` 属性的模型进行正常对话，对于其他模型，需要自定义 [config.yaml](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/c29e7dc522fc34a897e4e9cff88fc6e0c1110139/CodePlayground/config.yaml#L14) 中的 `custom_template` 参数。**
+**注意，暂时仅支持拥有 `tokenizer.chat_template` 属性的模型进行正常对话，对于其他模型，需要自定义 [config.yaml](./config.yaml#L14) 中的 `custom_template` 参数。**
 
-运行脚本会严格检查所有的环境并给出安装指引，你可以注释 [setup_chat()](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/1f23368f5a3eaab865ccf9343445516a3d9ce671/CodePlayground/chat.py#L13) 对应的行来跳过这个行为（如果不需要加载 GPTQ 和 AWQ 的模型文件）。
+运行脚本会严格检查所有的环境并给出安装指引，你可以注释 [setup_chat()](./chat.py#L13) 对应的行来跳过这个行为（如果不需要加载 GPTQ 和 AWQ 的模型文件）。
 
 #### 使用方法
 
@@ -178,7 +357,7 @@ python chat.py <model_path> [--no_stream] [--max_length 512] [--io history.json]
 - `--remote`：**仅适用于 GGUF 模型文件**，从 `<model_path>` 解析出 `repo_id` 和 `model_name` 进行远程模型文件的加载。
 - 其他参数使用 `--help` 进行查看。
 
-[配置文件](./config.yaml)示例：
+[config.yaml](./config.yaml) 示例：
 
 ```yaml
 chat:
@@ -202,6 +381,7 @@ chat:
 ```
 
 </details>
+
 
 ---
 
