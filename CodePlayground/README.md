@@ -107,7 +107,7 @@ python summarizer.py file_path [--api_key YOUR_API_KEY] [--output_dir OUTPUT_DIR
 
 脚本支持从 `config.yaml` 文件中读取默认配置，你可以通过编辑该文件来自定义参数，避免每次运行脚本时手动指定。
 
-[config.yaml](./config.yaml) 示例：
+[config.yaml](./config.yaml#L1) 示例：
 
    ```yaml
 summarizer:
@@ -213,9 +213,9 @@ python sd_lora.py [可选参数]
 
 脚本支持从 `config.yaml` 文件中读取默认配置，避免每次运行时手动指定所有参数。
 
-[config.yaml](./config.yaml) 示例：
+[config.yaml](./config.yaml#L12) 示例：
 
-```bash
+```yaml
 train:
   root: "./SD"
   dataset_path: "./Datasets/Brad"
@@ -233,7 +233,6 @@ train:
   lr_scheduler_name: "cosine_with_restarts"
   lr_warmup_steps: 100
   num_cycles: 3
-
 generate:
   save_folder: # 图像保存路径默认为 root + train.dataset_name + '/inference'
   prompts_path: "./Datasets/prompts/validation_prompt.txt"
@@ -338,9 +337,9 @@ python chat.py <model_path>
 
 替换 `<model_path>` 为 GPTQ、AWQ 或 GGUF 格式模型的路径，即可开始与模型进行交互。
 
-**注意，暂时仅支持拥有 `tokenizer.chat_template` 属性的模型进行正常对话，对于其他模型，需要自定义 [config.yaml](./config.yaml#L14) 中的 `custom_template` 参数。**
+**注意，暂时仅支持拥有 `tokenizer.chat_template` 属性的模型进行正常对话，对于其他模型，需要自定义 [config.yaml](./config.yaml#L38) 中的 `custom_template` 参数。**
 
-运行脚本会严格检查所有的环境并给出安装指引，你可以注释 [setup_chat()](./chat.py#L13) 对应的行来跳过这个行为（如果不需要加载 GPTQ 和 AWQ 的模型文件）。
+运行脚本会严格检查所有的环境并给出安装指引，你可以注释 [setup_chat()](./chat.py#L20) 对应的行来跳过这个行为（如果不需要加载 GPTQ 和 AWQ 的模型文件）。
 
 #### 使用方法
 
@@ -357,7 +356,7 @@ python chat.py <model_path> [--no_stream] [--max_length 512] [--io history.json]
 - `--remote`：**仅适用于 GGUF 模型文件**，从 `<model_path>` 解析出 `repo_id` 和 `model_name` 进行远程模型文件的加载。
 - 其他参数使用 `--help` 进行查看。
 
-[config.yaml](./config.yaml) 示例：
+[config.yaml](./config.yaml#L35) 示例：
 
 ```yaml
 chat:

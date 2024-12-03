@@ -3,11 +3,34 @@ summarizer:
   language: "zh"
   whisper_temperature: 0.2
   llm_temperature: 0.2
-  timestamped: false
+  timestamped: False
   max_tokens: 1000
   output_dir: "./output"
   api_key:
   api_base_url: "https://dashscope.aliyuncs.com/compatible-mode/v1"
+
+train:
+  root: "./SD"  # 根路径
+  dataset_path: "./Datasets/Brad"  # 数据集路径
+  captions_folder: # 存放文本标注的路径，默认和 dataset_path 一致
+  model_path: # checkpoint-last 路径默认为 root + dataset_name + 'logs/checkpoint-last'，如果使用了 --no-train，需要确保 model_path 路径存在
+  pretrained_model_name_or_path: "digiplay/AnalogMadness-realistic-model-v7"  # 预训练的 Stable Diffusion 模型名称或路径
+  resume: False  # 是否从上一次训练中恢复
+  batch_size: 2  # 训练批次大小
+  max_train_steps: 200  # 总训练步数
+  unet_learning_rate: 1e-4  # UNet 的学习率
+  text_encoder_learning_rate: 1e-4  # 文本编码器的学习率
+  seed: 1126  # 随机数种子，当前设置通用于训练和生成阶段，如果需要仅在生成的时候指定不同的随机数种子，可以使用 --no-train 参数后对 seed 进行修改
+  weight_dtype: "torch.bfloat16"  # 权重数据类型，硬件不支持的话修改成 "torch.float16/32"
+  snr_gamma: 5  # SNR 参数
+  lr_scheduler_name: "cosine_with_restarts"  # 学习率调度器名称
+  lr_warmup_steps: 100  # 学习率预热步数
+  num_cycles: 3  # 学习率调度器的周期数量
+generate:
+  prompts_path: "./Datasets/prompts/validation_prompt.txt"  # 默认验证提示文件路径
+  save_folder: # 图像保存路径默认为 root + train.dataset_name + '/inference'
+  num_inference_steps: 50  # 推理步骤数
+  guidance_scale: 7.5  # 指导尺度
 
 chat:
   max_length: 512
@@ -27,31 +50,3 @@ chat:
             {{ raise_exception('Only user and assistant roles are supported!') }}
         {% endif %}
     {% endfor %}
-
-train:
-  root: "./SD"  # 根路径
-  dataset_path: "./SD/Datasets/Brad"  # 数据集路径
-  model_path: # checkpoint-last 路径默认为 root + dataset_name + 'logs/checkpoint-last'
-  pretrained_model_name_or_path: "digiplay/AnalogMadness-realistic-model-v7"  # 预训练的 Stable Diffusion 模型名称或路径
-  resume: False  # 是否从上一次训练中恢复
-  batch_size: 2  # 训练批次大小
-  max_train_steps: 200  # 总训练步数
-  unet_learning_rate: 1e-4  # UNet 的学习率
-  text_encoder_learning_rate: 1e-4  # 文本编码器的学习率
-  seed: 1126  # 随机数种子
-  weight_dtype: "torch.bfloat16"  # 权重数据类型，硬件不支持的话修改成 "torch.float16/32"
-  snr_gamma: 5  # SNR 参数
-  lr_scheduler_name: "cosine_with_restarts"  # 学习率调度器名称
-  lr_warmup_steps: 100  # 学习率预热步数
-  num_cycles: 3  # 学习率调度器的周期数量
-
-generate:
-  root: "./SD"  # 根路径
-  prompts_path: "./SD/Datasets/prompts/validation_prompt.txt"  # 默认验证提示文件路径
-  model_path: # 加载的 checkpoint-last 路径默认为 root + train.dataset_name + 'logs/checkpoint-last'
-  save_folder: # 图像保存路径默认为 root + train.dataset_name + '/inference'，当然你完全可以指定二者
-  pretrained_model_name_or_path: "digiplay/AnalogMadness-realistic-model-v7"  # 预训练的 Stable Diffusion 模型名称或路径
-  num_inference_steps: 50  # 推理步骤数
-  guidance_scale: 7.5  # 指导尺度
-  weight_dtype: "torch.bfloat16"  # 权重数据类型，硬件不支持的话修改成 "torch.float16/32"
-  seed: 1126  # 随机数种子
