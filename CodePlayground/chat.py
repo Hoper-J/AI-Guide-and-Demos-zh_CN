@@ -1,6 +1,6 @@
 # ===============================================================
 # 这是一个 Toy Chat，祝你玩的开心，这里没有显卡要求
-# 如果遇到错误，欢迎通过 Issue 或 Discussion 提交反馈。为了更快解决问题，请尽可能附上运行环境和可复现的命令。
+# 如果遇到错误，欢迎通过 Issues 或 Discussions 提交反馈。为了更快解决问题，请尽可能附上运行环境和可复现的命令。
 
 # 对应文章：《19a. 从加载到对话：使用 Transformers 本地运行量化 LLM 大模型（GPTQ & AWQ）》
 # https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/19a.%20从加载到对话：使用%20Transformers%20本地运行量化%20LLM%20大模型（GPTQ%20%26%20AWQ）.md
