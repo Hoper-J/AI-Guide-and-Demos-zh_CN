@@ -43,7 +43,7 @@
 | [02. 简单入门：通过 API 与 Gradio 构建 AI 应用](./Guide/02.%20简单入门：通过%20API%20与%20Gradio%20构建%20AI%20应用.md) | API       | 指导如何去使用 Gradio 搭建一个简单的 AI 应用。               | [Code](./Demos/02.%20使用%20API%20快速搭建你的第一个%20AI%20应用.ipynb) | [Colab](https://colab.research.google.com/drive/1nz89ATcl5l900bso6-xErEo1laT-rmPE?usp=share_link) |
 | [03. 进阶指南：自定义 Prompt 提升大模型解题能力](./Guide/03.%20进阶指南：自定义%20Prompt%20提升大模型解题能力.md) | API       | 你将学习自定义一个 Prompt 来提升大模型解数学题的能力，其中一样会提供 Gradio 和非 Gradio 两个版本，并展示代码细节。 | [Code](./Demos/03.%20自定义%20Prompt%20提升大模型解题能力——Gradio%20与%20ipywidgets%20版.ipynb) | [Kaggle](https://www.kaggle.com/code/aidemos/03-prompt-ipywidgets)<br />[Colab](https://colab.research.google.com/drive/1c5WH62n8P1fKWaVrqXRV5pfRWKqV_3Zs?usp=sharing) |
 | [04. 认识 LoRA：从线性层到注意力机制](./Guide/04.%20认识%20LoRA：从线性层到注意力机制.md) | ---       | 在正式进入实践之前，你需要知道 LoRA 的基础概念，这篇文章会带你从线性层的 LoRA 实现到注意力机制。 |                                                              |      |
-| [05. 理解 Hugging Face 的 `AutoModel` 系列：不同任务的自动模型加载类](./Guide/05.%20理解%20Hugging%20Face%20的%20%60AutoModel%60%20系列：不同任务的自动模型加载类.md) | ---       | 我们即将用到的模块是 Hugging Face 中的 AutoModel，这篇文章一样是一个前置知识（当然你可以跳过，等后续产生疑惑时再看）。 | [Code](./Demos/04.%20Hugging%20Face%20AutoModel%20示例合集.ipynb) | [Kaggle](https://www.kaggle.com/code/aidemos/04-hugging-face-automodel)<br />[Colab](https://colab.research.google.com/drive/1gLTXcvG-tEDOqnR7qM-3-S812qnBUGlh?usp=sharing) |
+| [05. 理解 Hugging Face 的 `AutoModel` 系列：不同任务的自动模型加载类](./Guide/05.%20理解%20Hugging%20Face%20的%20%60AutoModel%60%20系列：不同任务的自动模型加载类.md) | ---       | 我们即将用到的模块是 Hugging Face 中的 AutoModel，这篇文章一样是一个前置知识，你可以从中学到如何查看对应的源码。 | [Code](./Demos/04.%20Hugging%20Face%20AutoModel%20示例合集.ipynb) | [Kaggle](https://www.kaggle.com/code/aidemos/04-hugging-face-automodel)<br />[Colab](https://colab.research.google.com/drive/1gLTXcvG-tEDOqnR7qM-3-S812qnBUGlh?usp=sharing) |
 | [06. 开始实践：部署你的第一个语言模型](./Guide/06.%20开始实践：部署你的第一个语言模型.md) | LLM       | 实现非常入门的语言模型部署，项目到现在为止都不会有 GPU 的硬性要求，你可以继续学习。 | [Code](./Demos/05.%20尝试部署你的第一个语言模型.ipynb)<br />[app_fastapi.py](./Demos/app_fastapi.py)<br /> [app_flask.py](./Demos/app_flask.py) |      |
 | [07. 探究模型参数与显存的关系以及不同精度造成的影响](./Guide/07.%20探究模型参数与显存的关系以及不同精度造成的影响.md) | ---       | 了解模型参数和显存的对应关系并掌握不同精度的导入方式会使得你对模型的选择更加称手。 |                                                              |      |
 | [08. 尝试微调 LLM：让它会写唐诗](./Guide/08.%20尝试微调%20LLM：让它会写唐诗.md) | LLM       | 这篇文章与 [03. 进阶指南：自定义 Prompt 提升大模型解题能力](./Guide/03.%20进阶指南：自定义%20Prompt%20提升大模型解题能力.md)一样，本质上是专注于“用”而非“写”，你可以像之前一样，对整体的流程有了一个了解，尝试调整超参数部分来查看对微调的影响。 | [Code](./Demos/06.%20尝试微调%20LLM：让它会写唐诗.ipynb) | [Kaggle](https://www.kaggle.com/code/aidemos/06-llm)<br />[Colab](https://colab.research.google.com/drive/1u2xgN5gWnZCwPlH2R-0gz_CpI9gzLdiy?usp=sharing) |
@@ -116,7 +116,7 @@
     - 预训练任务 MLM 和 NSP
     - BERT 模型的输入和输出，以及一些与 Transformer 不同的地方
     - 以 $\text{BERT}_\text{BASE}$ 为例，计算模型的总参数量
-    - [作业 - BERT 微n调抽取式问答](./Guide/22b.%20作业%20-%20Bert%20微调抽取式问答.md)
+    - [作业 - BERT 微调抽取式问答](./Guide/22b.%20作业%20-%20Bert%20微调抽取式问答.md)
 
 - [**CodePlayground**](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/tree/master/CodePlayground)
 
@@ -632,26 +632,6 @@ jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root
 </details>
 
 ## 当前规划
-
-- [x] 完全复现「生成式人工智能导论」的代码以供学习
-  - [x] 将其中的行为使用 OpenAI 库进行替换
-  - [x] 使用 ipywidgets 模拟 Colab 的交互
-  - [x] 以中文进行作业引导
-
-### 11月更新计划
-
-- [x] Transformer
-- [x] Bert 
-- [x] nn.Embedding
-- [x] 上传并测试在线平台代码的可运行性
-- [x] Bert 微调下游任务：抽取式问答 (Extractive Question Answering)
-  - [x] 提供一个中文版本的基础微调代码以供学习
-  - [x] 引导文章
-- [x] Docker 镜像制作和引导文章撰写
-  - [x] 基础版本
-  - [x] 深度学习版本
-
-### 12月更新计划
 
 - [ ] GPT 论文系列
 - [ ] 基础拓展文章《关于梯度累积的正确使用》（待定）
