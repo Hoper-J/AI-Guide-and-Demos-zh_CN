@@ -47,10 +47,12 @@
 
 > **写在前面**
 >
-> 如果不想每次运行都使用 `sudo` 开头，使用以下命令：
+> ### 无需每次使用 `sudo` 的设置方法
+>
+> 默认情况下，非 root 用户执行 Docker 命令需要在前面加上 `sudo`。如果不想这样，可以将当前用户添加到 `docker` 用户组中：
 >
 > ```bash
-> sudo groupadd docker
+> sudo groupadd docker  # 如果提示 group 已存在，可忽略
 > sudo usermod -aG docker $USER
 > newgrp docker
 > ```
@@ -79,7 +81,7 @@ docker pull hoperj/quickstart:dl-torch2.5.1-cuda11.8-cudnn9-devel
 
 > [!note]
 >
-> `docker pull` 可以更新镜像，此时下载数据量较小，不严谨地类比为 `git pull` 进行理解。
+> `docker pull` 可以从远程仓库更新镜像，如果镜像已存在，则只会拉取更新部分（层），不严谨地类比为 `git pull` 进行理解。
 
 ### 删除镜像
 
@@ -87,50 +89,56 @@ docker pull hoperj/quickstart:dl-torch2.5.1-cuda11.8-cudnn9-devel
 docker rmi <image_id_or_name>
 ```
 
-**注意：** 删除镜像前，确保没有容器正在使用它。
+在删除镜像前，请确保没有容器正在使用它。
 
 ## 创建容器
 
-以当前使用的命令为例：
+### 基础用法
+
+```bash
+docker run --gpus all -it [--rm] <image_name>:<tag>
+```
+
+- `--gpus all`：允许容器使用主机的所有 GPU 资源（如有）。
+- `-it`：交互式终端。这是两个参数的组合，`-i` 表示“交互式”（interactive），`-t` 表示为容器分配一个伪终端（pseudo-TTY）。
+- `--rm`：在容器退出后自动删除容器，避免试验产生无用容器。
+
+以当前使用的深度学习镜像为例：
 
 ```bash
 docker run --gpus all -it hoperj/quickstart:dl-torch2.5.1-cuda11.8-cudnn9-devel
 ```
 
-先来解释一下 `--gpus all` 和 `-it` 的作用：
-
-- `--gpus all`：允许容器使用主机的所有 GPU 资源。
-- `-it`：这是两个参数的组合，`-i` 表示“交互式”（interactive），`-t` 表示为容器分配一个伪终端（pseudo-TTY）。**`-it` 组合使用**可以获得完整的交互式终端体验。
-
 > [!tip]
 >
 > 使用 `docker run --help` 可以查看更多参数的用法。
 >
-> 如果在执行 Docker 命令时遇到权限问题，可以在命令前加上 `sudo`。
 
 ### 挂载
 
 如果需要在容器内访问主机的文件，可以使用 `-v` 参数。
 
-1. **卷挂载**
+1. **挂载卷（Volume）**
 
    ```bash
-   docker run --gpus all -it -v my_volume:container_path hoperj/quickstart:dl-torch2.5.1-cuda11.8-cudnn9-devel
+   docker run --gpus all -it -v my_volume:/container/path hoperj/quickstart:dl-torch2.5.1-cuda11.8-cudnn9-devel
    ```
 
    - `my_volume`：Docker 卷的名称。
-   - `container_path`：容器中的路径。
+   - `/container/path`：容器中的路径。
 
-   这样，保存在该路径的数据在容器删除后仍会保存在 `my_volume` 中。
+   挂载卷可让数据在容器删除后仍保留。
 
 2. **挂载主机目录到容器中**
 
+   使用绝对路径挂载主机目录到容器中：
+
    ```bash
-   docker run --gpus all -it -v /home/your_username/data:/workspace/data hoperj/quickstart:dl-torch2.5.1-cuda11.8-cudnn9-devel
+   docker run --gpus all -it -v /host/path:/container/path hoperj/quickstart:dl-torch2.5.1-cuda11.8-cudnn9-devel
    ```
 
-   - `/home/your_username/data`：主机上的目录路径。
-   - `/workspace/data`：容器内的挂载点。
+   - `/host/path`：主机上的路径。
+   - `/container/path`：容器中的路径。
 
 #### 用例
 
@@ -141,8 +149,6 @@ docker run --gpus all -it -v ~/Downloads/AI-Guide-and-Demos-zh_CN:/workspace/AI-
 ```
 
 容器中的 `/workspace/AI-Guide-and-Demos-zh_CN` 会与主机上的 `~/Downloads/AI-Guide-and-Demos-zh_CN` 目录同步，所有更改都会反映到主机的目录中。
-
-建议初次使用的同学创建新的文件夹进行实验，避免可能的误操作覆盖。
 
 ### 在容器中启动 Jupyter Lab
 
@@ -168,13 +174,13 @@ jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root
 docker run --gpus all -it --name ai -p 8888:8888 -p 7860:7860 ...（后续一致）
 ```
 
-- `7860` 端口一般对应于 Gradio。
+- `7860` 端口在这里对应于 Gradio。
 
 你可以根据实际情况重新指定端口号。
 
 ## 停止容器
 
-### 在容器终端内
+### 在容器终端内停止
 
 - 使用 `Ctrl+D` 或输入 `exit`：退出并**停止**容器（适用于通过 `docker run` 启动的情况）。
 - 使用 `Ctrl+P` 然后 `Ctrl+Q`：仅退出容器的终端（detach），让容器继续在后台运行。
@@ -183,7 +189,7 @@ docker run --gpus all -it --name ai -p 8888:8888 -p 7860:7860 ...（后续一致
 >
 > 以上的“停止”行为适用于通过 `docker run` 启动的容器。如果容器是通过 `docker start` 启动的，`Ctrl+D` 或 `exit` 只会退出终端，而不会停止容器。通过 `docker ps` 可以察觉到这一点。
 
-### 从主机停止容器
+### 从主机停止
 
 如果你想从主机停止正在运行的容器，可以使用：
 
@@ -195,41 +201,43 @@ docker stop <container_id_or_name>
 
 ## 重新连接到已存在的容器
 
-在使用一段时间后，你可能会发现每次使用 `docker run` 去“运行”容器时，之前所做的改变都“没有”保存。
+在使用一段时间后，你可能会发现每次使用 `docker run` 去“运行”容器时，之前所做的改变都没有“保存”。
 
 **这是因为每次运行 `docker run` 创建了新的容器。**
 
-要找回在容器中的更改，需要重新连接到之前创建的容器。
+要找回在容器中的更改，需要重新连接到之前创建的容器，参考以下步骤：
 
-### 查看所有容器
+1. **查看正在运行的容器**：
 
-```bash
-docker ps -a
-```
+   ```bash
+   docker ps
+   ```
 
-- `docker ps`：默认只显示正在运行的容器。
-- `-a`：显示所有容器，包括已停止的。
+   如果容器已停止，可**查看所有容器**：
 
-### 启动已停止的容器
+   ```bash
+   docker ps -a
+   ```
 
-如果目标容器已停止，可以使用以下命令将其重新启动：
+2. **启动已停止的容器**：
 
-```bash
-docker start <container_id_or_name>
-```
+   ```bash
+   docker start <container_id_or_name>
+   ```
 
-替换 `<container_id_or_name>` 为容器的 ID 或名称。
+3. **连接到正在运行的容器**：
 
-### 重新连接到运行中的容器
+   ```bash
+   docker exec -it <container_id_or_name> /bin/bash
+   ```
 
-使用 `docker exec`：
+   或者使用
 
-```bash
-docker exec -it <container_id_or_name> /bin/bash
-```
+   ```bash
+   docker attach <container_id_or_name>
+   ```
 
-- `/bin/bash`：在容器内启动一个 Bash Shell。
-- 在 `docker run` 命令末尾也可添加 `/bin/bash`。
+   区别在于 `exec` 启动一个新进程的终端，`attach` 附着到容器主进程终端（`PID 1`）。
 
 > [!note]
 >
@@ -270,7 +278,7 @@ docker run --gpus all -it --name ai hoperj/quickstart:dl-torch2.5.1-cuda11.8-cud
 - **重新连接到容器：**
 
   ```bash
-  docker exec -it ai /bin/bash
+  docker exec -it ai /bin/zsh
   ```
 
 ## 复制文件
@@ -278,18 +286,18 @@ docker run --gpus all -it --name ai hoperj/quickstart:dl-torch2.5.1-cuda11.8-cud
 ### 从主机复制文件到容器
 
 ```bash
-docker cp /path/on/host <container_id_or_name>:/path/in/container
+docker cp /host/path <container_id_or_name>:/container/path
 ```
 
 ### 从容器复制文件到主机
 
 ```bash
-docker cp <container_id_or_name>:/path/in/container /path/on/host
+docker cp <container_id_or_name>:/container/path /host/path
 ```
 
 ## 删除容器
 
-### 删除指定的容器
+### 删除指定容器
 
 如果想删除一个容器，可以使用 `docker rm` 命令：
 
@@ -297,31 +305,51 @@ docker cp <container_id_or_name>:/path/in/container /path/on/host
 docker rm <container_id_or_name>
 ```
 
-例如，删除名为 `ai` 的容器：
+删除前需先 `stop` 容器。
 
-```bash
-docker rm ai
-```
-
-**注意：** 需要先停止容器才能删除。
-
-### 删除所有未使用的容器
-
-我们可以使用以下命令来删除所有处于“已退出”状态的容器：
+### 删除所有已退出的容器
 
 ```bash
 docker container prune
 ```
 
-这将删除所有已停止的容器（请谨慎使用，因为删除后无法恢复，适用于刚安装 Docker “不小心”创建了一堆容器）。
+这将删除所有已停止的容器（请谨慎使用，因为删除后无法恢复，适用于刚安装 Docker “不小心”创建了一堆容器的情况）。
 
-# 解决常见报错
+## 查看和调试容器状态
+
+### 查看容器日志
+
+```bash
+docker logs <container_id_or_name>
+```
+
+可加 `-f` 参数实时跟随日志输出。
+
+### 查看容器详细信息
+
+```bash
+docker inspect <container_id_or_name>
+```
+
+输出容器的 JSON 配置信息（环境变量、卷挂载、网络信息等）。
+
+### 查看容器资源使用情况
+
+```bash
+docker stats
+```
+
+显示所有容器的 CPU、内存、网络和存储 I/O 实时数据。
+
+![image-20241207115307912](./assets/image-20241207115307912.png)
+
+## 解决常见报错
 
 > 介绍在新环境中使用 Docker 时，可能会遇到的报错。
 >
 > **推荐阅读，特别是报错 2**。
 
-## 报错 1：权限被拒绝（Permission Denied）
+### 报错 1：权限被拒绝（Permission Denied）
 
 当运行命令：
 
@@ -335,7 +363,7 @@ docker ps
 
 **解决方法**：
 
-### 方法 1：使用 `sudo`
+#### 方法 1：使用 `sudo`
 
 在 Docker 命令前加上 `sudo`：
 
@@ -343,7 +371,7 @@ docker ps
 sudo docker ps
 ```
 
-### 方法 2：将用户添加到 `docker` 用户组
+#### 方法 2：将用户添加到 `docker` 用户组
 
 1. **创建 `docker` 用户组**
 
@@ -371,7 +399,7 @@ sudo docker ps
    docker ps	
    ```
 
-## 报错 2：无法连接到 Docker 仓库（Timeout Exceeded）
+### 报错 2：无法连接到 Docker 仓库（Timeout Exceeded）
 
 > Error response from daemon: Get "https://registry-1.docker.io/v2/": net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)
 
@@ -379,7 +407,7 @@ sudo docker ps
 
 **解决方法**：
 
-### 方法一：配置镜像
+#### 方法一：配置镜像
 
 > 镜像参考：[目前国内可用Docker镜像源汇总（截至2024年11月）](https://www.coderjia.cn/archives/dba3f94c-a021-468a-8ac6-e840f85867ea)
 
@@ -422,7 +450,7 @@ sudo systemctl daemon-reload
 sudo systemctl restart docker
 ```
 
-### 方法二：设置 HTTP/HTTPS 代理
+#### 方法二：设置 HTTP/HTTPS 代理
 
 > 这一项提供给🪜科学上网的同学进行配置。对于本项目来说，**所有文件都会提供网盘链接**和对应的国内镜像命令。
 
@@ -462,7 +490,7 @@ sudo systemctl restart docker
    sudo systemctl restart docker
    ```
 
-## 报错 3: 磁盘空间不足（No Space Left on Device）
+### 报错 3：磁盘空间不足（No Space Left on Device）
 
 > write /var/lib/docker/tmp/...: no space left on device
 
@@ -470,7 +498,7 @@ sudo systemctl restart docker
 
 **解决方法：**
 
-### 更改 Docker 的数据目录
+#### 更改 Docker 的数据目录
 
 1. **查看当前的磁盘空间**
 
@@ -529,6 +557,6 @@ sudo systemctl restart docker
 
    **输出**：![image-20241112101614536](./assets/image-20241112101614536.png)
 
-# 参考链接
+## 参考链接
 
 [How to Fix Docker’s No Space Left on Device Error](https://www.baeldung.com/linux/docker-fix-no-space-error)
