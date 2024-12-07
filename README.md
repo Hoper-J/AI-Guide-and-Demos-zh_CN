@@ -638,7 +638,7 @@ jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root
   - [ ] 进一步讲解 epoch，batch，step... 之间的对应关系
 
 - [x] LoRA 文生图的 🎡 命令行脚本制作上传
-- [ ] 补充 Docker 基础命令（待定）
+- [x] 补充 Docker 基础命令
 - [ ] 更多有趣的实践项目与理论...
 
 ---

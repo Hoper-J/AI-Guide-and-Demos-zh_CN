@@ -9,19 +9,18 @@
 ## 目录
 
 - [镜像管理](#镜像管理)
+  - [无需每次使用 sudo 的设置方法](#无需每次使用-sudo-的设置方法)
   - [查看本地镜像](#查看本地镜像)
   - [拉取镜像](#拉取镜像)
   - [删除镜像](#删除镜像)
 - [创建容器](#创建容器)
+  - [基础用法](#基础用法)
   - [挂载](#挂载)
   - [在容器中启动 Jupyter Lab](#在容器中启动-jupyter-lab)
 - [停止容器](#停止容器)
-  - [在容器终端内](#在容器终端内)
-  - [从主机停止容器](#从主机停止容器)
+  - [在容器终端内停止](#在容器终端内停止)
+  - [从主机停止](#从主机停止)
 - [重新连接到已存在的容器](#重新连接到已存在的容器)
-  - [查看所有容器](#查看所有容器)
-  - [启动已停止的容器](#启动已停止的容器)
-  - [重新连接到运行中的容器](#重新连接到运行中的容器)
 - [命名容器](#命名容器)
   - [使用 --name 参数](#使用---name-参数)
   - [使用容器名称的命令示例](#使用容器名称的命令示例)
@@ -29,19 +28,27 @@
   - [从主机复制文件到容器](#从主机复制文件到容器)
   - [从容器复制文件到主机](#从容器复制文件到主机)
 - [删除容器](#删除容器)
-  - [删除指定的容器](#删除指定的容器)
-  - [删除所有未使用的容器](#删除所有未使用的容器)
-
- - [解决常见报错](#解决常见报错)
-   - [报错 1：权限被拒绝（Permission Denied）](#报错-1权限被拒绝permission-denied)
-     - [方法 1：使用 sudo](#方法-1使用-sudo)
-     - [方法 2：将用户添加到 docker 用户组](#方法-2将用户添加到-docker-用户组)
-   - [报错 2：无法连接到 Docker 仓库（Timeout Exceeded）](#报错-2无法连接到-docker-仓库timeout-exceeded)
-     - [方法一：配置镜像](#方法一配置镜像)
-     - [方法二：设置 HTTP/HTTPS 代理](#方法二设置-httphttps-代理)
-   - [报错 3: 磁盘空间不足（No Space Left on Device）](#报错-3-磁盘空间不足no-space-left-on-device)
-     - [更改 Docker 的数据目录](#更改-docker-的数据目录)
- - [参考链接](#参考链接)
+  - [删除指定容器](#删除指定容器)
+  - [删除所有已退出的容器](#删除所有已退出的容器)
+- [查看和调试容器状态](#查看和调试容器状态)
+  - [查看容器日志](#查看容器日志)
+  - [查看容器详细信息](#查看容器详细信息)
+  - [查看容器资源使用情况](#查看容器资源使用情况)
+- [导出与加载镜像](#导出与加载镜像)
+  - [使用 docker commit 提交容器为镜像](#使用-docker-commit-提交容器为镜像)
+  - [导出镜像](#导出镜像)
+  - [加载镜像](#加载镜像)
+  - [压缩镜像文件](#压缩镜像文件)
+- [解决常见报错](#解决常见报错)
+  - [报错 1：权限被拒绝（Permission Denied）](#报错-1权限被拒绝permission-denied)
+    - [方法 1：使用 sudo](#方法-1使用-sudo)
+    - [方法 2：将用户添加到 docker 用户组](#方法-2将用户添加到-docker-用户组)
+  - [报错 2：无法连接到 Docker 仓库（Timeout Exceeded）](#报错-2无法连接到-docker-仓库timeout-exceeded)
+    - [方法一：配置镜像](#方法一配置镜像)
+    - [方法二：设置 HTTP/HTTPS 代理](#方法二设置-httphttps-代理)
+  - [报错 3：磁盘空间不足（No Space Left on Device）](#报错-3磁盘空间不足no-space-left-on-device)
+    - [更改 Docker 的数据目录](#更改-docker-的数据目录)
+- [参考链接](#参考链接)
 
 ## 镜像管理
 
@@ -139,8 +146,6 @@ docker run --gpus all -it hoperj/quickstart:dl-torch2.5.1-cuda11.8-cudnn9-devel
 
    - `/host/path`：主机上的路径。
    - `/container/path`：容器中的路径。
-
-#### 用例
 
 以当前项目为例，假设已经在主机的 `~/Downloads` 文件夹克隆了项目并做了一些修改，那么所需要同步的目录为 `~/Downloads/AI-Guide-and-Demos-zh_CN`，想同步到容器的同名文件夹中，对应命令：
 
@@ -342,6 +347,92 @@ docker stats
 显示所有容器的 CPU、内存、网络和存储 I/O 实时数据。
 
 ![image-20241207115307912](./assets/image-20241207115307912.png)
+
+## 导出与加载镜像
+
+有时候我们可能需要在没有网络环境、或者在不同机器之间迁移镜像，这时可以通过 `docker save` 和 `docker load` 来完成镜像的导出与导入。
+
+### 使用 `docker commit` 提交容器为镜像
+
+```bash
+docker commit <container_id_or_name> <new_image_name>:<tag>
+```
+
+- `<container_id_or_name>`：容器的 ID 或名称。
+- `<new_image_name>`：为生成的新镜像指定名称。
+- `<tag>`（可选）：为镜像指定标签，默认是 `latest`。
+
+假设容器名为 `ai`，我们在其中安装了一些软件并做了环境修改，现在希望将其保存为新镜像 `ai2:latest`：
+
+```bash
+docker commit ai ai2:latest
+```
+
+执行成功后，使用 `docker images` 查看：
+
+```bash
+docker images
+```
+
+**输出**： 
+
+![image-20241207123507670](./assets/image-20241207123507670.png)
+
+此时，`ai2:latest` 就是基于容器 `ai` 保存的新镜像，其中包含了所有最近的修改。
+
+### 导出镜像
+
+使用 `docker save` 将指定镜像及其历史层打包成 `.tar` 文件：
+
+```bash
+docker save <image_name>:<tag> -o <output_file.tar>
+```
+
+例如，将刚才创建的 `ai2:latest` 镜像导出为 `quickstart_ai_image.tar`：
+
+```bash
+docker save ai2:latest -o quickstart_ai_image.tar
+```
+
+现在我们拥有了一个 `quickstart_ai_image.tar` 文件，可以将其迁移到其他机器上。
+
+### 加载镜像
+
+在另一台机器上，使用 `docker load` 来加载 `.tar` 文件中的镜像：
+
+```bash
+docker load -i <input_file.tar>
+```
+
+例如：
+
+```bash
+docker load -i quickstart_ai_image.tar
+```
+
+加载完成后可以使用 `docker images` 查看该镜像已成功导入。
+
+> **区别于 export/import**：
+>
+> - `docker save` 与 `docker load` 针对镜像操作，并保留镜像的元数据（包括标签和镜像分层信息）。
+> - `docker export` 与 `docker import` 针对容器操作，而非镜像本身（此时不需要 commit），将运行后的容器文件系统导出为单一文件系统快照，并不会保留完整的镜像层结构（如果只需要将容器环境打包并在另一端恢复为镜像，可以考虑这一对命令）。
+
+### 压缩镜像文件
+
+为了减少传输的文件大小，可以对导出的 `.tar` 文件进行压缩：
+
+```bash
+gzip quickstart_ai_image.tar
+```
+
+生成 `quickstart_ai_image.tar.gz` 后，在目标机器上解压：
+
+```bash
+gzip -d quickstart_ai_image.tar.gz
+docker load -i quickstart_ai_image.tar
+```
+
+通过这种方式，可显著减少镜像备份文件的大小（接近 1/2）。
 
 ## 解决常见报错
 
@@ -555,7 +646,9 @@ sudo systemctl restart docker
    docker info -f '{{ .DockerRootDir}}'
    ```
 
-   **输出**：![image-20241112101614536](./assets/image-20241112101614536.png)
+   **输出**：
+   
+   ![image-20241112101614536](./assets/image-20241112101614536.png)
 
 ## 参考链接
 
