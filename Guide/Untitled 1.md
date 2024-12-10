@@ -1,24 +1,26 @@
-## Epoch、Batch 和 Step 之间的关系
+# Epoch、Batch 和 Step 之间的关系以及梯度累积
+
+## 基本概念：Epoch、Batch、Step
 
 ### Epoch
 
-- **定义**：一个 **epoch** 表示模型对**整个训练集进行一次完整的遍历**，即所有样本数据都经历了前向传播和反向传播的过程。
+- **定义**：一个 **epoch** 表示模型对**整个训练集**进行一次完整的遍历，即所有样本都经历一次前向传播和反向传播的训练过程。
 
   当我们说 “训练了 10 个 epoch”，意味着模型已经从头到尾扫过了训练集 10 次。
 
 ### Batch
 
-- **定义**：训练时通常不会将整个数据集一次性送入模型，而是将数据分成若干小批量（mini-batch）逐步进行训练，其中**每个 batch 包含一定数量的样本（batch size）**。
+- **定义**：训练时通常不会将整个数据集一次性输入到模型，而是将数据分成若干小批量（mini-batch）逐步进行训练，其中**每个 batch 包含一定数量的样本（batch size）**。
 
 - **公式**：假设数据集大小为 $N$，batch size 为 $B$，则一个 epoch 内的 batch 数量为：
   $$
   \text{Number of Batches per Epoch} = \left\lceil \frac{N}{B} \right\rceil
   $$
-  这里使用向上取整 $\lceil \cdot \rceil$ 是因为数据集大小 $N$ 可能不被 $B$ 整除。大多数深度学习框架在加载数据时可以自动处理最后一个不完整的 batch。例如，在 PyTorch 的 `DataLoader` 中，通过设置参数 `drop_last` 决定是否丢弃最后那个不完整的 batch（如果 `drop_last=True`，则会丢弃最后不足一个 batch 的样本，以确保所有 batch 大小一致）。
+  这里使用向上取整 $\lceil \cdot \rceil$ 是因为数据集大小 $N$ 可能无法被 $B$ 整除。大多数深度学习框架在加载数据时可以自动处理最后一个不完整的 batch。例如，在 PyTorch 的 `DataLoader` 中，通过设置参数 `drop_last` 决定是否丢弃最后那个不完整的 batch（如果 `drop_last=True`，则会丢弃最后不足一个 batch 的样本，以确保所有 batch 大小一致）。
 
 ### Step
 
-- **定义**：在训练中，**一次对参数的更新过程被称为一个 step**。更具体地说，处理完一个 batch 后，对模型参数执行一次前向传播（forward）、反向传播（backward）以及参数更新（optimizer.step()）的整个过程即为 1 个 step。
+- **定义**：在训练中，**一次对参数的更新过程**被称为一个 **step**。也就是说，执行一次前向传播（forward）、反向传播（backward）以及参数更新（optimizer.step()），就算完成了 1 个 step。
 
 - **公式**：对应于上面的定义，一个 epoch 内 step 的数量与该 epoch 内的 batch 数量相同。当训练了 $E$ 个 epoch 时，总的 step 数为：
   $$
@@ -27,11 +29,11 @@
 
 ### 关系总结
 
-| **概念**  | **定义**                                                 | **公式**                                                     |
-| --------- | -------------------------------------------------------- | ------------------------------------------------------------ |
-| **Epoch** | 整个训练集完整遍历一次                                   | -                                                            |
-| **Batch** | 一小组样本，用于一次参数更新前的前/后向传播              | $\text{Number of Batches per Epoch} = \left\lceil \frac{N}{B} \right\rceil$ |
-| **Step**  | 一次完整的参数更新过程（前向传播 + 反向传播 + 权重更新） | $\text{Total Steps} = \left\lceil \frac{N}{B} \right\rceil \times E$ |
+| **概念**  | **定义**                                         | **公式**                                                     |
+| --------- | ------------------------------------------------ | ------------------------------------------------------------ |
+| **Epoch** | 整个训练集完整遍历一次                           | -                                                            |
+| **Batch** | 一小组样本，用于一次参数更新前的前/后向传播      | $\text{Number of Batches per Epoch} = \left\lceil \frac{N}{B} \right\rceil$ |
+| **Step**  | 一次完整的参数更新过程（前向+反向传播+更新参数） | $\text{Total Steps} = \left\lceil \frac{N}{B} \right\rceil \times E$ |
 
 ---
 
@@ -57,7 +59,7 @@
 
 ```bash
 Epoch 1
-  └── Batch 1 → Step 1  (前向传播 + 反向传播 + 权重更新)
+  └── Batch 1 → Step 1  (前向+反向传播+更新参数)
   └── Batch 2 → Step 2
   └── Batch 3 → Step 3
   └── ... 
@@ -72,8 +74,8 @@ Epoch 2
 
 ```
 
-- **每个 epoch** 包含多个 batch，每个 batch 进行 1 次权重更新（即 1 个 step）。
-- **多个 epoch** 连续训练时，也可以让 step 累积，这样除了用 `epochs` 控制训练回合数，还可以设置 `max_steps` 控制模型结束训练的时间（AI 画图的 UI 界面中常出现这个超参数选项）。
+- 每个 epoch 包含多个 batch，每个 batch 对应 1 次参数更新（即 1 个 step）。
+- 我们可以用 `epochs` 控制训练回合数或用 `max_steps` 控制训练总 step 数（AI 画图的 UI 界面中常出现这个超参数选项）。
 
 #### 代码示例
 
@@ -83,10 +85,10 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 
-# 假设数据集大小为 N=10000
-N = 10000
-B = 32   # batch_size
-E = 5    # epochs
+# 数据集参数
+N = 10000  # 数据集总样本数
+B = 32     # batch_size
+E = 5      # epochs
 
 # 创建一个示例数据集
 X = torch.randn(N, 10)        # 假设输入维度为 10
@@ -104,14 +106,20 @@ model = nn.Sequential(
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(model.parameters(), lr=0.01)
 
-steps_per_epoch = len(dataloader)  # batch 的数量
+steps_per_epoch = len(dataloader)   # 一个 epoch 内 batch 的数量
 total_steps = steps_per_epoch * E
+
+device = "cuda" if torch.cuda.is_available() else "cpu"
+model.to(device)
 
 current_step = 0
 
-# 这里设置成从 1 开始只是为了不在 print 中额外设置，实际训练的时候不需要纠结这一点
+# 这里设置成从 1 开始只是为了不在 print 中额外设置，实际写代码的时候不需要纠结这一点
 for epoch in range(1, E + 1):
     for batch_idx, (inputs, targets) in enumerate(dataloader, start=1): 
+        inputs = inputs.to(device)
+        targets = targets.to(device)
+        
         # 清零梯度（这一步放在反向传播前和参数更新之后都可以）
         optimizer.zero_grad()
         
@@ -125,12 +133,12 @@ for epoch in range(1, E + 1):
         loss.backward()
 
         # 参数更新
-        optimizer.step(
+        optimizer.step()
         
-        # 如果不需要累积 step，可以去除 current_step 项直接打印 batch_idx
         current_step += 1
         # 每 50 步打印一次
         if batch_idx % 50 == 0:
+            # 如果不需要打印累积 step，可以去除 current_step 项直接使用 batch_idx
             print(f"Epoch [{epoch}/{E}], Batch [{batch_idx}/{steps_per_epoch}], "
                   f"Step [{current_step}/{total_steps}], Loss: {loss.item():.4f}")
 
@@ -158,9 +166,9 @@ Epoch [2/5], Batch [300/313], Step [613/1565], Loss: 0.6896
 ...
 ```
 
+> **思考一下**：为什么输出 `Epoch [2/5], Batch [50/313], Step [363/1565], Loss: 0.7058` 中的 `step` 是 363？
 
-
-### 实践相关基础知识
+### 实践中相关的基础概念
 
 1. **学习率调度器（Scheduler）**
 
@@ -173,35 +181,25 @@ Epoch [2/5], Batch [300/313], Step [613/1565], Loss: 0.6896
      
      for epoch in range(E):
          for batch_idx, (inputs, targets) in enumerate(dataloader):
-             optimizer.zero_grad()
-             outputs = model(inputs)
-             loss = criterion(outputs, targets)
-             loss.backward()
-             optimizer.step()
-             
+             # 前向、后向、更新参数
+             ...
              # 在每个 step 后更新学习率
              scheduler.step()
      ```
-
+     
    - **以 epoch 为基础**：在每个 epoch 结束后更新学习率。
-
+   
      ```python
      scheduler = ...
      
      for epoch in range(E):
          for batch_idx, (inputs, targets) in enumerate(dataloader):
-             optimizer.zero_grad()
-             outputs = model(inputs)
-             loss = criterion(outputs, targets)
-             loss.backward()
-             optimizer.step()
-         
+             # 前向、后向、更新参数
+             ...
          # 在每个 epoch 后更新学习率
          scheduler.step()
      ```
-
    
-
 2. **早停（Early Stopping）**
 
    可以基于 epoch 或 step 来监控验证集性能，若在一定 patience（耐心值）内验证性能没有提高，则提前停止训练来避免过拟合。
@@ -230,11 +228,11 @@ Epoch [2/5], Batch [300/313], Step [613/1565], Loss: 0.6896
 
 3. **Batch Size 与显存**
 
-   更大的 batch size 意味着每个 step 会处理更多数据，占用更多显存。当遇到 GPU 内存不足（Out of Memory，OOM）错误时，可以尝试减小 batch size。
+   更大的 batch size 意味着每个 step 会处理更多数据，占用更多显存。当遇到 GPU 内存不足（Out of Memory，OOM）错误时，可以尝试减小 batch size，如果仍想达成大 batch size 的效果，使用梯度累积技巧（见下文）。
 
 ## Q：SGD、BGD、MBGD 三者的区别是什么？
 
-它们的本质区别在于**每次更新使用的样本数量（batch size）**不同。
+它们的本质区别在于**每次更新使用的样本数量（batch size）**。
 
 ### SGD（Stochastic Gradient Descent，随机梯度下降）
 
@@ -323,4 +321,148 @@ $$
 - **SGD (batch_size=1)**：每次更新参数使用 1 个样本，更新 200 次（2 个 epoch，100 个样本）。  
 - **BGD (batch_size=100)**：每次使用 100 个样本，更新 2 次（2 个 epoch，每个 epoch 1 次）。  
 - **MBGD (batch_size=20)**：每次使用 20 个样本，更新 10 次（2 个 epoch，100 个样本分成 5 个 batch，每个 epoch 更新 5 次，2 epoch 共 10 次）。  
+
+## 梯度累积（Gradient Accumulation）
+
+当 GPU 显存不足以支持较大的 batch_size 时，可以使用梯度累积。梯度累积的核心思想是将多个小批量（mini-batch）的梯度累加起来，然后再更新参数，这样可以模拟更大的 batch_size。
+
+### 数学公式
+
+假设理想的 batch_size 为 $B$，但由于硬件限制，每次只能处理 $b$ 个样本（$b < B$）。那么我们可以把 $B$ 个样本的训练过程拆分为 $\frac{B}{b}$ 个小批次，每个小批次的平均损失函数记为 $J_{b}(\theta)$，对应的梯度为 $\nabla_\theta J_{b}(\theta)$。
+
+ 1. **梯度累积**：
+
+    对于每个小批次计算的梯度，将其累加到一个梯度变量 $g$ 上：
+    $$
+    g := g + \nabla_\theta J_{b}(\theta)
+    $$
+
+    重复上述步骤 $\frac{B}{b}$ 次后，$g$ 中就累积了相当于 $B$ 个样本的梯度总和。
+
+2. **参数更新**：
+
+   在完成 $\frac{B}{b}$ 次累积后，我们使用**累积的平均梯度**对参数进行更新。由于 $g$ 是 $\frac{B}{b}$ 个小批次的总梯度，我们需要求其平均值，公式如下：
+   $$
+   \theta := \theta - \eta \frac{g}{k}, \quad \text{其中} \, k = \frac{B}{b}
+   $$
+
+   - **参数 $\theta$ 的更新基于平均梯度，而不是总梯度**。
+   - 更新完成后，**需要将 $g$ 清零**，即 $g := 0$，以便下一批的梯度累积。
+
+### 代码示例
+
+假设理想 batch_size = 32，但受显存限制只能一次处理 8 个样本（b=8），则需要累积 4 次（32/8=4）小批次的梯度后再更新参数：
+
+```python
+import torch
+from torch import nn, optim
+
+# 数据集参数
+N = 10000  # 数据集总样本数
+B = 32     # 理想 batch size
+b = 8      # 实际 batch size
+gradient_accumulation_steps = B // b  # 等于 4，可以手动设置
+
+# 创建一个示例数据集
+X = torch.randn(N, 10)        # 假设输入维度为 10
+y = torch.randint(0, 2, (N,)) # 二分类标签
+
+dataset = TensorDataset(X, y)
+dataloader = DataLoader(dataset, batch_size=b, shuffle=True, drop_last=False)
+
+model = nn.Sequential(
+    nn.Linear(10, 50),
+    nn.ReLU(),
+    nn.Linear(50, 2)
+)
+criterion = nn.CrossEntropyLoss()
+optimizer = optim.SGD(model.parameters(), lr=0.01)
+
+device = "cuda" if torch.cuda.is_available() else "cpu"
+model.to(device)
+
+for i, (inputs, targets) in enumerate(dataloader):
+    inputs = inputs.to(device)
+    targets = targets.to(device)
+    
+    # 前向传播
+    outputs = model(inputs)
+    loss = criterion(outputs, targets) / gradient_accumulation_steps
+
+    # 反向传播，梯度自动累积
+    loss.backward()
+
+    # 达到设定的累积次数后更新参数
+    if (i + 1) % gradient_accumulation_steps == 0:
+        optimizer.step()
+        optimizer.zero_grad()
+```
+
+梯度累积的基本步骤：
+
+- 在每个小批次（batch_size=8）中，我们执行一次前向传播、一次反向传播，并将梯度累加到模型参数的 .grad 中。
+- 当累计了 4 次（也就是相当于处理了 32 个样本后），我们执行 optimizer.step() 来更新参数，然后用 optimizer.zero_grad() 清空累积的梯度。
+
+#### 使用 `accelerate` 库简化
+
+`accelerate` 可以自动管理设备与梯度累积逻辑，先进行安装：
+
+```python
+pip install accelerate
+```
+
+**修改如下**[^1]：
+
+```diff
++ from accelerate import Accelerator
+
+...
+
+- device = "cuda" if torch.cuda.is_available() else "cpu"
+- model.to(device)
+
++ accelerator = Accelerator(gradient_accumulation_steps=gradient_accumulation_steps)
++ # 将模型和优化器交给 Accelerator 管理
++ model, optimizer, dataloader = accelerator.prepare(model, optimizer, dataloader)
+
+- for i, (inputs, targets) in enumerate(dataloader):
+-	inputs = inputs.to(device)
+-	targets = targets.to(device)
++for inputs, targets in dataloader:
++	with accelerator.accumulate(model):
+    	outputs = model(inputs)
+-		loss = criterion(outputs, targets) / gradient_accumulation_steps
+-		loss.backward()
++		loss = criterion(outputs, targets)
++		accelerator.backward(loss)
+-		if (i + 1) % gradient_accumulation_steps == 0:
+-			optimizer.step()
+-			optimizer.zero_grad()
++		optimizer.step()
++		optimizer.zero_grad()
+```
+
+**最终版本**：
+
+```python
+from accelerate import Accelerator
+
+...
+
+# 使用 Accelerator 自动管理设备和梯度累积
+accelerator = Accelerator(gradient_accumulation_steps=gradient_accumulation_steps)
+# 将模型和优化器交给 Accelerator 管理
+model, optimizer, dataloader = accelerator.prepare(model, optimizer, dataloader)
+
+# 训练循环
+for inputs, targets in dataloader:
+    with accelerator.accumulate(model):  # 必须加这行代码，否则无法正确实现梯度累积
+        outputs = model(inputs)
+        loss = criterion(outputs, targets)
+        accelerator.backward(loss)
+        optimizer.step()
+        optimizer.zero_grad()
+```
+
+[^1]: [Gradient accumulation - Docs](https://huggingface.co/docs/accelerate/usage_guides/gradient_accumulation).
 
