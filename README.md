@@ -78,6 +78,7 @@
 | [f. 交叉熵损失函数 nn.CrossEntropyLoss() 详解和要点提醒（PyTorch）](./Guide/f.%20交叉熵损失函数%20nn.CrossEntropyLoss()%20详解和要点提醒（PyTorch）.md) | - 了解交叉熵损失的数学原理及 PyTorch 实现。<br />- 了解初次使用时需要注意的地方。 |
 | [g. 嵌入层 nn.Embedding() 详解和要点提醒（PyTorch）](./Guide/g.%20嵌入层%20nn.Embedding()%20详解和要点提醒（PyTorch）.md) | - 了解嵌入层和词嵌入的概念。<br />- 使用预训练模型可视化 Embedding。<br />[Code](./Demos/20.%20嵌入层%20nn.Embedding()%20代码示例.ipynb) \| [Kaggle](https://www.kaggle.com/code/aidemos/20-nn-embedding) \| [Colab](https://colab.research.google.com/drive/1BLgmxasxOD1HQGrI0L1sPlYG40iba9SY?usp=sharing) |
 | [h. 使用 Docker 快速配置深度学习环境（Linux）](./Guide/使用%20Docker%20快速配置深度学习环境（Linux）.md)<br />[h. Docker 基础命令介绍和常见报错解决](./Guide/Docker%20基础命令介绍和常见报错解决.md) | - 使用两行命令配置好深度学习环境<br />- Docker 基础命令介绍<br />- 解决使用时的三个常见报错 |
+| [i. Epoch、Batch 和 Step 之间的关系以及梯度累积](./Guide/Epoch、Batch%20和%20Step%20之间的关系以及梯度累积.md) | 基础文章，可以在任意时候进行阅读<br />- Epoch、Batch、Step 三者之间的关系<br />- SGD、BGD、MBGD 方法的区别<br />- 梯度累积的使用 |
 
 **文件夹解释：**
 
@@ -634,8 +635,8 @@ jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root
 ## 当前规划
 
 - [ ] GPT 论文系列
-- [ ] 基础拓展文章《关于梯度累积的正确使用》（待定）
-  - [ ] 进一步讲解 epoch，batch，step... 之间的对应关系
+- [x] 基础拓展文章《关于梯度累积的正确使用》（待定）
+  - [x] 进一步讲解 epoch，batch，step... 之间的对应关系
 
 - [x] LoRA 文生图的 🎡 命令行脚本制作上传
 - [x] 补充 Docker 基础命令

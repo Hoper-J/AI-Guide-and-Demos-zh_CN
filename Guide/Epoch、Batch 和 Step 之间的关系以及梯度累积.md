@@ -1,5 +1,31 @@
 # Epoch、Batch 和 Step 之间的关系以及梯度累积
 
+> 本文将简单介绍一些深度学习中的基本概念： 
+>
+> - Epoch、Batch、Step 三者之间的关系
+> - SGD、BGD、MBGD 方法的区别
+> - 梯度累积的使用
+
+## 目录
+
+- [基本概念：Epoch、Batch、Step](#基本概念epochbatchstep)
+   - [Epoch](#epoch)
+   - [Batch](#batch)
+   - [Step](#step)
+   - [关系总结](#关系总结)
+   - [举例说明](#举例说明)
+      - [代码示例](#代码示例)
+   - [实践中相关的概念](#实践中相关的概念)
+- [Q：SGD、BGD、MBGD 三者的区别是什么？](#qsgdbgdmbgd-三者的区别是什么)
+   - [SGD（Stochastic Gradient Descent，随机梯度下降）](#sgdstochastic-gradient-descent随机梯度下降)
+   - [BGD（Batch Gradient Descent，批量梯度下降）](#bgdbatch-gradient-descent批量梯度下降)
+   - [MBGD（Mini-Batch Gradient Descent，小批量梯度下降）](#mbgdmini-batch-gradient-descent小批量梯度下降)
+- [梯度累积（Gradient Accumulation）](#梯度累积gradient-accumulation)
+   - [数学公式](#数学公式)
+   - [代码示例](#代码示例-1)
+      - [使用 accelerate 库简化](#使用-accelerate-库简化)
+   - [Q：使用了梯度累积后，step 和 batch 的对应关系有什么变化？](#q使用了梯度累积后step-和-batch-的对应关系有什么变化)
+
 ## 基本概念：Epoch、Batch、Step
 
 ### Epoch
@@ -12,10 +38,10 @@
 
 - **定义**：训练时通常不会将整个数据集一次性输入到模型，而是将数据分成若干小批量（mini-batch）逐步进行训练，其中**每个 batch 包含一定数量的样本（batch size）**。
 
-- **公式**：假设数据集大小为 $N$，batch size 为 $B$，则一个 epoch 内的 batch 数量为：
-  $$
-  \text{Number of Batches per Epoch} = \left\lceil \frac{N}{B} \right\rceil
-  $$
+- **公式**：假设数据集大小为 $N$, batch size 为 $B$, 则一个 epoch 内的 batch 数量为：
+
+  $$\text{Number of Batches per Epoch} = \left\lceil \frac{N}{B} \right\rceil$$
+  
   这里使用向上取整 $\lceil \cdot \rceil$ 是因为数据集大小 $N$ 可能无法被 $B$ 整除。大多数深度学习框架在加载数据时可以自动处理最后一个不完整的 batch。例如，在 PyTorch 的 `DataLoader` 中，通过设置参数 `drop_last` 决定是否丢弃最后那个不完整的 batch（如果 `drop_last=True`，则会丢弃最后不足一个 batch 的样本，以确保所有 batch 大小一致）。
 
 ### Step
@@ -23,9 +49,8 @@
 - **定义**：在训练中，**一次对参数的更新过程**被称为一个 **step**。也就是说，执行一次前向传播（forward）、反向传播（backward）以及参数更新（optimizer.step()），就算完成了 1 个 step。
 
 - **公式**：对应于上面的定义，一个 epoch 内 step 的数量与该 epoch 内的 batch 数量相同。当训练了 $E$ 个 epoch 时，总的 step 数为：
-  $$
-  \text{Total Steps} = \text{Number of Batches per Epoch} \times E = \left\lceil \frac{N}{B} \right\rceil \times E
-  $$
+
+  $$\text{Total Steps} = \text{Number of Batches per Epoch} \times E = \left\lceil \frac{N}{B} \right\rceil \times E$$
 
 ### 关系总结
 
@@ -34,8 +59,6 @@
 | **Epoch** | 整个训练集完整遍历一次                           | -                                                            |
 | **Batch** | 一小组样本，用于一次参数更新前的前/后向传播      | $\text{Number of Batches per Epoch} = \left\lceil \frac{N}{B} \right\rceil$ |
 | **Step**  | 一次完整的参数更新过程（前向+反向传播+更新参数） | $\text{Total Steps} = \left\lceil \frac{N}{B} \right\rceil \times E$ |
-
----
 
 ### 举例说明
 
@@ -46,14 +69,16 @@
 - epoch 数 $E = 5$
 
 1. 计算 1 个 epoch 中的 batch 数量：
-   $$
-   \text{Number of Batches per Epoch} = \left\lceil \frac{10,000}{32} \right\rceil = \left\lceil 312.5 \right\rceil = 313
-   $$
+
+$$
+\text{Number of Batches per Epoch} = \left\lceil \frac{10,000}{32} \right\rceil = \left\lceil 312.5 \right\rceil = 313
+$$
 
 2. 计算总步数：
-   $$
-   \text{Total Steps} = \left\lceil \frac{10,000}{32} \right\rceil \times 5 = 313 \times 5 = 1565
-   $$
+
+$$
+\text{Total Steps} = \left\lceil \frac{10,000}{32} \right\rceil \times 5 = 313 \times 5 = 1565
+$$
 
 **图示**（以前 2 个 epoch 为例）：
 
@@ -168,7 +193,7 @@ Epoch [2/5], Batch [300/313], Step [613/1565], Loss: 0.6896
 
 > **思考一下**：为什么输出 `Epoch [2/5], Batch [50/313], Step [363/1565], Loss: 0.7058` 中的 `step` 是 363？
 
-### 实践中相关的基础概念
+### 实践中相关的概念
 
 1. **学习率调度器（Scheduler）**
 
@@ -239,6 +264,7 @@ Epoch [2/5], Batch [300/313], Step [613/1565], Loss: 0.6896
 **定义**：每次参数更新使用**单个样本**计算梯度（batch_size = $1$）。 
 
 **参数更新**：
+
 $$
 \theta := \theta - \eta \nabla_\theta \ell(f_\theta(x_i), y_i)
 $$
@@ -258,9 +284,11 @@ $$
 **定义**：每次参数更新都使用**整个训练集**计算梯度（batch_size = $N$）。
 
 **参数更新**：
+
 $$
 \theta := \theta - \eta \nabla_\theta J(\theta)
 $$
+
 其中：
 
 - $\theta$：模型的参数向量。
@@ -268,37 +296,34 @@ $$
 - $\eta$：学习率。
 
 - $J(\theta)$：整个数据集的平均损失函数，定义为：
-  $$
-  J(\theta) = \frac{1}{N} \sum_{i=1}^{N} \ell(f_\theta(x_i), y_i)
-  $$
+
+  $$J(\theta) = \frac{1}{N} \sum_{i=1}^{N} \ell(f_\theta(x_i), y_i)$$
+  
   其中 $N$ 是数据集中的样本总数。
 
 - $\nabla_\theta J(\theta)$：损失函数 $J(\theta)$ 关于参数 $\theta$ 的梯度。
 
 ### MBGD（Mini-Batch Gradient Descent，小批量梯度下降）
 
-**定义**：每次参数更新使用**一小批样本（mini-batch）**计算梯度（batch_size = $B$）。
+**定义**：每次参数更新使用**一小批样本**（mini-batch）计算梯度（batch_size = $B$）。
 
 **参数更新**：
 
 1. 将训练集划分为若干 mini-batch：
-   $$
-   \mathcal{B}_1, \mathcal{B}_2, \dots, \mathcal{B}_K
-   $$
+
+   $$\mathcal{B}_1, \mathcal{B}_2, \dots, \mathcal{B}_K$$
+   
    其中每个 $\mathcal{B}_k$ 包含 $B$ 个样本，即：
-   $$
-   \mathcal{B}_k = \{(x_{k_1}, y_{k_1}), (x_{k_2}, y_{k_2}), \dots, (x_{k_B}, y_{k_B})\}.
-   $$
+   
+   $`\mathcal{B}_k = \{(x_{k_1}, y_{k_1}), (x_{k_2}, y_{k_2}), \dots, (x_{k_B}, y_{k_B})\}`$
 
 2. 在第 $k$ 个 mini-batch 上定义平均损失函数：
-   $$
-   J_{\mathcal{B}_k}(\theta) = \frac{1}{B} \sum_{(x_{k_j},y_{k_j}) \in \mathcal{B}_k} \ell(f_\theta(x_{k_j}), y_{k_j}).
-   $$
+
+   $`J_{\mathcal{B}_k}(\theta) = \frac{1}{B} \sum_{(x_{k_j},y_{k_j}) \in \mathcal{B}_k} \ell(f_\theta(x_{k_j}), y_{k_j})`$
 
 3. 利用该 mini-batch 的平均损失对参数进行更新：
-   $$
-   \theta := \theta - \eta \nabla_\theta J_{\mathcal{B}_k}(\theta)
-   $$
+
+   $$\theta := \theta - \eta \nabla_\theta J_{\mathcal{B}_k}(\theta)$$
 
 其中：
 
@@ -306,7 +331,7 @@ $$
 - $\eta$：学习率。
 - $B$：mini-batch 的大小。
 - $\mathcal{B}_k$：第 $k$ 个 mini-batch，包含 $B$ 个样本。
-- $\nabla_\theta J_{\mathcal{B}_k}(\theta)$：损失函数 $J_{\mathcal{B}_k}(\theta)$ 关于参数 $\theta$ 的梯度。
+- $`\nabla_\theta J_{\mathcal{B}_k}(\theta)`$：损失函数 $J_{\mathcal{B}_k}(\theta)$ 关于参数 $\theta$ 的梯度。
 
 其实，**SGD 和 BGD 只是 MBGD 中不同 batch_size 下的特例**，切换方法只需要修改 batch_size 的值：
 
@@ -328,26 +353,24 @@ $$
 
 ### 数学公式
 
-假设理想的 batch_size 为 $B$，但由于硬件限制，每次只能处理 $b$ 个样本（$b < B$）。那么我们可以把 $B$ 个样本的训练过程拆分为 $\frac{B}{b}$ 个小批次，每个小批次的平均损失函数记为 $J_{b}(\theta)$，对应的梯度为 $\nabla_\theta J_{b}(\theta)$。
+假设理想的 batch_size 为 $B$, 但由于硬件限制，每次只能处理 $b$ 个样本 ($b < B$)。那么我们可以把 $B$ 个样本的训练过程拆分为 $\frac{B}{b}$ 个小批次，每个小批次的平均损失函数记为 $J_{b}(\theta)$, 对应的梯度为 $\nabla_\theta J_{b}(\theta)$。
 
  1. **梯度累积**：
 
     对于每个小批次计算的梯度，将其累加到一个梯度变量 $g$ 上：
-    $$
-    g := g + \nabla_\theta J_{b}(\theta)
-    $$
+    
+    $$g := g + \nabla_\theta J_{b}(\theta)$$
 
-    重复上述步骤 $\frac{B}{b}$ 次后，$g$ 中就累积了相当于 $B$ 个样本的梯度总和。
+    重复上述步骤 $\frac{B}{b}$ 次后, $g$ 中就累积了相当于 $B$ 个样本的梯度总和。
 
 2. **参数更新**：
 
    在完成 $\frac{B}{b}$ 次累积后，我们使用**累积的平均梯度**对参数进行更新。由于 $g$ 是 $\frac{B}{b}$ 个小批次的总梯度，我们需要求其平均值，公式如下：
-   $$
-   \theta := \theta - \eta \frac{g}{k}, \quad \text{其中} \, k = \frac{B}{b}
-   $$
+   
+   $$\theta := \theta - \eta \frac{g}{k}, \quad \text{其中} \, k = \frac{B}{b}$$
 
    - **参数 $\theta$ 的更新基于平均梯度，而不是总梯度**。
-   - 更新完成后，**需要将 $g$ 清零**，即 $g := 0$，以便下一批的梯度累积。
+   - 更新完成后，**需要将 $g$ 清零**，即 $g := 0$, 以便下一批的梯度累积。
 
 ### 代码示例
 
@@ -465,4 +488,47 @@ for inputs, targets in dataloader:
 ```
 
 [^1]: [Gradient accumulation - Docs](https://huggingface.co/docs/accelerate/usage_guides/gradient_accumulation).
+
+### Q：使用了梯度累积后，step 和 batch 的对应关系有什么变化？
+
+- **无梯度累积时**：1 个 batch 对应 1 次参数更新（1 step）。
+- **有梯度累积时**：多个小批次（k 个 batch）累积后才更新一次参数，这时 k 个 batch 才对应 1 次 step。
+
+也就是说，step 的频率降低了，但每次 step 的意义相当于在更大有效 batch_size 上进行一次更新。所以如果需要打印 loss，则修改大致如下：
+
+```diff
+B = 32
++ b = 8
++ gradient_accumulation_steps = B // b
+
+- dataloader = DataLoader(dataset, batch_size=B, shuffle=True, drop_last=False)
++ dataloader = DataLoader(dataset, batch_size=b, shuffle=True, drop_last=False)
+
+- total_steps = len(dataloader)
++ total_steps = len(dataloader) // gradient_accumulation_steps
++ current_step = 0
++ accumulated_loss = 0.0
+
+for i, (inputs, targets) in enumerate(dataloader):
+    inputs = inputs.to(device)
+    targets = targets.to(device)
+    outputs = model(inputs)
+    
+-	loss = criterion(outputs, targets)
++	loss = criterion(outputs, targets) / gradient_accumulation_steps
+
+    loss.backward()
+
+-	optimizer.step()
+-	optimizer.zero_grad()
+-	current_step += 1
+-	print(f"Step [{current_step}/{total_steps}], Loss: {loss.item():.4f}")
++	accumulated_loss += loss.item()
++	if (i + 1) % gradient_accumulation_steps == 0:
++		optimizer.step()
++		optimizer.zero_grad()
++ 		current_step += 1
++		print(f"Step [{current_step}/{total_steps}], Loss: {accumulated_loss:.4f}")
++		accumulated_loss = 0.0
+```
 
