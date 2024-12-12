@@ -503,7 +503,7 @@ $$
 
 #### Q3: 什么是 PPL?
 
-> 《[18. 模型量化技术概述及 GGUF:GGML 文件格式解析](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/eb30d73be9388bace7e6de9b520712afdc2da569/Guide/18.%20模型量化技术概述及%20GGUF%3AGGML%20文件格式解析.md#什么是-ppl)》
+> 《[18. 模型量化技术概述及 GGUF:GGML 文件格式解析](../Guide/18.%20模型量化技术概述及%20GGUF%3AGGML%20文件格式解析.md#什么是-ppl)》
 
 #### Q4: 什么是 BLEU？
 
@@ -1854,7 +1854,7 @@ class LayerNorm(nn.Module):
 >    # 初始化的 shape 是二维的
 >    self.weight = nn.Parameter(torch.randn(out_features, in_features))  # 权重矩阵
 >    self.bias = nn.Parameter(torch.zeros(out_features))  # 偏置向量
->                                                                                                                                                                               
+>                                                                                                                                                                                           
 >    # 计算
 >    def forward(self, x):
 >    	return torch.matmul(x, self.weight.T) + self.bias
@@ -3023,14 +3023,15 @@ print(model)
 
 #### 自回归（Auto-Regressive）
 
-自回归是一种序列生成方式，位于解码操作，**每一步都依赖于之前生成的符号**。这种设计确保了生成过程中的连贯性和逻辑一致性。当前大多数语言模型（如 GPT 系列）都采用自回归生成。例如：
+**自回归生成**是指序列生成过程中，**每个新生成的 token 依赖于之前生成的 token**。这意味着生成过程是**串行的**，每一步的输入由**前面已生成的 token 组成的上下文序列**构成。例如：
 
-- 当生成句子的第一个词 $y_1$ 后，模型会使用 $y_1$ 作为输入来生成下一个词 $y_2$。
-- 这种过程会一直重复，直到生成结束符号（`<end>`）。
+- 假设要生成一个长度为 $T$ 的句子 $y = (y_1, y_2, \dots, y_T)$，在生成句子 $y$ 的过程中，首先生成 $y_1$，然后在生成 $y_2$ 时需要考虑 $y_1$；在生成 $y_3$ 时，需要考虑 $(y_1, y_2)$，以此类推，直到生成结束符号（`<end>`）。
+
+这种设计确保了生成过程中的连贯性和逻辑一致性，当前大多数语言模型（如 GPT 系列）都采用自回归生成的方式。
 
 #### 非自回归（Non-Autoregressive）
 
-非自回归可以一次性生成多个甚至全部的输出符号，会牺牲一定的生成质量。
+**非自回归生成**是一种**并行生成**的方式，**一次性生成多个甚至全部的 token**，从而显著提高生成速度，但也会**牺牲一定的生成质量**。
 
 > **拓展**
 >
