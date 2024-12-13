@@ -8,13 +8,13 @@
 >
 > 项目将从简单的 API 调用入手，带你逐步深入大模型的世界。在此过程中，你将掌握 **AI 视频摘要**、**LLM 微调**和 **AI 图像生成**等技能。
 >
-> 强烈建议观看李宏毅老师的课程「生成式人工智能导论」同步学习：[课程相关链接快速访问](https://github.com/Hoper-J/LLM-Guide-and-Demos-zh_CN?tab=readme-ov-file#快速访问)
+> 强烈建议观看李宏毅老师的课程「生成式人工智能导论」同步学习：[课程相关链接快速访问](#快速访问)
 >
-> 现在，项目还开设了[🎡CodePlayground](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/tree/master/CodePlayground)，你可以按照文档配置好环境，使用一行代码运行脚本，体验 AI 的魅力。
+> 现在，项目还开设了[🎡CodePlayground](./CodePlayground)，你可以按照文档配置好环境，使用一行代码运行脚本，体验 AI 的魅力。
 >
-> 📑论文随笔位于 [PaperNotes](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/tree/master/PaperNotes)，将逐步上传大模型相关的基础论文。
+> 📑论文随笔位于 [PaperNotes](./PaperNotes)，将逐步上传大模型相关的基础论文。
 >
-> 🚀 [基础镜像](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/tree/master#-docker-快速部署-)已经准备好，如果你还没有配置好属于自己的深度学习环境，不妨尝试一下 Docker。
+> 🚀 [基础镜像](#-docker-快速部署-)已经准备好，如果你还没有配置好属于自己的深度学习环境，不妨尝试一下 Docker。
 >
 > 祝你旅途愉快！
 >
@@ -106,7 +106,7 @@
 
   论文随笔。
 
-  - [**README.md**](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/tree/master/PaperNotes)
+  - [**README.md**](./PaperNotes)
     - 目录索引。
   - [对比学习论文随笔 1：正负样本](./PaperNotes/对比学习论文随笔%201：正负样本.md)
     - 涉及使用正负样本思想且优化目标一致的基础论文
@@ -119,7 +119,7 @@
     - 以 $\text{BERT}_\text{BASE}$ 为例，计算模型的总参数量
     - [作业 - BERT 微调抽取式问答](./Guide/22b.%20作业%20-%20Bert%20微调抽取式问答.md)
 
-- [**CodePlayground**](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/tree/master/CodePlayground)
+- [**CodePlayground**](./CodePlayground)
 
   - 一些有趣的代码脚本示例（Toy 版）。
 
@@ -635,11 +635,6 @@ jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root
 ## 当前规划
 
 - [ ] GPT 论文系列
-- [x] 基础拓展文章《关于梯度累积的正确使用》（待定）
-  - [x] 进一步讲解 epoch，batch，step... 之间的对应关系
-
-- [x] LoRA 文生图的 🎡 命令行脚本制作上传
-- [x] 补充 Docker 基础命令
 - [ ] 更多有趣的实践项目与理论...
 
 ---

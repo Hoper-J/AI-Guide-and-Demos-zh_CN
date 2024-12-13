@@ -753,4 +753,4 @@ ollama run qwen2.5_7b_Q4
 
 ## 相关文章阅读
 
-[18. 模型量化技术概述及 GGUF/GGML 文件格式解析](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/18.%20模型量化技术概述及%20GGUF%3AGGML%20文件格式解析.md#直观感受-gguf-文件的权重)
+[18. 模型量化技术概述及 GGUF/GGML 文件格式解析](./18.%20模型量化技术概述及%20GGUF%3AGGML%20文件格式解析.md#直观感受-gguf-文件的权重)
