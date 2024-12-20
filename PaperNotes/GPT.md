@@ -41,6 +41,10 @@ Alec Radford et al. | [PDF](https://cdn.openai.com/research-covers/language-unsu
 
 **Google 的 Transformer（Attention is All You Need）** 于 2017 年 6 月发表，一年后，OpenAI 的团队发表了 **GPT** ，又过了两个月，Google 的另一个团队发表了 **BERT**。
 
+...
+
+（如果说BERT开启了预训练语言模型的浪潮，那GPT...
+
 > [!tip]
 >
 > 缩写 **GPT** 来自论文题目的 **Generative Pre-Training**，生成式预训练，维基百科[^2]中的表述是 **Generative Pre-trained Transformer**，二者指代一致。这是一个通用概念，当前常见的具有聊天功能的 AI 或者说 LLM 其实都可以称作 GPT。
@@ -129,9 +133,110 @@ GPT 是一种自回归（Auto-Regressive，AR）模型，在进一步了解 GPT 
 
 > [!tip]
 >
-> 如果对架构中的表述感到难以理解，建议先阅读《[Transformer 论文精读](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/PaperNotes/Transformer%20论文精读.md)》，GPT 完全基于 Transformer 原模型的架构，所以此处没有着墨太多。
+> 如果对架构中的表述感到难以理解，建议先阅读《[Transformer 论文精读](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/PaperNotes/Transformer%20论文精读.md)》，GPT 完全基于 Transformer 原模型的架构，所以本文没有着墨太多。
 >
 > 另外，可以通过拓展文章《[g. 嵌入层 nn.Embedding() 详解和要点提醒（PyTorch）](../Guide/g.%20嵌入层%20nn.Embedding()%20详解和要点提醒（PyTorch）.md)》进一步了解什么是嵌入层。
+
+
+
+
+
+### 右半部分：不同任务的输入处理
+
+> ![Figure 1 (right)](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/image-20241219214959564.png)
+
+GPT 将不同的自然语言处理（NLP）任务的输入转化为统一的序列格式，使得预训练的生成模型（图中的 Transformer）可以直接接受它们进行处理。
+
+以下符号将遵循原论文的表述，这里将用到三种**特殊词元**（Special Token）：
+
+- **开始词元**（Start Token）：$\langle s \rangle$，表示序列起始。
+- **结束词元**（End Token）：$\langle e \rangle $，表示序列结束。
+- **分隔词元**（Delimiter Token）：$\$$，用于分隔子序列，例如前提句和假设句，问题和答案。
+
+> [!note]
+>
+> 这些标记并不是为人类设计的，而是为模型提供明确的语义提示，以便在训练中建立序列关系。
+
+#### 1. 文本分类（Classification）
+
+**文本分类**任务的输入是**单一文本**，目标是根据文本内容预测类别（例如电影评论情感分析：积极或消极）。
+
+**输入格式**：  
+$$
+\langle s \rangle \ \text{文本} \ \langle e \rangle
+$$
+
+#### 2. 文本蕴含（Textual Entailment）
+
+**文本蕴含**任务，也称自然语言推理（NLI）[^4]，目标是判断**前提**（Premise）与**假设**（Hypothesis）之间的关系：
+
+1. **蕴含**（Entailment）：由前提可以推出假设，p $\Rightarrow$ h。
+2. **矛盾**（Contradiction）：前提与假设相矛盾。
+3. **无关**（Neutral）：前提和假设无直接关联。
+
+这是一个三分类问题，举个例子：
+
+**蕴含**（positive TE，premise entails hypothesis）：
+
+- **前提**：“所有鸟类都有翅膀。”
+- **假设**：“麻雀有翅膀。”
+- **关系**：假设可以从前提推导出，因此为**蕴含**。
+
+**矛盾**（negative TE，premise contradicts hypothesis）：
+
+- **前提**：“所有鸟类都有翅膀。”
+- **假设**：“企鹅没有翅膀。”
+- **关系**：假设与前提的事实相矛盾，因此为**矛盾**（对了，企鹅是鸟）。
+
+**无关**（non-TE，premise does not entail nor contradict）：
+
+- **前提**：“所有鸟类都有翅膀。”
+- **假设**：“所有鸟类都会飞。”
+- **关系**：假设无法从前提中推导，也不矛盾，因此为**无关**。
+
+**输入格式**：  
+$$
+\langle s \rangle \ \text{前提} \ \$\ \text{假设} \ \langle e \rangle
+$$
+[^4]: [Textual entailment - Wikipedia](https://en.wikipedia.org/wiki/Textual_entailment)
+
+#### 3. 语义相似性（Semantic Similarity）
+
+在**语义相似性**任务中，目标是判断两个句子是否在语义上相似，例如 Quora 问题对检测（Quora Question Pairs，QQP）要求识别两个问题是否相似。
+
+> Similarity For similarity tasks, there is no inherent ordering of the two sentences being compared. To reflect this, we modify the input sequence to contain both possible sentence orderings (with a delimiter in between) and process each independently to produce two sequence representations $h^m_l$ which are added element-wise before being fed into the linear output layer.
+
+由于句子对没有固有的顺序，论文采用了以下方法：
+
+1. 将句子对按照两种可能的顺序输入模型（即$A; B$和$B; A$）。
+2. 对两种输入序列分别处理，生成的最后一层激活向量（$h^m_l$）进行**逐元素相加**（element-wise addition）。
+3. 加和后的表示被输入到线性层中，用于判断语义相似性。
+
+**输入格式**：
+$$
+\langle s \rangle \ \text{句子A} \ \$\ \text{句子B} \ \langle e \rangle\\
+\langle s \rangle \ \text{句子B} \ \$\ \text{句子A} \ \langle e \rangle
+$$
+#### 4. 选择题（Multiple Choice）
+
+在**选择题任务**中，模型需要从多个候选答案中选择一个最可能的正确答案，例如问答（Question Answering，QA）和常识推理（Commonsense Reasoning）。
+
+> For these tasks, we are given a context document $z$, a question $q$, and a set of possible answers $\{a_k\}$. We concatenate the document context and question with each possible answer, adding a delimiter token in between to get $[z; q; \$; a_k]$. Each of these sequences are processed independently with our model and then normalized via a softmax layer to produce an output distribution over possible answers.
+
+此时的输入通常包括三个部分，以问答任务为例：
+
+1. **上下文文档** $z$：问题的背景信息。
+2. **问题** $q$：需要解答的问题。
+3. **候选答案集** $\{a_k\}$：多个可能的答案。
+
+**输入格式**：
+$$
+\langle s \rangle \ \text{文档} z \ \text{问题} q \ \$\ \text{答案} a_1 \ \langle e \rangle\\
+\langle s \rangle \ \text{文档} z \ \text{问题} q \ \$\ \text{答案} a_2 \ \langle e \rangle\\
+\vdots \\
+\langle s \rangle \ \text{文档} z \ \text{问题} q \ \$\ \text{答案} a_k \ \langle e \rangle
+$$
+这些序列会被**独立处理**，最后通过 softmax 归一化生成概率分布。
 
 
 
