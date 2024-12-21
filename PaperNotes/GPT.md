@@ -10,6 +10,12 @@ Alec Radford et al. | [PDF](https://cdn.openai.com/research-covers/language-unsu
 > - **前置文章**
 >   - [Transformer 论文精读](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/PaperNotes/Transformer%20论文精读.md)
 >
+> - **机器学习**
+>
+>   —— 李宏毅老师的 B 站搬运视频
+>
+>     - [自监督式学习(四) - GPT的野望](https://www.bilibili.com/video/BV1Wv411h7kN/?p=74&share_source=copy_web&vd_source=e46571d631061853c8f9eead71bdb390)
+>     - [[DLHLP 2020] 來自猎人暗黑大陆的模型 GPT-3](https://www.bilibili.com/video/BV1Wv411h7kN/?p=80&share_source=copy_web&vd_source=e46571d631061853c8f9eead71bdb390)
 >
 > - **论文逐段精读**
 >
@@ -101,18 +107,18 @@ GPT 是一种自回归（Auto-Regressive，AR）模型，在进一步了解 GPT 
 
 > <img src="/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/image-20241219214847470.png" alt="Figure 1 (Left)" style="zoom:33%;" />
 
-让我们**自顶向下**的理解这个架构，下文所说的**词**实际上就是 Token。
+让我们**自顶向下**的理解这个架构，下文所说的**词**/**词元**实际上就是 Token。
 
-#### 1. 顶部：Text Prediction 和 Text Classifier
+#### 1. 顶部：Text Prediction 和 Task Classifier
 
-- **Text Prediction**：用于生成任务，预测下一个词（**生成任务**）。
-- **Text Classifier**：用于文本分类任务，输出分类标签（**分类任务**）。
+- **Text Prediction**：用于**生成任务**，预测下一个词。
+- **Task Classifier**：用于**分类任务**，如情感分析或文本蕴含任务。
 
 #### 2. 中部：Transformer 架构
 
 - 遵循原论文的表达将其称之为 `transformer_block`，其中每一层包含：
 
-  - **Layer Norm (LN) + 残差连接 `+`**
+  - **Layer Norm (LN) + 残差连接 (`+`)**
 
     对应于 Transformer 架构中的 `Add & Norm`。
 
@@ -137,15 +143,104 @@ GPT 是一种自回归（Auto-Regressive，AR）模型，在进一步了解 GPT 
 >
 > 另外，可以通过拓展文章《[g. 嵌入层 nn.Embedding() 详解和要点提醒（PyTorch）](../Guide/g.%20嵌入层%20nn.Embedding()%20详解和要点提醒（PyTorch）.md)》进一步了解什么是嵌入层。
 
+#### 无监督预训练（Unsupervised pre-training）
 
+在预训练阶段，模型的目标是最大化未标注语料的语言建模函数：
+$$
+L_1(\mathcal{U}) = \sum_i \log P(u_i \mid u_{i-k}, \ldots, u_{i-1}; \Theta)
+$$
 
+其中：
 
+- $\mathcal{U}$：未标注的文本语料。
+- $u_i$：第 $i$ 个词。
+- $k$：上下文窗口的大小（即当前词基于前 $k$ 个词预测）。
+- $\Theta$：模型参数。
+
+**具体流程**
+
+1. **输入嵌入**
+
+   将输入序列 $ U = {u_{-k}, \ldots, u_{-1}} $ 映射到嵌入空间：
+   $$
+   h_0 = U W_e + W_p
+   $$
+   - $W_e$：词嵌入矩阵。
+   - $W_p$：位置嵌入矩阵。
+   - $h_0$：初始输入的嵌入表示。
+
+2. **多层 Transformer 编码**
+
+   输入嵌入 $h_0$ 通过 $n$ 层 `transformer_block` 逐层处理：
+   $$
+   h_l = \text{transformer\_block}(h_{l-1}) \; \forall i \in [1, n]
+   $$
+
+   - $h_l$：第 $l$ 层的输出。
+
+3. **预测下一个词**
+
+   最后一层的输出 $h_n$ 被映射回词汇表维度，生成下一个词的概率分布：
+   $$
+   P(u) = \text{softmax}(h_n W_e^T)
+   $$
+   - $W_e^T$：词嵌入矩阵的转置，将隐藏状态映射回词汇表。
+   - **softmax**：归一化概率分布。
+
+> [!tip]
+>
+> 更准确一点应该是**自监督**（Self-supervised）而非无监督，这是一个较新（相对于 2018 年发布的 GPT）的说法，源于 2019 年 [Yann LeCun](https://www.facebook.com/yann.lecun) 在 Facebook 上发表的帖文：
+>
+> ![image-20241222172619405](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/image-20241222172619405.png)
+
+#### Q: Transformer 的 Encoder、Decoder 和 GPT 的架构有什么区别？
+
+> 下图为 Transformer 的模型架构：
+>
+> ![Transformer 模型架构图](./assets/20241023202539.png)
+
+如果不考虑子层（sublayer）之间的残差连接和 Layer Norm（`Add & Norm`），我们可以将 Transformer 的编码器和解码器层以及GPT的架构抽象为以下表述：
+
+**Encoder**：
+$$
+\text{输入} 
+\xrightarrow{\text{嵌入层（Embedding Layer）}} 
+\xrightarrow{\text{位置编码（Positional Encoding）}} 
+\xrightarrow{\text{多头自注意力（Multi-Head Self-Attention）}} 
+\xrightarrow{\text{前馈网络（Feed-Forward Network, FFN）}} 
+\xrightarrow{\text{输出}}
+$$
+**Decoder**：
+$$
+\text{输入} 
+\xrightarrow{\text{嵌入层（Embedding Layer）}} 
+\xrightarrow{\text{位置编码（Positional Encoding）}} 
+\xrightarrow{\text{掩码多头自注意力（Masked Multi-Head Self-Attention）}} 
+\xrightarrow{\text{多头交叉注意力（Multi-Head Cross-Attention）}} 
+\xrightarrow{\text{前馈网络（Feed-Forward Network, FFN）}} 
+\xrightarrow{\text{输出}}
+$$
+从架构上看，Decoder 相较于 Encoder 多了掩码机制和交叉注意力，实际上真正区分二者的是自注意力中的掩码机制，防止模型在生成时看到未来的词。
+
+注意，交叉注意力也可以称为编码器-解码器注意力（Encoder-Decoder Attention）。
+
+**GPT**：
+
+GPT 的架构可以被视为去除了交叉注意力的 Decoder。
+$$
+\text{输入} 
+\xrightarrow{\text{嵌入层（Embedding Layer）}} 
+\xrightarrow{\text{位置编码（Positional Encoding）}} 
+\xrightarrow{\text{掩码多头自注意力（Masked Multi-Head Self-Attention）}} 
+\xrightarrow{\text{前馈网络（Feed-Forward Network, FFN）}} 
+\xrightarrow{\text{输出}}
+$$
 
 ### 右半部分：不同任务的输入处理
 
 > ![Figure 1 (right)](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/image-20241219214959564.png)
 
-GPT 将不同的自然语言处理（NLP）任务的输入转化为统一的序列格式，使得预训练的生成模型（图中的 Transformer）可以直接接受它们进行处理。
+GPT 将不同的自然语言处理（NLP）任务的输入转化为统一的序列格式，使得预训练的生成模型（图中的 Transformer）可以直接接受它们进行处理，避免为每个任务设计特定的模型架构。
 
 以下符号将遵循原论文的表述，这里将用到三种**特殊词元**（Special Token）：
 
