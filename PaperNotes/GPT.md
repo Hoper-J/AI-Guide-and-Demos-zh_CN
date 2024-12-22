@@ -97,13 +97,15 @@ GPT 是一种自回归（Auto-Regressive，AR）模型，在进一步了解 GPT 
 
 还记得 Transformer 是针对机器翻译所提出的，GPT 正是如今的...
 
+
+
 ## 模型架构
 
 > 论文的图 1 分别展示了**模型的架构和后续微调时不同任务的处理方式**：
 >
 > ![Figure 1](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/image-20241219202218248.png)
 
-### 左半部分：Transformer 架构和训练目标
+### 左半部分：Transformer 架构
 
 > <img src="/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/image-20241219214847470.png" alt="Figure 1 (Left)" style="zoom:33%;" />
 
@@ -143,7 +145,7 @@ GPT 是一种自回归（Auto-Regressive，AR）模型，在进一步了解 GPT 
 >
 > 另外，可以通过拓展文章《[g. 嵌入层 nn.Embedding() 详解和要点提醒（PyTorch）](../Guide/g.%20嵌入层%20nn.Embedding()%20详解和要点提醒（PyTorch）.md)》进一步了解什么是嵌入层。
 
-#### 无监督预训练（Unsupervised pre-training）
+### 无监督预训练（Unsupervised pre-training）
 
 在预训练阶段，模型的目标是最大化未标注语料的语言建模函数：
 $$
@@ -333,7 +335,21 @@ $$
 $$
 这些序列会被**独立处理**，最后通过 softmax 归一化生成概率分布。
 
+### 有监督微调（Supervised Fine-Tuning）
 
+在预训练阶段完成后，模型可以根据具体的下游任务进行微调。假设我们现在有一个标注数据集 $C$，其中每个样本包含一个输入序列 $x = (x^1, \dots, x^m)$ 和对应的标签 $y$。
+
+模型的目标是通过最大化标签 $y$ 在输入序列 $x$ 下的条件概率来进行微调：
+$$
+L_2(C) = \sum_{(x, y)} \log P(y \mid x^1, \ldots, x^m).
+$$
+其中：
+$$
+P(y \mid x^1, \ldots, x^m) = \text{softmax}(h_l^m W_y).
+$$
+
+- $h_l^m$：输入序列 $x = (x^1, \dots, x^m)$ 经过预训练模型的最后一层隐藏状态。
+- **$W_y$**：线性层的权重矩阵（该层接在预训练模型之后），用于将隐藏状态 $h_l^m$ 映射到标签空间。
 
 ## GPT-2
 
