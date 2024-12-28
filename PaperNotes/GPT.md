@@ -1,5 +1,7 @@
 【占位文章，虽然时间线上 GPT 更早一点，但还是决定先讲 BERT，GPT 留待日后整理上传】
 
+
+
 # GPT
 
 **Improving Language Understanding by Generative Pre-Training**
@@ -47,10 +49,6 @@ Alec Radford et al. | [PDF](https://cdn.openai.com/research-covers/language-unsu
 
 **Google 的 Transformer（Attention is All You Need）** 于 2017 年 6 月发表，一年后，OpenAI 的团队发表了 **GPT** ，又过了两个月，Google 的另一个团队发表了 **BERT**。
 
-...
-
-（如果说BERT开启了预训练语言模型的浪潮，那GPT...
-
 > [!tip]
 >
 > 缩写 **GPT** 来自论文题目的 **Generative Pre-Training**，生成式预训练，维基百科[^2]中的表述是 **Generative Pre-trained Transformer**，二者指代一致。这是一个通用概念，当前常见的具有聊天功能的 AI 或者说 LLM 其实都可以称作 GPT。
@@ -58,11 +56,7 @@ Alec Radford et al. | [PDF](https://cdn.openai.com/research-covers/language-unsu
 [^1]: 按照沐神论文精读的课件设计进行展示，时间跨度为 3 年。
 [^2]: [Generative pre-trained transformer - Wikipedia](https://en.wikipedia.org/wiki/Generative_pre-trained_transformer).
 
-Transformer 提出了...
-
-
-
-GPT 是一种自回归（Auto-Regressive，AR）模型，在进一步了解 GPT 之前，有必要先了解自回归和非自回归的概念[^3]：
+GPT 是一种自回归（Auto-Regressive，AR）模型，在进一步了解 GPT 之前，可以先了解自回归和非自回归的概念[^3]：
 
 > ![AR vs NAR](./assets/image-20241023203706721.png)
 
@@ -90,12 +84,6 @@ GPT 是一种自回归（Auto-Regressive，AR）模型，在进一步了解 GPT 
 > - Accelerating Large Language Model Decoding with Speculative Sampling: [arXiv 2302.01318](https://arxiv.org/pdf/2302.01318)
 
 [^3]: 摘自《[Transformer 论文精读 QA 部分的 Q2](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/PaperNotes/Transformer%20论文精读.md#q2-什么是自回归与非自回归)》。
-
-除了名称上的区别，你可能还常听到以下概念：Encoder-Decoder（Transformer）、Decoder-Only（GPT）、Encoder-Only（BERT）。
-
-...
-
-还记得 Transformer 是针对机器翻译所提出的，GPT 正是如今的...
 
 ## 贡献
 
@@ -273,7 +261,7 @@ $$
 
 在**语义相似性**任务中，目标是判断两个句子是否在语义上相似，例如 Quora 问题对检测（Quora Question Pairs，QQP）要求识别两个问题是否相似。
 
-> Similarity For similarity tasks, there is no inherent ordering of the two sentences being compared. To reflect this, we modify the input sequence to contain both possible sentence orderings (with a delimiter in between) and process each independently to produce two sequence representations $h^m_l$ which are added element-wise before being fed into the linear output layer.
+> *“Similarity For similarity tasks, there is no inherent ordering of the two sentences being compared. To reflect this, we modify the input sequence to contain both possible sentence orderings (with a delimiter in between) and process each independently to produce two sequence representations $h^m_l$ which are added element-wise before being fed into the linear output layer.”*
 
 由于句子对没有固有的顺序，论文采用了以下方法：
 
@@ -290,7 +278,7 @@ $$
 
 在**选择题任务**中，模型需要从多个候选答案中选择一个最可能的正确答案，例如问答（Question Answering，QA）和常识推理（Commonsense Reasoning）。
 
-> For these tasks, we are given a context document $z$, a question $q$, and a set of possible answers $\{a_k\}$. We concatenate the document context and question with each possible answer, adding a delimiter token in between to get $[z; q; \$; a_k]$. Each of these sequences are processed independently with our model and then normalized via a softmax layer to produce an output distribution over possible answers.
+> *“For these tasks, we are given a context document $z$, a question $q$, and a set of possible answers $\{a_k\}$. We concatenate the document context and question with each possible answer, adding a delimiter token in between to get $[z; q; \$; a_k]$. Each of these sequences are processed independently with our model and then normalized via a softmax layer to produce an output distribution over possible answers.”*
 
 此时的输入通常包括三个部分，以问答任务为例：
 
@@ -458,7 +446,7 @@ $$
 
 3. **辅助目标**
 
-   > We additionally found that including language modeling as an auxiliary objective to the fine-tuning helped learning by (a) improving generalization of the supervised model, and (b) accelerating convergence. This is in line with prior work [50, 43], who also observed improved performance with such an auxiliary objective. Specifically, we optimize the following objective (with weight $\lambda$):
+   > *“We additionally found that including language modeling as an auxiliary objective to the fine-tuning helped learning by (a) improving generalization of the supervised model, and (b) accelerating convergence. This is in line with prior work [50, 43], who also observed improved performance with such an auxiliary objective. Specifically, we optimize the following objective (with weight $\lambda$):”*
 
    为了提高泛化能力和加速收敛，微调阶段还引入了预训练的语言建模目标函数作为辅助，最终的目标函数如下：
    $$
@@ -490,11 +478,42 @@ $$
   - **Dropout 率**：分类器层（就是预训练模型之后的线性层）设置为 0.1。
   - **辅助目标权重**：$\lambda = 0.5$。
 
-到目前为止，还看不到现在的 ChatGPT 的影子，因为针对不同的任务还需要进行微调，不能简单的直接用对话的形式获取答案，...
+到目前为止，还看不到现在 ChatGPT 的影子，因为针对不同的任务还需要进行微调，不能简单的直接用对话的形式获取答案，即便论文后续有提及 Zero-shot，但实际效果一般。
 
-## 关于 Zero-Shot
+## 关于 Zero-shot
 
-其实在 GPT-1 中就已经提到了 ...
+其实 Zero-shot 并非 GPT-2 才引入，在 GPT-1 中（第 7 页的 Zero-shot Behaviors 部分）就已经探讨了生成式预训练模型的**零样本（Zero-shot）**性能，即模型在没有针对某些特定任务进行微调的情况下，也能通过预训练过程中学习到的知识直接完成这些任务。
+
+> *“A hypothesis is that the underlying generative model learns to perform many of the tasks we evaluate on in order to improve its language modeling capability and that the more structured attentional memory of the transformer assists in transfer compared to LSTMs. ”*
+>
+> - 论文假设，预训练语言模型的生成目标让模型在学习语言建模能力的过程中，掌握了大量任务相关的语言知识。
+> - Transformer 架构的**结构化注意力机制**（Structured Attentional Memory）相比于 LSTM 具有更好的迁移性。
+>
+> *“We designed a series of heuristic solutions that use the underlying generative model to perform tasks without supervised finetuning. We visualize the effectiveness of these heuristic solutions over the course of generative pre-training in Fig 2(right). We observe the performance of these heuristics is stable and steadily increases over training suggesting that generative pretraining supports the learning of a wide variety of task relevant functionality. We also observe the LSTM exhibits higher variance in its zero-shot performance suggesting that the inductive bias of the Transformer architecture assists in transfer.”*
+>
+> 作者设计了一系列启发式方法，通过直接使用生成预训练模型（无需监督微调）解决不同下游任务。
+>
+> *“For SST-2 (sentiment analysis), we append the token `very` to each example and restrict the language model’s output distribution to only the words positive and negative and guess the token it assigns higher probability to as the prediction..”*
+>
+> 以情感分析任务为例，对于输入：
+>
+> ```
+> The movie was incredibly entertaining.
+> ```
+>
+> 增加 `very`：
+>
+> ```
+> The movie was incredibly entertaining. very
+> ```
+>
+> 限制生成的输出仅包含“positive”和“negative”，最后根据预测的概率确定情感。
+>
+> 下图展示了模型在不同任务上的零样本性能随预训练迭代次数的变化趋势。性能指标归一化到随机猜测与当前 SOTA 之间：
+>
+> ![Figure 2 (right)](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/image-20241228200239146.png)
+>
+> 可以看到，随着训练的进行，任务性能稳定增长，但离 SOTA 还有不小的差距。
 
 # GPT-2
 
@@ -537,7 +556,7 @@ GPT-2 的整体设计思想相较于 GPT-1 没有变化，但通过模型规模�
    >
    > 其中，最小的模型（117M）对标 GPT-1，第二个模型（345M）对标 $\text{BERT}_\text{LARGE}$，最大的模型（1152M）称为 GPT-2。
 
-3. **零样本学习（Zero-Shot Learning）**
+3. **零样本学习（Zero-shot Learning）**
 
    GPT-2 的**创新**在于对零样本学习的进一步探索。GPT-1 微调时引入了三种特殊符号：$\langle s \rangle$, $\$$, $\langle e \rangle$，这些符号在预训练时并没有见过，所以会在微调的时候学习表示。而 GPT-2 不再引入这些特殊符号，采用与 GPT-1 预训练数据格式更相似的自然输入格式（其实就是不做多余操作，单纯的预训练），这也是后续文献常提及以及我们现在耳熟能详的 `prompt`，作者给出了两个例子：
 
@@ -551,11 +570,11 @@ GPT-2 的整体设计思想相较于 GPT-1 没有变化，但通过模型规模�
 
    正如论文标题 *「Language Models are Unsupervised Multitask Learners」* 所暗示的，在 GPT-2 的原始论文中，模型并未针对任何下游任务进行有监督的微调（fine-tuning），而是直接在大规模文本上进行预训练，然后在各种 NLP 任务上测试性能。
 
-   所以 Zero-Shot 或许可以片面地理解为**只**进行预训练。
+   所以 Zero-shot 或许可以片面地理解为**只**进行预训练。
 
-## QA
+   GPT-2 并没有卷微调性能，而是...。
 
-### Q1：什么是 Pre-Norm？和 GPT-1 的区别？
+## Q1：什么是 Pre-Norm？和 GPT-1 的区别？
 
 > 结合图例[^7]进行理解：
 >
@@ -609,7 +628,9 @@ GPT-2 的整体设计思想相较于 GPT-1 没有变化，但通过模型规模�
 **Language Models are Few-Shot Learners**
 Tom B. Brown et al. | [PDF](https://arxiv.org/pdf/2005.14165) | OpenAI | 2020.05
 
+GPT-2 的效果其实并没有非常惊艳，
 
+GPT-3 自然秉承传统，更大的模型和更大的数据集。
 
 ## GPT-4
 
