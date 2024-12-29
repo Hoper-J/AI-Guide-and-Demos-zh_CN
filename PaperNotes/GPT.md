@@ -369,21 +369,19 @@ $$
 
   - **Transformer 相关**：
 
-    - **层数 $L=12$**：Transformer 解码器的层数。
+    - **层数 $n_{layers}=12$**：Transformer 解码器的层数。
 
       > We trained a 12-layer **decoder-only** transformer with masked self-attention heads (768 dimensional states and 12 attention heads).
       >
       > 原论文在 4.1 Setup 的 Model specifications 中提到了 `decoder-only`。
 
-    - **隐藏层维度 $H=768$**：每个隐藏层的维度。
+    - **隐藏层维度 $d_{model}=768$**：每个隐藏层的维度为 768。
 
-    - **注意力头数 $A=12$**：每层的多头注意力机制包含 12 个注意力头，每个头的维度为 64, $12 * 64 = 768$。
+    - **注意力头数 $n_{heads}=12$**：每层的多头注意力机制包含 12 个注意力头，每个头的维度为 64, $12 * 64 = 768$。
 
-      > [!note]
-      >
-      > 以上数学符号直接取自 BERT，GPT 原论文并没有对它们进行简写。
+      > 以上数学符号与 GPT-3 的表 2-1 一致。
 
-    - **前向层维度** $F=3072$：Transformer 中 FFN 的隐藏层维度为 3072。
+    - **前向层维度**：Transformer 中 FFN 的隐藏层维度为 3072。
 
     - **Dropout 率**：残差连接、嵌入层和注意力中均设置为 **0.1**。
 
