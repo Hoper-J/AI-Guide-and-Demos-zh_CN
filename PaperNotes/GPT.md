@@ -632,6 +632,55 @@ GPT-2 的效果其实并没有非常惊艳，
 
 GPT-3 自然秉承传统，更大的模型和更大的数据集。
 
+同样的，完全基于GPT-2的模型。
+
+GPT-2训练了4个不同规模的模型，最大的称为GPT-2，GPT-3训练了8个，同样，最大的称为GPT-3.
+
+## Q1：Zero-Shot、One-Shot 和 Few-Shot 的区别是什么？和 In-Context Learning 有什么关系？与微调有什么不同？
+
+> ![eval_strategies](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/eval_strategies.png)
+
+过去常说的“学习（Learning）”通常隐含参数更新的过程，所以 In-Context Learning 初见的确是一个容易迷惑的表述，可以直接将其理解为 Prompting，毕竟现在与 AI 对话的过程就是不更新模型参数的。
+
+In-Context Learning 的特点是：**通过上下文提示（Prompting）完成任务，不更新模型参数（即不需要进行微调）**。有人认为 Few-Shot 并非 In-Context Learning，这种说法在本文中实际是不准确的，根据 GPT-3 论文的定义，**Zero-Shot**、**One-Shot** 和 **Few-Shot** 本质上是 **In-Context Learning** 的三种不同设置（见上图左上角的叙述），其区别仅在于上下文提示中任务样本的数量：
+
+- **Zero-Shot Learning（零样本学习）**：
+
+  - 仅通过**自然语言（Prompting）**描述任务，不提供任何样本。
+
+    ```
+    Translate English to French:
+    cheese =>
+    ```
+
+- **One-Shot Learning（单样本学习）**：
+
+  - 除了任务描述外，还提供**一个样本**。
+
+    ```
+    Translate English to French:
+    sea otter => loutre de mer
+    cheese =>
+    ```
+
+- **Few-Shot Learning（小样本学习）**：
+
+  - 除了任务描述外，提供**多个样本**。
+
+    ```
+    Translate English to French:
+    sea otter => loutre de mer
+    peppermint => menthe poivree
+    plush girafe => girafe peluche
+    cheese =>
+    ```
+
+那么 In-Context Learning 与传统的微调（Fine-Tuning）有什么不同呢？
+
+**简单来说：In-Context Learning 是通过提示（Prompting）完成任务，而微调是通过训练更新参数来适应任务。一个不更新参数，一个更新参数。一个是 eval，一个是 train。**
+
+
+
 ## GPT-4
 
 **GPT-4 Technical Report**
