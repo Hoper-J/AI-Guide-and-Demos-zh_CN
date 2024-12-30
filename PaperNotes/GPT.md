@@ -328,7 +328,7 @@ $$
 
    输入嵌入 $h_0$ 通过 $n$ 层 `transformer_block` 逐层处理：
    $$
-   h_l = \text{transformer\_block}(h_{l-1}) \; \forall i \in [1, n]
+   h_l = \texttt{transformer\_block}(h_{l-1}) \; \forall i \in [1, n]
    $$
 
    - $h_l$：第 $l$ 层的输出。
@@ -337,7 +337,7 @@ $$
 
    最后一层的输出 $h_n$ 被映射回词汇表维度，生成下一个词的概率分布：
    $$
-   P(u) = \text{softmax}(h_n W_e^T)
+   P(u) = \texttt{softmax}(h_n W_e^T)
    $$
 
    - $W_e^T$：词嵌入矩阵的转置，将隐藏状态映射回词汇表。
@@ -436,7 +436,7 @@ $$
 
    微调阶段的目标是优化以下条件概率：
    $$
-   P(y \mid x^1, \ldots, x^m) = \text{softmax}(h_l^m W_y)
+   P(y \mid x^1, \ldots, x^m) = \texttt{softmax}(h_l^m W_y)
    $$
 
    - $h_l^m$：输入序列 $x = (x^1, \dots, x^m)$ 经过预训练模型的最后一层隐藏状态，注意上标 $m$ 代表了位置。
@@ -526,51 +526,49 @@ GPT-2 的整体设计思想相较于 GPT-1 没有变化，但通过模型规模�
 
 ## 关键改进
 
-1. **更大的数据集**
+### 更大的数据集
 
-   GPT-2 使用了 **WebText** 数据集进行训练。WebText 的文本来源是 4500 万个经过 Reddit 用户过滤后的网页链接（至少有 3 karma，karma 可以当成点赞），经过去重和清理后，最终包含 800 万篇文档，总计约 40GB 的文本（GPT-1 数据集的大小约为 1GB）。为了避免评估数据的“泄漏”，数据集还特意去除了常见的数据来源（比如维基百科）。
+GPT-2 使用了 **WebText** 数据集进行训练。WebText 的文本来源是 4500 万个经过 Reddit 用户过滤后的网页链接（至少有 3 karma，karma 可以当成点赞），经过去重和清理后，最终包含 800 万篇文档，总计约 40GB 的文本（GPT-1 数据集的大小约为 1GB）。为了避免评估数据的“泄漏”，数据集还特意去除了常见的数据来源（比如维基百科）。
 
-   同时，因为数据集的变化，词汇表从 40,000 扩展到了 50,257。
+同时，因为数据集的变化，词汇表从 40,000 扩展到了 50,257。
 
-   值得一提的是，GPT-2 采用了字节级的 BPE (Byte-level Byte Pair Encoding) 进行分词（GPT-1 使用的是 BPE）。
+值得一提的是，GPT-2 采用了字节级的 BPE (Byte-level Byte Pair Encoding) 进行分词（GPT-1 使用的是 BPE）。
 
-2. **更大的模型**
+### 更大的模型
 
-   GPT-2 的参数规模（15 亿参数）远超其前身 GPT-1（1.1 亿参数） 以及当时的主流模型（如 $\text{BERT}_\text{LARGE}$ 的 3.4 亿参数）。但模型主体架构并没有修改，只是调整了一些超参数：
+GPT-2 的参数规模（15 亿参数）远超其前身 GPT-1（1.1 亿参数） 以及当时的主流模型（如 $\text{BERT}_\text{LARGE}$ 的 3.4 亿参数）。但模型主体架构并没有修改，只是调整了一些超参数：
 
-   - **层数**：12 → 48。
-   - **隐藏层维度**：768 → 1600。
-   - **最大序列长度**：512 → 1024。
-   - **批量大小**：64 → 512。
+- **层数**：12 → 48。
+- **隐藏层维度**：768 → 1600。
+- **最大序列长度**：512 → 1024。
+- **批量大小**：64 → 512。
 
-   另外，还引入了一些细节优化：
+另外，还引入了一些细节优化：
 
-   - **层归一化（Layer Normalization）**：调整至每个子模块的输入端（Pre-Norm），类似于预激活残差网络，同时在最后的自注意力模块后增加额外的层归一化。
-   - **残差权重初始化**：采用了 $1/\sqrt{N}$ 的权重缩放因子，其中 $N$ 是残差层的深度。
+- **层归一化（Layer Normalization）**：调整至每个子模块的输入端（Pre-Norm），类似于预激活残差网络，同时在最后的自注意力模块后增加额外的层归一化。
+- **残差权重初始化**：采用了 $1/\sqrt{N}$ 的权重缩放因子，其中 $N$ 是残差层的深度。
 
-   > 表 2 列出了四种不同参数规模的模型配置：
-   >
-   > ![image-20241227212626715](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/image-20241227212626715.png)
-   >
-   > 其中，最小的模型（117M）对标 GPT-1，第二个模型（345M）对标 $\text{BERT}_\text{LARGE}$，最大的模型（1152M）称为 GPT-2。
+> 表 2 列出了四种不同参数规模的模型配置：
+>
+> ![image-20241227212626715](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/image-20241227212626715.png)
+>
+> 其中，最小的模型（117M）对标 GPT-1，第二个模型（345M）对标 $\text{BERT}_\text{LARGE}$，最大的模型（1152M）称为 GPT-2。
 
-3. **零样本学习（Zero-shot Learning）**
+### 零样本学习（Zero-shot Learning）
 
-   GPT-2 的**创新**在于对零样本学习的进一步探索。GPT-1 微调时引入了三种特殊符号：$\langle s \rangle$, $\$$, $\langle e \rangle$，这些符号在预训练时并没有见过，所以会在微调的时候学习表示。而 GPT-2 不再引入这些特殊符号，采用与 GPT-1 预训练数据格式更相似的自然输入格式（其实就是不做多余操作，单纯的预训练），这也是后续文献常提及以及我们现在耳熟能详的 `prompt`，作者给出了两个例子：
+GPT-2 的**创新**在于对零样本学习的进一步探索。GPT-1 微调时引入了三种特殊符号：$\langle s \rangle$, $\$$, $\langle e \rangle$，这些符号在预训练时并没有见过，所以会在微调的时候学习表示。而 GPT-2 不再引入这些特殊符号，采用与 GPT-1 预训练数据格式更相似的自然输入格式（其实就是不做多余操作，单纯的预训练），这也是后续文献常提及以及我们现在耳熟能详的 `prompt`，作者给出了两个例子：
 
-   - **翻译**：`translate to French, English text, French text`。
+- **翻译**：`translate to French, English text, French text`。
 
-     > 论文的表 1 展示了 WebText 中自然出现的语言翻译例子：
-     >
-     > ![image-20241227214420068](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/image-20241227214420068.png)
+  > 论文的表 1 展示了 WebText 中自然出现的语言翻译例子：
+  >
+  > ![image-20241227214420068](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/image-20241227214420068.png)
 
-   - **阅读理解**：`answer the question, document, question, answer`。
+- **阅读理解**：`answer the question, document, question, answer`。
 
-   正如论文标题 *「Language Models are Unsupervised Multitask Learners」* 所暗示的，在 GPT-2 的原始论文中，模型并未针对任何下游任务进行有监督的微调（fine-tuning），而是直接在大规模文本上进行预训练，然后在各种 NLP 任务上测试性能。
+正如论文标题 *「Language Models are Unsupervised Multitask Learners」* 所暗示的，在 GPT-2 的原始论文中，模型并未针对任何下游任务进行有监督的微调（fine-tuning），而是直接在大规模文本上进行预训练，然后在各种 NLP 任务上测试性能。
 
-   所以 Zero-shot 或许可以片面地理解为**只**进行预训练。
-
-   GPT-2 并没有卷微调性能，而是...。
+所以 Zero-shot 或许可以片面地理解为**只**进行预训练。
 
 ## Q1：什么是 Pre-Norm？和 GPT-1 的区别？
 
@@ -621,26 +619,131 @@ GPT-2 的整体设计思想相较于 GPT-1 没有变化，但通过模型规模�
 
 [^7]: [On Layer Normalization in the Transformer Architecture](https://arxiv.org/abs/2002.04745).
 
-## GPT-3
+# GPT-3
 
 **Language Models are Few-Shot Learners**
 Tom B. Brown et al. | [PDF](https://arxiv.org/pdf/2005.14165) | OpenAI | 2020.05
 
 GPT-2 的效果其实并没有非常惊艳，
 
-GPT-3 自然秉承传统，更大的模型和更大的数据集。
+## 关键改进
 
-同样的，完全基于GPT-2的模型。
+GPT-3 秉承传统：更大的数据集和更大的模型，架构基于 GPT-2。
+
+### 更大的数据集
+
+> GPT-3 的训练数据集来自 **Common Crawl、WebText2、Books1、Books2** 和 **Wikipedia**，论文的表 2.2 列出了它们的规模、在训练中的权重分布以及训练 3000 亿 tokens 时经过的轮次:
+>
+> ![image-20241230214618830](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/image-20241230214618830.png)
+
+| 数据集                 | 数据量（tokens 数） | 训练混合中的权重 | 训练 3000 亿 tokens 时的轮次 |
+| ---------------------- | ------------------- | ---------------- | ---------------------------- |
+| Common Crawl（过滤后） | 约 4100 亿          | 60%              | 0.44                         |
+| WebText2               | 约 190 亿           | 22%              | 2.9                          |
+| Books1                 | 约 120 亿           | 8%               | 1.9                          |
+| Books2                 | 约 550 亿           | 8%               | 0.43                         |
+| Wikipedia              | 约 30 亿            | 3%               | 3.4                          |
+
+> *“Note that during training, datasets are not sampled in proportion to their size, but rather datasets we view as higher-quality are sampled more frequently, such that CommonCrawl and Books2 datasets are sampled less than once during training, but the other datasets are sampled 2-3 times. This essentially accepts a small amount of overfitting in exchange for higher quality training data.”*
+
+需要注意的是，尽管 **Common Crawl** 是规模最大的数据集，数据量远超其他来源（是 WebText2 的 21.58 倍），但由于质量参差不齐，其训练权重被适当降低，仅为总权重的 **60%**，而较小但质量更高的 **WebText2** 则分配了 **22%** 的训练权重。
+
+#### 对于数据集 Common Crawl 的处理
+
+**Common Crawl** 是一个非盈利组织，会定期抓取互联网上的网页数据并免费开放给研究者使用。为了准备更大的数据集以匹配更大的模型，OpenAI 团队从 Common Crawl 中下载了 **2016-2019 年**的 **41** 个数据分片，总量约 **45TB（压缩后）**。在经过一系列自动化过滤、重新采样和去重处理后，最终得到约 **570GB 的文本**，对应约 **4100 亿** Byte-Pair Encoding (BPE) 子词。
+
+> 以下细节来自于论文的附录 A，可以跳过。
+
+##### 1. 自动过滤 (Automatic Filtering)
+
+- **训练集与分类器**
+  为了从原始 Common Crawl 中挑选更高质量的文档，研究团队先将高质量语料（如 **WebText**、**Wikipedia**、以及 **web books corpus**）合并为“正例”数据集，并将**未经过滤的 Common Crawl** 用作“负例”。随后，利用 **Spark** 的标准分词器（Tokenizer）和 **HashingTF** 提取文本特征，并以此训练 **Logistic Regression**（逻辑回归）分类器，为每篇文档打“分”：
+
+  - 得分越高，表示该文档越“接近”高质量语料；
+  - 得分较低则表明该文档的质量“可能”欠佳。
+
+- **重新采样 (Resampling) 与 Pareto 分布**
+  利用所得到的“质量分数”，研究团队基于以下条件进行重新采样：
+  $$
+  \texttt{np.random.pareto}(\alpha) > 1 - \texttt{document\_score}
+  $$
+  其中 $\alpha = 9$，文档得分越高越容易保留，但低分文档也有一定概率（出于维持多样性的考虑）。
+
+  通过代码来理解对应的概念：
+
+  ```python
+  import numpy as np
+  
+  def filter_rate(doc_score, alpha=9, trials=100000):
+      """
+      doc_score: 文档分数 (0 - 1)
+      alpha: Pareto 分布的形状参数
+      trials: 模拟采样次数
+      """
+      # 1. 生成很多个 Pareto(α=9) 随机数
+      samples = np.random.pareto(alpha, size=trials)  
+      # 2. 计算阈值
+      threshold = 1 - doc_score
+      # 3. 看看有多少随机数满足：sample > threshold
+      pass_count = np.sum(samples > threshold)
+      return pass_count / trials
+  
+  # 测试不同的 document_score
+  scores = [0.0, 0.2, 0.5, 0.8, 0.9]
+  for s in scores:
+      rate = filter_rate(s)
+      print(f"doc_score={s}, 通过过滤的模拟比例={rate:.4f}")
+  
+  ```
+
+  **输出**：
+
+  ```
+  doc_score=0.0, 通过过滤的模拟比例=0.0021
+  doc_score=0.2, 通过过滤的模拟比例=0.0051
+  doc_score=0.5, 通过过滤的模拟比例=0.0268
+  doc_score=0.8, 通过过滤的模拟比例=0.1950
+  doc_score=0.9, 通过过滤的模拟比例=0.4243
+  ```
+
+  - 当 **doc_score=0**，约 0.2% 的保留率。
+  - 当 **doc_score=0.9**，约 42% 的保留率。
+
+  **核心思路**：
+
+  ```python
+  if np.random.pareto(alpha) > 1 - document_score:
+      keep_doc = True
+  else:
+      keep_doc = False
+  ```
+
+##### 2. 模糊去重 (Fuzzy Deduplication)
+
+为进一步提升模型质量并降低过拟合风险，研究团队还对各训练集做了**模糊去重**（使用和上面分类相同的特征）：
+
+- 在 **Spark** 中使用 **MinHashLSH**（配置 10 个哈希），利用与上面分类相同的特征来检测文档间的相似度，对相似度较高的文档进行删除。
+- 同时将 **WebText** 中出现的内容从 Common Crawl 里删除（方式同上）。
+
+整体来看，模糊去重将减少 10% 的数据量。
+
+> *“A major methodological concern with language models pretrained on a broad swath of internet data, particularly large models with the capacity to memorize vast amounts of content, is potential contamination of downstream tasks by having their test or development sets inadvertently seen during pre-training. To reduce such contamination, we searched for and attempted to remove any overlaps with the development and test sets of all benchmarks studied in this paper. Unfortunately, a bug in the filtering caused us to ignore some overlaps, and due to the cost of training it was not feasible to retrain the model. In Section 4 we characterize the impact of the remaining overlaps, and in future work we will more aggressively remove data contamination.”*
+
+在文中提到尽管他们尝试去重（训练集和测试集之间，train-test overlap），但因为某些 bug，有可能存在少量测试集内容被模型“见”过，从而造成一定的数据泄漏。而由于训练成本太大，他们没法重来，论文的第 4 节评估了数据泄露的影响。
 
 GPT-2训练了4个不同规模的模型，最大的称为GPT-2，GPT-3训练了8个，同样，最大的称为GPT-3.
 
 ## Q1：Zero-Shot、One-Shot 和 Few-Shot 的区别是什么？和 In-Context Learning 有什么关系？与微调有什么不同？
 
+> 图 2.1：
+>
 > ![eval_strategies](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/eval_strategies.png)
+>
+> *“... fine-tuning is the traditional method, whereas zero-, one-, and few-shot, which we study in this work, require the model to perform the task with **only** forward passes **at test time**. We typically present the model with **a few dozen examples** in the few shot setting.”*
 
 过去常说的“学习（Learning）”通常隐含参数更新的过程，所以 In-Context Learning 初见的确是一个容易迷惑的表述，可以直接将其理解为 Prompting，毕竟现在与 AI 对话的过程就是不更新模型参数的。
 
-In-Context Learning 的特点是：**通过上下文提示（Prompting）完成任务，不更新模型参数（即不需要进行微调）**。有人认为 Few-Shot 并非 In-Context Learning，这种说法在本文中实际是不准确的，根据 GPT-3 论文的定义，**Zero-Shot**、**One-Shot** 和 **Few-Shot** 本质上是 **In-Context Learning** 的三种不同设置（见上图左上角的叙述），其区别仅在于上下文提示中任务样本的数量：
+In-Context Learning 的特点是：**通过上下文提示（Prompting）完成任务，不更新模型参数（即不需要进行微调）**。有些说法认为 Few-Shot 并非 In-Context Learning，这在 GPT 的语境下是不准确的，根据 GPT-3 论文的定义，**Zero-Shot**、**One-Shot** 和 **Few-Shot** 本质上是 **In-Context Learning** 的三种不同设置（见上图左上角的叙述），其区别仅在于上下文提示中任务样本的数量：
 
 - **Zero-Shot Learning（零样本学习）**：
 
@@ -653,7 +756,7 @@ In-Context Learning 的特点是：**通过上下文提示（Prompting）完成�
 
 - **One-Shot Learning（单样本学习）**：
 
-  - 除了任务描述外，还提供**一个样本**。
+  - 除了任务描述外，提供**一个样本**。
 
     ```
     Translate English to French:
@@ -663,7 +766,7 @@ In-Context Learning 的特点是：**通过上下文提示（Prompting）完成�
 
 - **Few-Shot Learning（小样本学习）**：
 
-  - 除了任务描述外，提供**多个样本**。
+  - 除了任务描述外，提供**多个样本**（按论文的叙述是几十个：*“a few dozen examples”*）。
 
     ```
     Translate English to French:
