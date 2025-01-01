@@ -1,6 +1,4 @@
-【占位文章，虽然时间线上 GPT 更早一点，但还是决定先讲 BERT，GPT 留待日后整理上传】
-
-
+【未完待续】
 
 # GPT
 
@@ -45,7 +43,7 @@ Alec Radford et al. | [PDF](https://cdn.openai.com/research-covers/language-unsu
 
 在深入研究之前，了解相关领域重要论文的时间线[^1]是一个很好的习惯：
 
-![时间线](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/%E6%97%B6%E9%97%B4%E7%BA%BF.png)
+![时间线](./assets/%E6%97%B6%E9%97%B4%E7%BA%BF.png)
 
 **Google 的 Transformer（Attention is All You Need）** 于 2017 年 6 月发表，一年后，OpenAI 的团队发表了 **GPT** ，又过了两个月，Google 的另一个团队发表了 **BERT**。
 
@@ -111,11 +109,11 @@ Transformer 是 GPT 的“巨人肩膀”，而 GPT 对于 BERT 也是如此。�
 
 > 论文的图 1 分别展示了**模型的架构和后续微调时不同任务的处理方式**：
 >
-> ![Figure 1](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/image-20241219202218248.png)
+> ![Figure 1](./assets/image-20241219202218248.png)
 
 ### 左半部分：Transformer 架构
 
-> <img src="/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/image-20241219214847470.png" alt="Figure 1 (Left)" style="zoom:33%;" />
+> <img src="./assets/image-20241219214847470.png" alt="Figure 1 (Left)" style="zoom:33%;" />
 
 让我们**自顶向下**的理解这个架构，下文所说的**词**/**词元**实际上就是 Token。
 
@@ -162,6 +160,7 @@ Transformer 是 GPT 的“巨人肩膀”，而 GPT 对于 BERT 也是如此。�
 如果不考虑子层（sublayer）之间的残差连接和 Layer Norm（`Add & Norm`），我们可以将 Transformer 的编码器和解码器层以及GPT的架构抽象为以下表述：
 
 **Encoder**：
+
 $$
 \text{输入} 
 \xrightarrow{\text{嵌入层（Embedding Layer）}} 
@@ -170,7 +169,9 @@ $$
 \xrightarrow{\text{前馈网络（Feed-Forward Network, FFN）}} 
 \xrightarrow{\text{输出}}
 $$
+
 **Decoder**：
+
 $$
 \text{输入} 
 \xrightarrow{\text{嵌入层（Embedding Layer）}} 
@@ -180,6 +181,7 @@ $$
 \xrightarrow{\text{前馈网络（Feed-Forward Network, FFN）}} 
 \xrightarrow{\text{输出}}
 $$
+
 从架构上看，Decoder 相较于 Encoder 多了掩码机制和交叉注意力，实际上真正区分二者的是自注意力中的掩码机制，防止模型在生成时看到未来的词。
 
 > 注意，交叉注意力也被称为编码器-解码器注意力（Encoder-Decoder Attention）。
@@ -187,6 +189,7 @@ $$
 **GPT**：
 
 GPT 的架构可以被视为去除了交叉注意力的 Decoder。
+
 $$
 \text{输入} 
 \xrightarrow{\text{嵌入层（Embedding Layer）}} 
@@ -198,15 +201,15 @@ $$
 
 ### 右半部分：不同任务的输入处理
 
-> ![Figure 1 (right)](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/image-20241219214959564.png)
+> ![Figure 1 (right)](./assets/image-20241219214959564.png)
 
 GPT 将不同的自然语言处理（NLP）任务的输入转化为统一的序列格式，使得预训练的生成模型（图中的 Transformer）可以直接接受它们进行处理，避免为每个任务设计特定的模型架构。
 
 以下符号将遵循原论文的表述，这里将用到三种**特殊词元**（Special Token）：
 
-- **开始词元**（Start Token）：$\langle s \rangle$，表示序列起始。
-- **结束词元**（End Token）：$\langle e \rangle $，表示序列结束。
-- **分隔词元**（Delimiter Token）：$\$$，用于分隔子序列，例如前提句和假设句，问题和答案。
+- **开始词元**（Start Token）: $\langle s \rangle$，表示序列起始。
+- **结束词元**（End Token）: $\langle e \rangle $，表示序列结束。
+- **分隔词元**（Delimiter Token）: $`\$`$，用于分隔子序列，例如前提句和假设句，问题和答案。
 
 > [!note]
 >
@@ -218,7 +221,8 @@ GPT 将不同的自然语言处理（NLP）任务的输入转化为统一的序�
 
 **文本分类**任务的输入是**单一文本**，目标是根据文本内容预测类别（例如电影评论情感分析：积极或消极）。
 
-**输入格式**：  
+**输入格式**：
+
 $$
 \langle s \rangle \ \text{文本} \ \langle e \rangle
 $$
@@ -251,10 +255,12 @@ $$
 - **假设**：“所有鸟类都会飞。”
 - **关系**：假设无法从前提中推导，也不矛盾，因此为**无关**。
 
-**输入格式**：  
+**输入格式**：
+
 $$
 \langle s \rangle \ \text{前提} \ \$\ \text{假设} \ \langle e \rangle
 $$
+
 [^4]: [Textual entailment - Wikipedia](https://en.wikipedia.org/wiki/Textual_entailment)
 
 #### 3. 语义相似性（Semantic Similarity）
@@ -265,15 +271,19 @@ $$
 
 由于句子对没有固有的顺序，论文采用了以下方法：
 
-1. 将句子对按照两种可能的顺序输入模型（即$A; B$和$B; A$）。
-2. 对两种输入序列分别处理，生成的最后一层激活向量（$h^m_l$）进行**逐元素相加**（element-wise addition）。
+1. 将句子对按照两种可能的顺序输入模型 (即 $A; B$ 和 $B; A$)。
+2. 对两种输入序列分别处理，生成的最后一层激活向量 ($h^m_l$) 进行**逐元素相加**（element-wise addition）。
 3. 加和后的表示被输入到线性层中，用于判断语义相似性。
 
 **输入格式**：
+
 $$
-\langle s \rangle \ \text{句子A} \ \$\ \text{句子B} \ \langle e \rangle\\
+\begin{align}
+\langle s \rangle \ \text{句子A} \ \$\ \text{句子B} \ \langle e \rangle \\
 \langle s \rangle \ \text{句子B} \ \$\ \text{句子A} \ \langle e \rangle
+\end{align}
 $$
+
 #### 4. 选择题（Multiple Choice）
 
 在**选择题任务**中，模型需要从多个候选答案中选择一个最可能的正确答案，例如问答（Question Answering，QA）和常识推理（Commonsense Reasoning）。
@@ -282,17 +292,21 @@ $$
 
 此时的输入通常包括三个部分，以问答任务为例：
 
-1. **上下文文档** $z$：问题的背景信息。
-2. **问题** $q$：需要解答的问题。
-3. **候选答案集** $\{a_k\}$：多个可能的答案。
+1. **上下文文档** $z$ :问题的背景信息。
+2. **问题** $q$ :需要解答的问题。
+3. **候选答案集** $\{a_k\}$ :多个可能的答案。
 
 **输入格式**：
+
 $$
+\begin{align}
 \langle s \rangle \ \text{文档} z \ \text{问题} q \ \$\ \text{答案} a_1 \ \langle e \rangle\\
 \langle s \rangle \ \text{文档} z \ \text{问题} q \ \$\ \text{答案} a_2 \ \langle e \rangle\\
 \vdots \\
 \langle s \rangle \ \text{文档} z \ \text{问题} q \ \$\ \text{答案} a_k \ \langle e \rangle
+\end{align}
 $$
+
 这些序列会被**独立处理**，最后通过 softmax 归一化生成概率分布。
 
 ## 训练细节
@@ -300,54 +314,52 @@ $$
 ### 无监督预训练（Unsupervised pre-training）
 
 在预训练阶段，模型的目标是最大化未标注语料的语言建模函数：
+
 $$
 L_1(\mathcal{U}) = \sum_i \log P(u_i \mid u_{i-k}, \ldots, u_{i-1}; \Theta)
 $$
 
 其中：
 
-- $\mathcal{U}$：未标注的文本语料。
-- $u_i$：第 $i$ 个词。
-- $k$：上下文窗口的大小（即当前词基于前 $k$ 个词预测）。
-- $\Theta$：模型参数。
+- $\mathcal{U}$ :未标注的文本语料。
+- $u_i$ :第 $i$ 个词。
+- $k$ :上下文窗口的大小（即当前词基于前 $k$ 个词预测）。
+- $\Theta$ :模型参数。
 
 **具体流程**
 
 1. **输入嵌入**
 
-   将输入序列 $ U = {u_{-k}, \ldots, u_{-1}} $ 映射到嵌入空间：
-   $$
-   h_0 = U W_e + W_p
-   $$
+   将输入序列 $U = {u_{-k}, \ldots, u_{-1}}$ 映射到嵌入空间：
+   
+   $$h_0 = U W_e + W_p$$
 
-   - $W_e$：词嵌入矩阵。
-   - $W_p$：位置嵌入矩阵。
-   - $h_0$：初始输入的嵌入表示。
+   - $W_e$ :词嵌入矩阵。
+   - $W_p$ :位置嵌入矩阵。
+   - $h_0$ :初始输入的嵌入表示。
 
 2. **多层 Transformer 编码**
 
    输入嵌入 $h_0$ 通过 $n$ 层 `transformer_block` 逐层处理：
-   $$
-   h_l = \texttt{transformer\_block}(h_{l-1}) \; \forall i \in [1, n]
-   $$
+   
+   $`h_l = \texttt{transformer\_block}(h_{l-1}) \; \forall i \in [1, n]`$
 
-   - $h_l$：第 $l$ 层的输出。
+   - $h_l$ :第 $l$ 层的输出。
 
 3. **预测下一个词**
 
    最后一层的输出 $h_n$ 被映射回词汇表维度，生成下一个词的概率分布：
-   $$
-   P(u) = \texttt{softmax}(h_n W_e^T)
-   $$
+   
+   $$P(u) = \texttt{softmax}(h_n W_e^T)$$
 
-   - $W_e^T$：词嵌入矩阵的转置，将隐藏状态映射回词汇表。
+   - $W_e^T$ :词嵌入矩阵的转置，将隐藏状态映射回词汇表。
    - **softmax**：归一化概率分布。
 
 > [!tip]
 >
 > 更准确一点应该是**自监督**（Self-supervised）而非无监督，这是一个较新（相对于 2018 年发布的 GPT）的说法，源于 2019 年 [Yann LeCun](https://www.facebook.com/yann.lecun) 在 Facebook 上发表的帖文：
 >
-> ![image-20241222172619405](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/image-20241222172619405.png)
+> ![image-20241222172619405](./assets/image-20241222172619405.png)
 
 #### 相关设置
 
@@ -359,7 +371,7 @@ $$
     >
     > BERT 预训练时除了 BooksCorpus 数据集（8 亿词元）外，还使用了英文维基百科（**English Wikipedia**， 25 亿词元），所以 BERT 的训练资料大概为 GPT 的四倍。
     >
-    > “... 所以它在这个数据集上训练了一个比 GPT 大三倍的模型（$\text{BERT}_\text{LARGE}$）也是可以理解的” - [沐神论文精读 31:32 - 32:47 部分 ](https://www.bilibili.com/video/BV1AF411b7xQ/?share_source=copy_web&vd_source=40b3e12ca72bba004f5dd21c08776797&t=1892)
+    > “... 所以它在这个数据集上训练了一个比 GPT 大三倍的模型  ($\text{BERT}_\text{LARGE}$) 也是可以理解的” - [沐神论文精读 31:32 - 32:47 部分 ](https://www.bilibili.com/video/BV1AF411b7xQ/?share_source=copy_web&vd_source=40b3e12ca72bba004f5dd21c08776797&t=1892)
   
   - 使用 **ftfy** 库清理原始文本，标准化标点符号和空白字符，然后使用 **spaCy** 分词器。
   
@@ -419,27 +431,30 @@ $$
 在预训练阶段完成后，模型可以根据具体的下游任务进行微调。假设我们现在有一个标注数据集 $C$，其中每个样本包含一个输入序列 $x = (x^1, \dots, x^m)$ 和对应的标签 $y$。
 
 此时的目标是最大化标签 $y$ 在输入序列 $x$ 下的条件概率：
+
 $$
 L_2(C) = \sum_{(x, y)} \log P(y \mid x^1, \ldots, x^m).
 $$
+
 **具体流程**
 
 1. **特定任务输入处理**
 
-   - 文本分类：$\langle s \rangle \text{文本} \langle e \rangle$
-   - 文本蕴含：$\langle s \rangle \text{前提} \, \$ \, \text{假设} \langle e \rangle$
-   - 语义相似性：$\langle s \rangle \ \text{句子A} \ \$\ \text{句子B} \ \langle e \rangle\\
-     \langle s \rangle \ \text{句子B} \ \$\ \text{句子A} \ \langle e \rangle$
-   - 选择题：$\langle s \rangle \text{上下文} \, \$ \, \text{问题} \, \$ \, \text{答案} \langle e \rangle$
+   - 文本分类: $\langle s \rangle \text{文本} \langle e \rangle$
+   - 文本蕴含: $`\langle s \rangle \text{前提} \, \$ \, \text{假设} \langle e \rangle`$
+   - 语义相似性: $`\begin{align}
+\langle s \rangle \ \text{句子A} \ \$\ \text{句子B} \ \langle e \rangle \\
+\langle s \rangle \ \text{句子B} \ \$\ \text{句子A} \ \langle e \rangle
+\end{align}`$
+   - 选择题: $`\langle s \rangle \text{上下文} \, \$ \, \text{问题} \, \$ \, \text{答案} \langle e \rangle`$
 
 2. **微调目标**
 
    微调阶段的目标是优化以下条件概率：
-   $$
-   P(y \mid x^1, \ldots, x^m) = \texttt{softmax}(h_l^m W_y)
-   $$
+   
+   $$P(y \mid x^1, \ldots, x^m) = \texttt{softmax}(h_l^m W_y)$$
 
-   - $h_l^m$：输入序列 $x = (x^1, \dots, x^m)$ 经过预训练模型的最后一层隐藏状态，注意上标 $m$ 代表了位置。
+   - $h_l^m$ :输入序列 $x = (x^1, \dots, x^m)$ 经过预训练模型的最后一层隐藏状态，注意上标 $m$ 代表了位置。
    - **$W_y$**：线性层的权重矩阵（该层接在预训练模型之后），用于将隐藏状态 $h_l^m$ 映射到标签空间。可以理解为预训练模型后接线性层，比如对于二分类任务，对应的代码是 `nn.Linear(hidden_size, 2)`。
 
 3. **辅助目标**
@@ -447,11 +462,10 @@ $$
    > *“We additionally found that including language modeling as an auxiliary objective to the fine-tuning helped learning by (a) improving generalization of the supervised model, and (b) accelerating convergence. This is in line with prior work [50, 43], who also observed improved performance with such an auxiliary objective. Specifically, we optimize the following objective (with weight $\lambda$):”*
 
    为了提高泛化能力和加速收敛，微调阶段还引入了预训练的语言建模目标函数作为辅助，最终的目标函数如下：
-   $$
-   L_3(C) = L_2(C) + \lambda L_1(C)
-   $$
+   
+   $$L_3(C) = L_2(C) + \lambda L_1(C)$$
 
-   - $\lambda$：辅助目标函数的权重。
+   - $\lambda$ :辅助目标函数的权重。
 
 #### 相关设置
 
@@ -474,13 +488,13 @@ $$
     - 热身步数为训练总步数的 **0.2%**。
     - 最大学习率调整为 $6.25 \times 10^{-5}$，热身后采用**线性衰减**策略。
   - **Dropout 率**：分类器层（就是预训练模型之后的线性层）设置为 0.1。
-  - **辅助目标权重**：$\lambda = 0.5$。
+  - **辅助目标权重**: $\lambda = 0.5$。
 
 到目前为止，还看不到现在 ChatGPT 的影子，因为针对不同的任务还需要进行微调，不能简单的直接用对话的形式获取答案，即便论文后续有提及 Zero-shot，但实际效果一般。
 
 ## 关于 Zero-shot
 
-其实 Zero-shot 并非 GPT-2 才引入，在 GPT-1 中（第 7 页的 Zero-shot Behaviors 部分）就已经探讨了生成式预训练模型的**零样本（Zero-shot）**性能，即模型在没有针对某些特定任务进行微调的情况下，也能通过预训练过程中学习到的知识直接完成这些任务。
+其实 Zero-shot 并非 GPT-2 才引入，在 GPT-1 中（第 7 页的 Zero-shot Behaviors 部分）就已经探讨了生成式预训练模型的 Zero-shot 性能，即模型在没有针对某些特定任务进行微调的情况下，也能通过预训练过程中学习到的知识直接完成这些任务。
 
 > *“A hypothesis is that the underlying generative model learns to perform many of the tasks we evaluate on in order to improve its language modeling capability and that the more structured attentional memory of the transformer assists in transfer compared to LSTMs. ”*
 >
@@ -509,7 +523,7 @@ $$
 >
 > 下图展示了模型在不同任务上的零样本性能随预训练迭代次数的变化趋势。性能指标归一化到随机猜测与当前 SOTA 之间：
 >
-> ![Figure 2 (right)](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/image-20241228200239146.png)
+> ![Figure 2 (right)](./assets/image-20241228200239146.png)
 >
 > 可以看到，随着训练的进行，任务性能稳定增长，但离 SOTA 还有不小的差距。
 
@@ -518,7 +532,7 @@ $$
 **Language Models are Unsupervised Multitask Learners**
 Alec Radford et al. | [PDF](https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf) | [Code - 官方 Tensorflow](https://github.com/openai/gpt-2) | OpenAI | 2019.02
 
-> “当自己的模型被人用更大的数据集（+维基百科）和更大的模型（$\text{BERT}_\text{LARGE}$）打败的时候，应该怎么去回应？”
+> “当自己的模型被人用更大的数据集（+维基百科）和更大的模型  ($\text{BERT}_\text{LARGE}$) 打败的时候，应该怎么去回应？”
 >
 > [GPT，GPT-2，GPT-3 论文精读【论文精读】 33:12 - 46:05 部分](https://www.bilibili.com/video/BV1AF411b7xQ/?share_source=copy_web&vd_source=40b3e12ca72bba004f5dd21c08776797&t=1992)
 
@@ -538,8 +552,8 @@ GPT-2 使用了 **WebText** 数据集进行训练。WebText 的文本来源是 4
 
 GPT-2 的参数规模（15 亿参数）远超其前身 GPT-1（1.1 亿参数） 以及当时的主流模型（如 $\text{BERT}_\text{LARGE}$ 的 3.4 亿参数）。但模型主体架构并没有修改，只是调整了一些超参数：
 
-- **层数** $n_{layers}$：12 → 48。
-- **隐藏层维度** $d_{model}$：768 → 1600。
+- **层数** $n_{layers}$ :12 → 48。
+- **隐藏层维度** $d_{model}$ :768 → 1600。
 - **最大序列长度**：512 → 1024。
 - **批量大小**：64 → 512。
 
@@ -550,19 +564,19 @@ GPT-2 的参数规模（15 亿参数）远超其前身 GPT-1（1.1 亿参数） 
 
 > 表 2 列出了四种不同参数规模的模型配置：
 >
-> ![image-20241227212626715](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/image-20241227212626715.png)
+> ![image-20241227212626715](./assets/image-20241227212626715.png)
 >
 > 其中，最小的模型（117M）对标 GPT-1，第二个模型（345M）对标 $\text{BERT}_\text{LARGE}$，最大的模型（1152M）称为 GPT-2，它的另一个名字是 GPT2-XL。
 
 ### 零样本学习（Zero-shot Learning）
 
-GPT-2 的**创新**在于对零样本学习的进一步探索。GPT-1 微调时引入了三种特殊符号：$\langle s \rangle$, $\$$, $\langle e \rangle$，这些符号在预训练时并没有见过，所以会在微调的时候学习表示。而 GPT-2 不再引入这些特殊符号，采用与 GPT-1 预训练数据格式更相似的自然输入格式（其实就是不做多余操作，单纯的预训练），这也是后续文献常提及以及我们现在耳熟能详的 `prompt`，作者给出了两个例子：
+GPT-2 的**创新**在于对零样本学习的进一步探索。GPT-1 微调时引入了三种特殊符号: $\langle s \rangle$, $`\$`$, $\langle e \rangle$，这些符号在预训练时并没有见过，所以会在微调的时候学习表示。而 GPT-2 不再引入这些特殊符号，采用与 GPT-1 预训练数据格式更相似的自然输入格式（其实就是不做多余操作，单纯的预训练），这也是后续文献常提及以及我们现在耳熟能详的 `Prompt`，作者给出了两个例子：
 
 - **翻译**：`translate to French, English text, French text`。
 
   > 论文的表 1 展示了 WebText 中自然出现的语言翻译例子：
   >
-  > ![image-20241227214420068](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/image-20241227214420068.png)
+  > ![image-20241227214420068](./assets/image-20241227214420068.png)
 
 - **阅读理解**：`answer the question, document, question, answer`。
 
@@ -574,21 +588,19 @@ GPT-2 的**创新**在于对零样本学习的进一步探索。GPT-1 微调时�
 
 > 结合图例[^7]进行理解：
 >
-> ![image-20241227230123493](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/image-20241227230123493.png)
+> ![image-20241227230123493](./assets/image-20241227230123493.png)
 
 如上图 (b) 所示，Pre-Norm 就是将层归一化放在**子层（SubLayer，例如自注意力或前馈网络）**的输入端，也就是在残差连接之前。
 
 具体公式如下：
 
 - **Pre-Norm**：
-  $$
-  \text{Output} = x + \text{SubLayer}(\text{LayerNorm}(x))
-  $$
+
+  $$\text{Output} = x + \text{SubLayer}(\text{LayerNorm}(x))$$
 
 - **Post-Norm**（Transformer 原始架构及 GPT-1）：
-  $$
-  \text{Output} = \text{LayerNorm}(x + \text{SubLayer}(x))
-  $$
+
+  $$\text{Output} = \text{LayerNorm}(x + \text{SubLayer}(x))$$
 
 **GPT-1 和 GPT-2 的区别**
 
@@ -624,8 +636,6 @@ GPT-2 的**创新**在于对零样本学习的进一步探索。GPT-1 微调时�
 **Language Models are Few-Shot Learners**
 Tom B. Brown et al. | [PDF](https://arxiv.org/pdf/2005.14165) | OpenAI | 2020.05
 
-GPT-2 的效果其实并没有非常惊艳，
-
 ## 关键改进
 
 GPT-3 秉承传统：更大的数据集和更大的模型。
@@ -634,7 +644,7 @@ GPT-3 秉承传统：更大的数据集和更大的模型。
 
 > GPT-3 的训练数据集来自 **Common Crawl、WebText2、Books1、Books2** 和 **Wikipedia**，论文的表 2.2 列出了它们的规模、在训练中的权重分布以及训练 3000 亿 tokens 时经过的轮次:
 >
-> ![image-20241230214618830](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/image-20241230214618830.png)
+> ![image-20241230214618830](./assets/image-20241230214618830.png)
 
 | 数据集                 | 数据量（tokens 数） | 训练混合中的权重 | 训练 3000 亿 tokens 时的轮次 |
 | ---------------------- | ------------------- | ---------------- | ---------------------------- |
@@ -664,9 +674,9 @@ GPT-3 秉承传统：更大的数据集和更大的模型。
 
 - **重新采样 (Resampling) 与 Pareto 分布**
   利用所得到的“质量分数”，研究团队基于以下条件进行重新采样：
-  $$
-  \texttt{np.random.pareto}(\alpha) > 1 - \texttt{document\_score}
-  $$
+  
+  $`\texttt{np.random.pareto}(\alpha) > 1 - \texttt{document\_score}`$
+  
   其中 $\alpha = 9$，文档得分越高越容易保留，但低分文档也有一定概率（出于维持多样性的考虑）。
 
   通过代码来理解对应的概念：
@@ -735,28 +745,96 @@ GPT-3 秉承传统：更大的数据集和更大的模型。
 
 > GPT-2 训练了 4 个不同规模的模型，最大的称为 GPT-2，GPT-3 训练了 8 个，同样 :)，最大的称为 GPT-3。表 2.1 列出了 GPT-3 八种不同规模的模型的具体训练配置，参数量从 1.25 亿到 1750 亿，所有模型的训练总量为 3000 亿个 tokens。
 >
-> ![表 2-1](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/image-20241231163900275.png)
+> ![表 2-1](./assets/image-20241231163900275.png)
 
 GPT-3 延续 GPT-2 的架构：**Decoder-only、Pre-Norm、Byte-level BPE 分词**，调整的超参数如下：
 
-- **层数** $n_{layers}$：48 → 96。
-- **隐藏层维度** $d_{model}$：1600 → 12288。
-- **注意力头数** $n_{heads}$：25 → 96。
+- **层数** $n_{layers}$ :48 → 96。
+- **隐藏层维度** $d_{model}$ :1600 → 12288。
+- **注意力头数** $n_{heads}$ :25 → 96。
 - **最大序列长度**：1024 → 2048。
 
 此外，GPT-3 的变化是**交替使用**密集（Dense）和局部带状稀疏注意力（Locally Banded Sparse Attention），这一机制类似于 [Sparse Transformer](https://arxiv.org/abs/1904.10509)。
 
-## Q1：Zero-Shot、One-Shot 和 Few-Shot 的区别是什么？和 In-Context Learning 有什么关系？与微调有什么不同？
+### 少样本学习（Few-shot Learning）
+
+> *“Few-Shot (FS) is the term we will use in this work to refer to the setting where the model is given a few demonstrations of the task at inference time as conditioning [RWC+19], but no weight updates are allowed. ”*
+
+GPT-3 **创新**在于示例的引入，推理时，通过在提示（Prompt）中加入少量示例来“告诉”模型要完成的具体任务，不对模型进行任何参数更新。相较于需要额外微调（fine-tuning）的做法，极大减少了特定任务的数据量需求。具体操作：**使用 K 个示例作为条件（Conditioning）**
+
+- 在推理时，对于评估集中（test set）的每一个测试样本，模型都会：
+
+  1. 从对应任务的**训练集**中随机选出 K 个示例。
+  2. 将这 K 条示例（上下文 + 正确答案）与**当前测试样本的上下文**拼接在一起，作为模型的输入（Prompt）。
+  3. 让模型根据提示（Prompt）来生成答案。
+
+  > [!note]
+  >
+  > - 如果某个任务本身没有公开的训练集（如 LAMBADA、StoryCloze），则从对应的开发集（dev set）中选 K 条示例；如果只有一个数据集（如原版 Winograd），则直接在同一数据集里选。
+  > - **K 的取值**从 **0**（零样本）到模型上下文窗口（GPT-3 中为 2048 tokens）所能容纳的最大示例数（一般为 10 - 100）。K 值通常比较大，但并不是越大越好，因此在有开发集（dev set）和测试集（test set）的任务上，往往会先在开发集上尝试多个 K 值，然后选择最优 K 再跑测试。
+
+> *“The main disadvantage is that results from this method have so far been much worse than state-of-the-art fine-tuned models.”*
+>
+> 对于 GPT-3 来说，Few-shot 方式在特定场景下不及 SOTA（State-of-the-Art）的微调模型。
+
+#### 具体任务
+
+论文中提到了两大类常见任务：**选择题（Multiple Choice）** 和 **自由生成（Free-form Completion）**，它们的核心流程都是“将示例与测试样本合并到 Prompt 中”。
+
+1. **选择题（Multiple Choice）**
+
+   > 下图为 RACE-h 数据集的示例：
+   >
+   > ![图 G.1](./assets/image-20250101161135203.png)
+
+   每个示例（训练/开发集中的题目）附上该题的**正确答案**，对于真正需要预测的那道题，则只给出题目，但**不**给出答案，然后计算每个候选答案的条件概率（语言模型似然，LM likelihood）：
+   
+   $$P(\text{completion} \mid \text{context})$$
+   
+   换个写法或许更容易理解：
+   
+   $$P(\mathbf{y} \mid \mathbf{x}) \;=\; \prod_{t=1}^{T} P\bigl(y_t \;\bigm|\; \mathbf{x},\, y_{1:t-1}\bigr)$$
+   
+   其中：
+
+   - $\mathbf{x}$ :上下文的文本（context）。
+   - $\mathbf{y} = (y_1, y_2, \ldots, y_T)$ :候选答案（completion）。
+   - $y_{1:t-1}$ :在第 $t$ 个 token 之前已“生成”的内容。
+
+   > *“For most tasks we compare the per-token likelihood (to normalize for length), however on a small number of datasets (ARC, OpenBookQA, and RACE) we gain additional benefit as measured on the development set by normalizing by the unconditional probability of each completion ...”*
+
+   对于少数数据集（例如 ARC、OpenBookQA 和 RACE），使用无条件概率归一化： 
+   
+   $`\frac{P(\text{completion} \mid \text{context})}{P(\text{completion} \mid \text{answer\_context})}`$
+   
+   其中 $answer\_context$ 是通用字符串（例如 `"Answer: "` 或 `"A: "`），用来提示模型生成答案。
+
+   > *“On tasks that involve binary classification, we give the options more semantically meaningful names (e.g. “True” or “False” rather than 0 or 1) and then treat the task like multiple choice”*
+
+   二分类任务可以当作选择题来处理，此时会给两个选项起更语义化的名字（例如 “True/False” 而不是 1/0）。
+
+2. **自由生成（Free-form Completion）**
+
+   > *“On tasks with free-form completion, we use beam search with the same parameters as [RSR+19]: a beam width of 4 and a length penalty of α = 0.6.”*
+
+   对于生成型任务（如翻译、摘要），采用与 [[RSR+19]](https://arxiv.org/abs/1910.10683) 相同的 **beam search** 参数来做解码：
+
+   - **束宽（Beam width）** ：4
+   - **长度惩罚（Length Penalty）**: $\alpha = 0.6$
+
+   模型最终输出的文本，会根据相应任务所常用的指标（F1、BLEU、Exact Match 等）来打分。
+
+#### Q1：Zero-Shot、One-Shot 和 Few-Shot 的区别是什么？和 In-Context Learning 有什么关系？与微调有什么不同？
 
 > 图 2.1：
 >
-> ![eval_strategies](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/eval_strategies.png)
+> ![eval_strategies](./assets/eval_strategies.png)
 >
 > *“... fine-tuning is the traditional method, whereas zero-, one-, and few-shot, which we study in this work, require the model to perform the task with **only** forward passes **at test time**. We typically present the model with **a few dozen examples** in the few shot setting.”*
 
 过去常说的“学习（Learning）”通常隐含参数更新的过程，所以 In-Context Learning 初见的确是一个容易迷惑的表述，可以直接将其理解为 Prompting，毕竟现在与 AI 对话的过程就是不更新模型参数的。
 
-In-Context Learning 的特点是：**通过上下文提示（Prompting）完成任务，不更新模型参数（即不需要进行微调）**。有些说法认为 Few-Shot 并非 In-Context Learning，这在 GPT 的语境下是不准确的，根据 GPT-3 论文的定义，**Zero-Shot**、**One-Shot** 和 **Few-Shot** 本质上是 **In-Context Learning** 的三种不同设置（见上图左上角的叙述），其区别仅在于上下文提示中任务样本的数量：
+In-Context Learning 的特点是：**通过上下文提示（Prompting）完成任务，不更新模型参数（即不需要进行微调）**。有些说法认为 Few-Shot 并非 In-Context Learning，这**在 GPT 的语境**下是不准确的（论文覆盖了一些已有概念，所以容易混淆），根据 GPT-3 论文的定义，**Zero-Shot**、**One-Shot** 和 **Few-Shot** 本质上是 **In-Context Learning** 的三种不同设置（见上图左上角的叙述），其区别仅在于上下文提示中任务样本的数量：
 
 - **Zero-Shot Learning（零样本学习）**：
 
@@ -802,4 +880,3 @@ In-Context Learning 的特点是：**通过上下文提示（Prompting）完成�
 
 
 
-Q：Transformer被称为Encoder-Decoder架构，BERT被称为Encoder-Only架构，GPT被称为Decoder-Only架构，那么两两之间的区别是什么？
