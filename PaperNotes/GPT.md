@@ -54,7 +54,7 @@ Alec Radford et al. | [PDF](https://cdn.openai.com/research-covers/language-unsu
 [^1]: 按照沐神论文精读的课件设计进行展示，时间跨度为 3 年。
 [^2]: [Generative pre-trained transformer - Wikipedia](https://en.wikipedia.org/wiki/Generative_pre-trained_transformer).
 
-GPT 是一种自回归（Auto-Regressive，AR）模型，在进一步了解 GPT 之前，可以先了解自回归和非自回归的概念[^3]：
+GPT 是一种自回归（Auto-Regressive，AR）模型，在进一步了解 GPT 之前，可以先认识自回归和非自回归[^3]：
 
 > ![AR vs NAR](./assets/image-20241023203706721.png)
 
@@ -501,7 +501,7 @@ $$
 > - 论文假设，预训练语言模型的生成目标让模型在学习语言建模能力的过程中，掌握了大量任务相关的语言知识。
 > - Transformer 架构的**结构化注意力机制**（Structured Attentional Memory）相比于 LSTM 具有更好的迁移性。
 >
-> *“We designed a series of heuristic solutions that use the underlying generative model to perform tasks without supervised finetuning. We visualize the effectiveness of these heuristic solutions over the course of generative pre-training in Fig 2(right). We observe the performance of these heuristics is stable and steadily increases over training suggesting that generative pretraining supports the learning of a wide variety of task relevant functionality. We also observe the LSTM exhibits higher variance in its zero-shot performance suggesting that the inductive bias of the Transformer architecture assists in transfer.”*
+> *“We designed a series of heuristic solutions that use the underlying generative model to perform tasks without supervised finetuning.”*
 >
 > 作者设计了一系列启发式方法，通过直接使用生成预训练模型（无需监督微调）解决不同下游任务。
 >
@@ -536,7 +536,7 @@ Alec Radford et al. | [PDF](https://cdn.openai.com/better-language-models/langua
 >
 > [GPT，GPT-2，GPT-3 论文精读【论文精读】 33:12 - 46:05 部分](https://www.bilibili.com/video/BV1AF411b7xQ/?share_source=copy_web&vd_source=40b3e12ca72bba004f5dd21c08776797&t=1992)
 
-GPT-2 的整体设计思想相较于 GPT-1 没有变化，但通过模型规模的扩展和数据集的优化，在**零样本学习（Zero-Shot Learning）**上迈出了一大步。此前该领域的模型或受限于架构或受限于规模，性能远不如 GPT-2。
+GPT-2 的整体设计思想相较于 GPT-1 没有变化，但通过模型规模的扩展和数据集的优化，在**零样本学习**（Zero-Shot Learning）上迈出了一大步。此前该领域的模型或受限于架构或受限于规模，性能远不如 GPT-2。
 
 ## 关键改进
 
@@ -760,7 +760,9 @@ GPT-3 延续 GPT-2 的架构：**Decoder-only、Pre-Norm、Byte-level BPE 分词
 
 > *“Few-Shot (FS) is the term we will use in this work to refer to the setting where the model is given a few demonstrations of the task at inference time as conditioning [RWC+19], but no weight updates are allowed. ”*
 
-GPT-3 **创新**在于示例的引入，推理时，通过在提示（Prompt）中加入少量示例来“告诉”模型要完成的具体任务，不对模型进行任何参数更新。相较于需要额外微调（fine-tuning）的做法，极大减少了特定任务的数据量需求。具体操作：**使用 K 个示例作为条件（Conditioning）**
+GPT-3 **创新**在于示例的引入，推理时，通过在提示（Prompt）中加入少量示例来“告诉”模型要完成的具体任务，不对模型进行任何参数更新。相较于需要额外微调（fine-tuning）的做法，极大减少了特定任务的数据量需求。
+
+具体操作：**使用 K 个示例作为条件（Conditioning）**
 
 - 在推理时，对于评估集中（test set）的每一个测试样本，模型都会：
 
@@ -768,10 +770,10 @@ GPT-3 **创新**在于示例的引入，推理时，通过在提示（Prompt）�
   2. 将这 K 条示例（上下文 + 正确答案）与**当前测试样本的上下文**拼接在一起，作为模型的输入（Prompt）。
   3. 让模型根据提示（Prompt）来生成答案。
 
-  > [!note]
-  >
-  > - 如果某个任务本身没有公开的训练集（如 LAMBADA、StoryCloze），则从对应的开发集（dev set）中选 K 条示例；如果只有一个数据集（如原版 Winograd），则直接在同一数据集里选。
-  > - **K 的取值**从 **0**（零样本）到模型上下文窗口（GPT-3 中为 2048 tokens）所能容纳的最大示例数（一般为 10 - 100）。K 值通常比较大，但并不是越大越好，因此在有开发集（dev set）和测试集（test set）的任务上，往往会先在开发集上尝试多个 K 值，然后选择最优 K 再跑测试。
+> [!note]
+>
+> - 如果某个任务本身没有公开的训练集（如 LAMBADA、StoryCloze），则从对应的开发集（dev set）中选 K 条示例；如果只有一个数据集（如原版 Winograd），则直接在同一数据集里选。
+> - **K 的取值**从 **0**（零样本）到模型上下文窗口（GPT-3 中为 2048 tokens）所能容纳的最大示例数（一般为 10 - 100）。K 值通常比较大，但并不是越大越好，因此在有开发集（dev set）和测试集（test set）的任务上，往往会先在开发集上尝试多个 K 值，然后选择最优 K 再跑测试。
 
 > *“The main disadvantage is that results from this method have so far been much worse than state-of-the-art fine-tuned models.”*
 >
