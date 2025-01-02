@@ -209,7 +209,7 @@ GPT 将不同的自然语言处理（NLP）任务的输入转化为统一的序�
 
 - **开始词元**（Start Token）: $\langle s \rangle$，表示序列起始。
 - **结束词元**（End Token）: $\langle e \rangle $，表示序列结束。
-- **分隔词元**（Delimiter Token）: $`\$`$，用于分隔子序列，例如前提句和假设句，问题和答案。
+- **分隔词元**（Delimiter Token）: `$`，用于分隔子序列，例如前提句和假设句，问题和答案。
 
 > [!note]
 >
@@ -423,7 +423,7 @@ $$
     - **位置嵌入**：采用可学习的位置嵌入矩阵，而非原始 Transformer 中的正弦嵌入。
 
 
-[^5]: [Aligning books and movies: Towards story-like visual explanations by watching movies and reading books](https://arxiv.org/abs/1506.06724).
+[^5]: [Aligning books and movies: Towards story-like visual explanations by watching movies and reading books](https://arxiv.org/pdf/1506.06724).
 [^6]: [BookCorpus - Wikipedia](https://en.wikipedia.org/wiki/BookCorpus)
 
 ### 有监督微调（Supervised Fine-Tuning）
@@ -629,7 +629,7 @@ GPT-2 的**创新**在于对零样本学习的进一步探索。GPT-1 微调时�
 >
 > 感兴趣的话可以访问官方代码：[gpt-2 block](https://github.com/openai/gpt-2/blob/9b63575ef42771a015060c964af2c3da4cf7c8ab/src/model.py#L123)。
 
-[^7]: [On Layer Normalization in the Transformer Architecture](https://arxiv.org/abs/2002.04745).
+[^7]: [On Layer Normalization in the Transformer Architecture](https://arxiv.org/pdf/2002.04745).
 
 # GPT-3
 
@@ -703,11 +703,10 @@ GPT-3 秉承传统：更大的数据集和更大的模型。
   for s in scores:
       rate = filter_rate(s)
       print(f"doc_score={s}, 通过过滤的模拟比例={rate:.4f}")
-  
   ```
-
+  
   **输出**：
-
+  
   ```
   doc_score=0.0, 通过过滤的模拟比例=0.0021
   doc_score=0.2, 通过过滤的模拟比例=0.0051
@@ -715,12 +714,12 @@ GPT-3 秉承传统：更大的数据集和更大的模型。
   doc_score=0.8, 通过过滤的模拟比例=0.1950
   doc_score=0.9, 通过过滤的模拟比例=0.4243
   ```
-
+  
   - 当 **doc_score=0**，约 0.2% 的保留率。
   - 当 **doc_score=0.9**，约 42% 的保留率。
-
+  
   **核心思路**：
-
+  
   ```python
   if np.random.pareto(alpha) > 1 - document_score:
       keep_doc = True
@@ -754,7 +753,7 @@ GPT-3 延续 GPT-2 的架构：**Decoder-only、Pre-Norm、Byte-level BPE 分词
 - **注意力头数** $n_{heads}$ :25 → 96。
 - **最大序列长度**：1024 → 2048。
 
-此外，GPT-3 的变化是**交替使用**密集（Dense）和局部带状稀疏注意力（Locally Banded Sparse Attention），这一机制类似于 [Sparse Transformer](https://arxiv.org/abs/1904.10509)。
+此外，GPT-3 的变化是**交替使用**密集（Dense）和局部带状稀疏注意力（Locally Banded Sparse Attention），这一机制类似于 [Sparse Transformer](https://arxiv.org/pdf/1904.10509)。
 
 ### 少样本学习（Few-shot Learning）
 
@@ -819,7 +818,7 @@ GPT-3 **创新**在于示例的引入，推理时，通过在提示（Prompt）�
 
    > *“On tasks with free-form completion, we use beam search with the same parameters as [RSR+19]: a beam width of 4 and a length penalty of α = 0.6.”*
 
-   对于生成型任务（如翻译、摘要），采用与 [[RSR+19]](https://arxiv.org/abs/1910.10683) 相同的 **beam search** 参数来做解码：
+   对于生成型任务（如翻译、摘要），采用与 [[RSR+19]](https://arxiv.org/pdf/1910.10683) 相同的 **beam search** 参数来做解码：
 
    - **束宽（Beam width）** ：4
    - **长度惩罚（Length Penalty）**: $\alpha = 0.6$
@@ -840,7 +839,7 @@ In-Context Learning 的特点是：**通过上下文提示（Prompting）完成�
 
 - **Zero-Shot Learning（零样本学习）**：
 
-  - 仅通过**自然语言（Prompting）**描述任务，不提供任何样本。
+  - 仅通过**自然语言**（Prompt）描述任务，不提供任何样本。
 
     ```
     Translate English to French:
@@ -871,11 +870,44 @@ In-Context Learning 的特点是：**通过上下文提示（Prompting）完成�
 
 那么 In-Context Learning 与传统的微调（Fine-Tuning）有什么不同呢？
 
-**简单来说：In-Context Learning 是通过提示（Prompting）完成任务，而微调是通过训练更新参数来适应任务。一个不更新参数，一个更新参数。一个是 eval，一个是 train。**
+**简单来说：In-Context Learning 是通过提示（Prompt）完成任务，而微调是通过训练更新参数来适应任务。一个不更新参数，一个更新参数。一个是 eval，一个是 train。**
+
+## 呈现
+
+### 图 3.1：初见 Scaling Law
+
+> ![LanguageModelingComputePareto](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/LanguageModelingComputePareto.png)
+>
+> **注**：线条颜色与模型参数对应（图右的 Colormap)。
+>
+> [GPT，GPT-2，GPT-3 论文精读【论文精读】 1:18:02 - 1:20:18 部分](https://www.bilibili.com/video/BV1AF411b7xQ/?share_source=copy_web&vd_source=40b3e12ca72bba004f5dd21c08776797&t=4682)
+
+上图展示了 GPT-3 不同参数规模的模型在训练计算量（compute）与交叉熵验证损失（cross-entropy validation loss）之间的幂律关系（power-law）。这与 [[KMH+20]](https://arxiv.org/pdf/2001.08361) 提出的 Scaling Law 一致，增加模型的规模和计算量会显著降低语言建模损失，甚至这个趋势在扩展了两个数量级后一样成立，只有轻微的偏离。所以在之后使用了大模型和数据的研究中，会经常看到对 [KMH+20] 的引用（*“虽然我们的研究看起来是「力大砖飞」，但是确实是有效且有参考依据的！”*）。
+
+> [!Tip]
+>
+> 横轴的 **PetaFLOP/s-days**（PF-days）是衡量计算量的指标，将其拆开进行理解：
+>
+> - **Peta-**
+>   - 一个数量级的前缀，对应于 $10^{15}$。
+> - **Floating point operations per second** (**FLOPS** / **flops** / **flop/s**)
+>   - 每秒可以执行的浮点运算次数。
+>   - 因此，1 PetaFLOPS = $10^{15}$ 浮点运算/秒。
+> - **Days**
+>   - 天。
+>
+> 1 **PetaFLOP/s-day** 可以理解为以 $10^{15}$ 次浮点运算/秒的速度运行一天（24 小时 = 86400 秒）所完成的浮点运算次数：
+> $$
+> 1 \text{ PetaFLOP/s} \times 1 \text{ day}   = 10^{15}\ \text{flop/s} \times 86400\ \text{s}   = 8.64 \times 10^{19}\ \text{flops}
+> $$
+
+**那么，是谁这么有先见之明的提出 Scaling Law 呢？**
+
+答：**OpenAI**。是的，[[KMH+20]](https://arxiv.org/pdf/2001.08361) 也是由 OpenAI 的团队所发表。
 
 
 
-## GPT-4
+# GPT-4
 
 **GPT-4 Technical Report**
 [PDF](https://arxiv.org/pdf/2303.08774) | OpenAI | 2023.03
