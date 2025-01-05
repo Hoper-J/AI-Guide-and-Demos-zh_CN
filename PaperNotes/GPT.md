@@ -22,7 +22,7 @@ Alec Radford et al. | [PDF](https://cdn.openai.com/research-covers/language-unsu
 >   —— 沐神的论文精读合集
 >
 >   - [GPT，GPT-2，GPT-3 论文精读【论文精读】](https://www.bilibili.com/video/BV1AF411b7xQ/?share_source=copy_web&vd_source=e46571d631061853c8f9eead71bdb390)
->   - 
+>   - [GPT-4论文精读【论文精读·53】](https://www.bilibili.com/video/BV1vM4y1U7b5/?share_source=copy_web&vd_source=40b3e12ca72bba004f5dd21c08776797)
 >
 > - **3Blue1Brown**
 >
@@ -994,12 +994,30 @@ In-Context Learning 的特点是：**通过上下文提示（Prompting）完成�
 8. 模型参数规模太大导致推理费用昂贵。论文提到，可以将大型模型蒸馏为更小规模子模型用于特定任务，因为大型模型可能包含了大量用不到的知识。
 9. 缺乏可解释性、预测校准（calibration）不佳，性能方差比人类高很多，并且带有训练数据的偏见。
 
-
-
 # GPT-4
 
 **GPT-4 Technical Report**
-[PDF](https://arxiv.org/pdf/2303.08774) | OpenAI | 2023.03
+[PDF](https://arxiv.org/pdf/2303.08774) | [精简版](https://openai.com/index/gpt-4-research/) | OpenAI | 2023.03
+
+> [GPT-4论文精读【论文精读·53】](https://www.bilibili.com/video/BV1vM4y1U7b5/?share_source=copy_web&vd_source=40b3e12ca72bba004f5dd21c08776797)
+>
+> “这份技术报告中没有任何的技术细节”
+>
+> 原论文中也很直白的指出了这一点：
+>
+> *“Given both the competitive landscape and the safety implications of large-scale models like GPT-4, this report **contains no further details** about the architecture (including model size), hardware, training compute, dataset construction, training method, or similar.”*
+>
+> “考虑到像 GPT-4 这样的大规模模型的竞争格局和安全影响，本报告**没有包含**有关架构（包括模型大小）、硬件、训练计算、数据集构造、训练方法或类似的进一步细节。”
+
+技术报告中的正文部分其实很短，仅有 14 页，附录实验相关有 77 页。
+
+### 多模态能力
+
+> ![表 3](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/image-20250106210629931.png)
+
+GPT-4 不再是一个单一的语言模型，而是多模态模型，能够处理**图像和文本输入**，并生成文本输出。论文的表 3 展示了一个图像输入的示例，该示例图分三部分，描述的是 VGA 转 Lightning 接口神奇的点在于，模型分别识别了这三块区域，并 Get 到了其中的幽默点：“把一个大且过时的 VGA 接口插入一个小的现代智能手机充电端口是荒谬的”。
+
+
 
 
 
