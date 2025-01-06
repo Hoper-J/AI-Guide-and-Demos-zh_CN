@@ -1011,13 +1011,71 @@ In-Context Learning 的特点是：**通过上下文提示（Prompting）完成�
 
 技术报告中的正文部分其实很短，仅有 14 页，附录实验相关有 77 页。
 
+研究团队花了 6 个月时间去对齐人类的偏好，这也说明了OpenAI 确实在 22 年 8 月就已经完成了模型的训练，接着的半年时间都是在准备 GPT-4 的发布。
+
+## 能力测试
+
+> *“In a casual conversation, the distinction between GPT-3.5 and GPT-4 can be subtle. The difference comes out when the complexity of the task reaches a sufficient threshold—GPT-4 is more reliable, creative, and able to handle much more nuanced instructions than GPT-3.5.”*
+
+在日常对话中，GPT-3.5 和 GPT-4 的区别是非常小的，当任务复杂度达到一定程度的时候，才能体现出差异 — GPT-4 更可靠、更有创意，并且能够处理更细致的指令。
+
+另外，模型并没有针对测试进行特定的训练，但考虑到模型还是可能在预训练过程中看到部分问题，研究团队做了两种测试：
+
+1. **正常版本（包含可能见过的题目）**
+2. **去污染版本（移除已知训练见过的题目）**
+
+在最终报告时，选取二者中较低的分数。
+
+### 专业和学术考试
+
+> **表 1**：
+>
+> ![表 1](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/image-20250107144727777.png)
+>
+> GPT 在各类学术和专业考试上的最终得分（根据对应官方评分方式计算），模拟了真实考试的条件和评分方式，同时给出了模型相应分数所处的考生百分位（越高越好，上限 100）。
+>
+> **图 4**：
+>
+> ![图 4](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/exam_perf.jpg)
+>
+> 跟上表基本对应，图中横坐标列出了不同考试科目，这些科目按照 GPT-3.5 的成绩从低到高进行排列，纵坐标为考生的分位数（下限）。
+
+GPT-4 虽然在现实场景中还不如人类，但在各种专业和学术基准测试中已经有了显著提升，经常超越大多数的人类考生，比如在模拟律师资格考试（Bar Exam）中得分达到考生前 10% 的水准（GPT-3.5 仅为后 10%），从图中可以看出，在大多数的考试下，GPT-4 的表现优于 GPT-3.5。另外，上图保守地报告了百分位数范围的下限，这会使得某些考试排名看起来偏低，以  AP Biology 为例（5/5），虽然已经拿到了最高分，但报告中显示的百分位数仅为 85%，因为约有 15% 的考生能拿到 5 分。
+
+但在一些领域的表现还是比较差：
+
+- **AP Calculus BC（微积分）**
+- **AMC 12（美国高中数学竞赛）**
+- **Codeforces Rating（编程竞赛）**
+- **AP English Literature（英语文学）**/ **AP English Language（英语语言）**：“GPT 系列的模型虽然能生成大段流利的文本，但写出来的东西很多时候就是翻来覆去的空话和大话，非常的冠冕堂皇，并没有真正自己的思考，没有一个深刻的洞见，所以真的让一个以英语为母语，而且是教英语课的老师去批卷子，这个分数肯定不会高到哪去。”
+
+> [!TIP]
+>
+> AP（Advanced Placement）[^8]，又称为大学先修课程，主要面向对某学科有兴趣、想提前学习大学内容的高中生。所有科目的 AP 考试分数都是从 1 到 5：
+>
+> - **1** - 不合格（No recommendation）
+> - **2** - 勉强合格（Possibly qualified）
+> - **3** - 合格（Qualified）
+> - **4** - 良好（Well qualified）
+> - **5** - 优秀（Extremely well qualified）
+
+[^8]: [Advanced Placement - Wikipedia](https://en.wikipedia.org/wiki/Advanced_Placement).
+
+#### 附录 B：RLHF 对模型能力的影响（Impact of RLHF on capability）
+
+> *“The model’s capabilities on exams appear to stem primarily from the pre-training process and are not significantly affected by RLHF. On multiple choice questions, both the base GPT-4 model and the RLHF model perform equally well on average across the exams we tested (see Appendix B).”*
+
+作者认为模型的考试能力似乎主要来自于预训练过程，与后期的人类反馈微调（RLHF）关系不大。
+
+> ![表 8](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/image-20250107154848653.png)
+>
+> 表中为 GPT-4 的基础（base）模型与 RLHF 后（post-RLHF）模型在考试基准的比较，最终平均正确率分别为 73.7% 与 74.0%，这表明 RLHF 并没有从根本上改变基础模型的能力。
+
+
+
 ### 多模态能力
 
 > ![表 3](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/image-20250106210629931.png)
 
 GPT-4 不再是一个单一的语言模型，而是多模态模型，能够处理**图像和文本输入**，并生成文本输出。论文的表 3 展示了一个图像输入的示例，该示例图分三部分，描述的是 VGA 转 Lightning 接口神奇的点在于，模型分别识别了这三块区域，并 Get 到了其中的幽默点：“把一个大且过时的 VGA 接口插入一个小的现代智能手机充电端口是荒谬的”。
-
-
-
-
 
