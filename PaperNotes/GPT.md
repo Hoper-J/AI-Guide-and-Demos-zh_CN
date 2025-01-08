@@ -1011,7 +1011,72 @@ In-Context Learning 的特点是：**通过上下文提示（Prompting）完成�
 
 技术报告中的正文部分其实很短，仅有 14 页，附录实验相关有 77 页。
 
-研究团队花了 6 个月时间去对齐人类的偏好，这也说明了OpenAI 确实在 22 年 8 月就已经完成了模型的训练，接着的半年时间都是在准备 GPT-4 的发布。
+> *“We’ve spent 6 months iteratively aligning⁠ GPT-4 using lessons from our adversarial testing program as well as ChatGPT, resulting in our best-ever results (though far from perfect) on factuality, steerability, and refusing to go outside of guardrails.”*
+
+研究团队花了 6 个月时间去对齐人类的偏好，这也说明了 OpenAI 确实在 22 年 8 月就已经完成了模型的训练，接着的半年时间都是在准备 GPT-4 的发布。
+
+## 训练过程
+
+> 这部分内容在官网的[精简版](https://openai.com/index/gpt-4-research/)中稍微提及。
+>
+> *“Like previous GPT models, the GPT-4 base model was trained to predict the next word in a document, and was trained using publicly available data (such as internet data) as well as data we’ve licensed. The data is a web-scale corpus of data including correct and incorrect solutions to math problems, weak and strong reasoning, self-contradictory and consistent statements, and representing a great variety of ideologies and ideas.”*
+
+和之前的 GPT 模型一样，GPT-4 也是用预测下一个词的方式去训练的，对应的 Loss 就是语言建模损失（Language modeling loss），训练的数据就是公开的数据集（比如说网络数据）以及一些授权的数据。“其实什么都没说，因为这些在之前的论文中就已经说过了，正如 [William Falcon](https://x.com/_willfalcon/status/1635712178031296520?ref_src=twsrc%5Etfw%7Ctwcamp%5Etweetembed%7Ctwterm%5E1635712178031296520%7Ctwgr%5E%7Ctwcon%5Es1_&ref_url=about%3Asrcdoc) 总结的那样”：
+
+> ![From twitter](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/image-20250107222336913.png)
+
+> *“So when prompted with a question, the base model can respond in a wide variety of ways that might be far from a user’s intent. To align it with the user’s intent within guardrails, we fine-tune the model’s behavior using reinforcement learning with human feedback ([RLHF⁠](https://openai.com/index/learning-from-human-preferences/)).*
+>
+> *Note that the model’s capabilities seem to come primarily from the pre-training process—RLHF does not improve exam performance (without active effort, it actually degrades it). But steering of the model comes from the post-training process—the base model requires prompt engineering to even know that it should answer the questions.”*
+
+另外，在提问的时候，基础模型（未经过 RLHF）可能不知道需要回答，有可能以各种各样的方式进行回应（比如续写这个问题），为了使得模型知道用户实际上需要它来做什么，研究团队使用 RLHF 对模型的行为进行了微调。需要注意的是，RLHF 并不会提升考试能力（甚至可能降低）。
+
+## 可预测的扩展性（Predictable Scaling）
+
+在 GPT-4 这样的超大规模模型上进行一次完整训练，往往需要耗费几个月的时间和非常昂贵的算力，如果每次都要等训练结束才能知道模型的最终效果，那花销实在太大了，因此不可能像小规模模型那样频繁地进行参数调优。为此，研究团队重构了深度学习栈，开发了具有可预测行为的基础设施与优化方法，使得在仅有 1/1000 到 1/10000 计算量的小模型上准确地预测 GPT-4 的某些性能表现，从而可以先在小模型上进行快速验证和调优，最后再应用到大模型上。
+
+### 损失预测
+
+> **图 1**
+>
+> ![图 1](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/codebase_loss.jpg)
+>
+> 图中的灰点代表使用更少训练计算量（Compute）的小模型结果，虚线是根据这些小模型结果拟合出的幂律曲线。纵轴是 Loss，横轴是归一化后的训练计算量（GPT-4 为 1）。右下角的绿点对应于 GPT-4，可以发现恰好落在这条拟合曲线上。
+
+基于 Scaling Laws 的相关理论，研究人员认为在小模型上可以用幂律关系（Power Law）来很好地拟合最终损失（Loss）与训练所需的计算量（Compute）之间的关系。具体而言，选取与 GPT-4 训练方法相同但规模更小的模型来进行幂律拟合，形式如下：
+$$
+L(C) = aC^b + c
+$$
+
+- $C$: 训练过程中使用的计算量
+- $a, b, c$：需要拟合的参数。
+
+这个预测是在 GPT-4 训练刚开始后不久完成的，并且没有使用 GPT-4 中途的任何结果，却成功预测了 GPT-4 在内部代码数据集（不包含在正式训练集中）的最终损失。
+
+回顾早期的 GPT 系列论文，性能相关的横轴经常指代具体的参数规模或计算量，比如 GPT-3 中图 3.1 的横轴是 PetaFLOP/s-days，而这里却进行了归一化 :)，掩盖了真正的参数规模。
+
+### HumanEval 上的能力预测
+
+> **图 2**
+>
+> ![图 2](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/capability_pred.jpg)
+>
+> 以小模型在「HumanEval 部分题目」上的平均通过率（取对数后）去做幂律拟合，虚线为预测曲线，横轴依然为归一化后的训练算力（GPT-4 = 1），同图 1 一样，预测结果和最终结果（绿点）非常接近。
+
+除了预测「损失」这一抽象指标，研究团队还希望在训练前更直观地评估模型的实际能力。比如编程题的「通过率（pass rate）」，对这种问题来讲损失值并不直观，为此，他们选取了 **HumanEval** 数据集，并用小模型的训练结果进行幂律外推，成功预测了 GPT-4 在 HumanEval 部分子集上的通过率。不过，在个别题目上，模型性能偶尔会随着规模的扩大而下降。但整体来看，研究团队还是发现了一个近似幂律的关系式：
+$$
+- \mathbb{E}_P[\log(\text{pass\_rate}(C))] = \alpha \ast C^{-k}
+$$
+
+- $k$ 和 $\alpha$：正的常数。
+- $P$：子集。
+- $C$：训练计算量。
+
+> [!note]
+>
+> 除了 15 个最难的问题之外，所有问题都根据较小模型的性能被分为 6 个难度桶（这里的分桶对应之前所说的子集），图 2 展示的是第 3 简单桶的结果。论文中有提到在最简单的桶上对 GPT-4 的预测不符合预期。
+
+
 
 ## 能力测试
 
@@ -1138,4 +1203,5 @@ GPT-4 不再是一个单一的语言模型，而是多模态模型，能够处�
 > *“However, these numbers do not fully represent the extent of its capabilities as we are constantly discovering new and exciting tasks that the model is able to tackle.”*
 
 [^9]: [精简版 Visual inputs 中的表格](https://openai.com/index/gpt-4-research/).
+
 
