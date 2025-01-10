@@ -441,15 +441,14 @@ jupyter-lab
 
 #### 版本说明
 
-- **base** 版本基于 `pytorch/pytorch:2.5.1-cuda11.8-cudnn9-devel`，默认 `python` 版本为 3.11.10，可以通过 `conda install python==版本号` 直接修改版本。
-- **dl** 版本在 **base** 基础上，额外安装了深度学习框架和常用工具，具体查看安装清单。
+- **base** 版本：占用约 16GB 存储空间，基于 `pytorch/pytorch:2.5.1-cuda11.8-cudnn9-devel`，默认 `python` 版本为 3.11.10，可以通过 `conda install python==版本号` 直接修改版本。
+- **dl** 版本：占用约 20GB 存储空间，在 **base** 基础上，额外安装了深度学习框架和常用工具，具体查看安装清单。
 
 ### 安装清单
 
 <details> <summary> <strong>base</strong> </summary>
+
 **基础环境**：
-
-
 
 - python 3.11.10
 - torch 2.5.1 + cuda 11.8 + cudnn 9
