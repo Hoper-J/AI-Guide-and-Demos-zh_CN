@@ -999,7 +999,7 @@ In-Context Learning 的特点是：**通过上下文提示（Prompting）完成�
 **GPT-4 Technical Report**
 [PDF](https://arxiv.org/pdf/2303.08774) | [精简版](https://openai.com/index/gpt-4-research/) | OpenAI | 2023.03
 
-> [GPT-4论文精读【论文精读·53】](https://www.bilibili.com/video/BV1vM4y1U7b5/?share_source=copy_web&vd_source=40b3e12ca72bba004f5dd21c08776797)
+> [GPT-4论文精读【论文精读·53】](https://www.bilibili.com/video/BV1vM4y1U7b5/?share_source=copy_web&vd_source=40b3e12ca72bba004f5dd21c08776797)（下文基本遵循视频的顺序进行组织）
 >
 > “这份技术报告中没有任何的技术细节”
 >
@@ -1255,3 +1255,25 @@ GPT-4 不再是一个单一的语言模型，而是多模态模型，能够处�
 
 [^10]: [精简版 Visual inputs 中的表格](https://openai.com/index/gpt-4-research/).
 
+### 可控性（角色扮演）
+
+> *“Rather than the classic ChatGPT personality with a fixed verbosity, tone, and style, developers (and soon ChatGPT users) can now prescribe their AI’s style and task by describing those directions in the “system” message.”*
+
+GPT-4 在对话机制中新增了 **System** 消息，以帮助开发者更好地控制模型的风格、语气等，而不再局限于 ChatGPT 默认的回答方式。这一机制的灵感部分来自于社区早期对于 ChatGPT 的“调教”（如通过“催眠”Prompt 试图绕过安全限制、预设角色扮演猫娘等）。过去一般将这些预定义写在 Prompt 中，例如：
+
+```
+User: 现在开始，你将扮演一个出小学数学题的老师，当我说开始时提供一个简单的数学题，接收到正确回答后进行下一题，否则给我答案。
+Assistant: ...
+User: 开始
+Assistant: ...
+```
+
+现在，引入了 **System** 消息来处理这样的需求：
+
+```
+System: 现在开始，你将扮演一个出小学数学题的老师，当我说开始时提供一个简单的数学题，接收到正确回答后进行下一题，否则给我答案。
+User: 开始
+Assistant: ...
+```
+
+这样，过去需要放在 Prompt 里的角色设定可以移到一个更适合的地方，不用每次新对话都去提及，用户可以专注于交互。
