@@ -1259,7 +1259,7 @@ GPT-4 不再是一个单一的语言模型，而是多模态模型，能够处�
 
 > *“Rather than the classic ChatGPT personality with a fixed verbosity, tone, and style, developers (and soon ChatGPT users) can now prescribe their AI’s style and task by describing those directions in the “system” message.”*
 
-GPT-4 在对话机制中新增了 **System** 消息，以帮助开发者更好地控制模型的风格、语气等，而不再局限于 ChatGPT 默认的回答方式。这一机制的灵感部分来自于社区早期对于 ChatGPT 的“调教”（如通过“催眠”Prompt 试图绕过安全限制、预设角色扮演猫娘等）。过去一般将这些预定义写在 Prompt 中，例如：
+GPT-4 在对话机制中新增了 **System** 消息（3.5 其实就已经增加了），以帮助开发者更好地控制模型的风格、语气等，而不再局限于 ChatGPT 默认的回答方式。这一机制的灵感来自于社区早期对于 ChatGPT 的“调教”（如通过“催眠”Prompt 试图绕过安全限制、预设角色扮演猫娘等）。过去一般将这些预定义写在 Prompt 中，例如：
 
 ```
 User: 现在开始，你将扮演一个出小学数学题的老师，当我说开始时提供一个简单的数学题，接收到正确回答后进行下一题，否则给我答案。
@@ -1277,3 +1277,51 @@ Assistant: ...
 ```
 
 这样，过去需要放在 Prompt 里的角色设定可以移到一个更适合的地方，不用每次新对话都去提及，用户可以专注于交互。
+
+## 局限性（Limitations）
+
+GPT-4 和之前的 GPT 系列模型具有类似的局限性，主要如下：
+
+### 1. **幻觉（Hallucination）**
+
+> **图 6**
+>
+> ![图 6](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/factual.jpg)
+>
+> 准确率为 100% 表示模型答案和人类理想答案一致。
+
+在内部对抗性事实评估测试中，GPT-4 相比于上一代 GPT-3.5 提高了 19% 的准确率（相对 40% 的提升），显著减少了幻觉（不真实的或自相矛盾的生成内容，“自信地胡说八道”），但幻觉依旧存在，所以在一些高风险领域（如医疗、金融）中，需要进行额外的人工审查或者完全避免使用。
+
+### 2. 上下文窗口有限
+
+早期版本上下文窗口为 8,192 个 token，目前已有更长上下文的版本，但“上下文有限”依然是大模型普遍面临的问题，对于超长文本或多轮对话内容，一旦超出上下文限制，就会造成旧信息被“遗忘”，从而导致不一致的回答。
+
+### 3. 预训练数据的截断（pre-training  data cuts off）
+
+> *“GPT-4 generally lacks knowledge of events that have occurred after the vast majority of its pre-training data cuts off in September 2021, and does not learn from its experience”*
+>
+> *“The pre-training and post-training data contain a small amount of more recent data.”*
+
+训练数据大多截至 2021 年 9 月左右，对于其后发生的事件仅能“凭空脑补”，不过版本更新会引入新的知识。
+
+### 4. 仍会出现简单的推理错误
+
+> *“It can sometimes make simple reasoning errors which do not seem to comport with competence across so many domains, or be overly gullible in accepting obviously false statements from a user.”*
+
+GPT-4 尽管在很多领域的表现都很好，但有时依然会出现低级的错误，而且非常容易轻信用户明显错误的说法。
+
+### 5. 依旧存在偏见
+
+> *“GPT-4 has various biases in its outputs that we have taken efforts to correct but which will take some time to fully characterize and manage.”*
+
+语言模型不可避免地会在训练过程中吸收训练语料中潜在的偏见或歧视性内容，例如种族、性别、政治立场等，研究团队也在尽力对这类偏见进行修正，但依旧无法完全消除。
+
+### 6. 校准度下降与过度自信
+
+> **图 8**
+>
+> ![图 8](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/image-20250113131110915.png)
+>
+> 横轴是模型的自信度，纵轴是正确率，虚线部分（y=x）表示完美的校准。左图为预训练（pre-training）的 GPT-4 模型在 MMLU 子集上的校准图，右图为后训练（post-training）后的校准图。
+
+“校准度”（calibration）指的是模型的自信度与实际正确率之间的匹配度，即模型对回答的自信程度与正确率一致，模型知道自己的回答可能不对。观察上图可以发现，GPT-4 的基础模型在自信度与正确率的匹配度上相对更高，但在经历指令微调（instructed Tuning），RLHF 等后训练步骤之后，校准度明显下降，更容易出现“过度自信”——错误回答时也表现得非常“自信”。
