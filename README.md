@@ -118,6 +118,8 @@
     - BERT 模型的输入和输出，以及一些与 Transformer 不同的地方
     - 以 $\text{BERT}_\text{BASE}$ 为例，计算模型的总参数量
     - [作业 - BERT 微调抽取式问答](./Guide/22b.%20作业%20-%20Bert%20微调抽取式问答.md)
+  - [GPT 论文精读](./PaperNotes/GPT%20论文精读.md)
+    - GPT 数字系列论文：[GPT-1](./PaperNotes/GPT%20论文精读.md#gpt-1) / [GPT-2](./PaperNotes/GPT%20论文精读.md#gpt-2) / [GPT-3](./PaperNotes/GPT%20论文精读.md#gpt-3) / [GPT-4](./PaperNotes/GPT%20论文精读.md#gpt-4)
 
 - [**CodePlayground**](./CodePlayground)
 
