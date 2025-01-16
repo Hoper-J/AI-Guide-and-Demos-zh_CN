@@ -13,7 +13,7 @@ model.to(device)
 
 @app.route('/generate', methods=['POST'])
 def generate():
-    prompt = request.form.get('prompt')
+    prompt = request.json.get('prompt')
     if not prompt:
         return jsonify({'error': 'No prompt provided'}), 400
 
