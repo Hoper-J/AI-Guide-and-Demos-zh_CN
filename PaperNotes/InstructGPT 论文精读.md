@@ -26,6 +26,10 @@ Long Ouyang et al. | [PDF](https://arxiv.org/pdf/2203.02155) | [精简版](https
 
     > [OpenAI ChatGPT API Waitlist](https://share.hsforms.com/1u4goaXwDRKC9-x9IvKno0A4sk30) 中有一个必填的栏目 “Are there specific ideas you're excited to build with the ChatGPT API?” ，即“你有什么特别想用 ChatGPT API 实现的想法吗？”
 
+  > [!tip]
+  >
+  > 论文第 7 页的 3.4「Human data collection」 和第 36 页附录 B「Additional human data collection details」详细的阐述了标注人员招聘，指导、任务分配以及数据收集流程等，如果有实际需要可以参考。
+
 - **API 收集的提示**
 
   > *“Our prompt dataset consists primarily of text prompts submitted to the OpenAI API, specifically those using an earlier version of the InstructGPT models (trained via supervised learning on a subset of our demonstration data) on the Playground interface.”*
@@ -36,16 +40,18 @@ Long Ouyang et al. | [PDF](https://arxiv.org/pdf/2203.02155) | [精简版](https
 
   1. **去重**：通过启发式方法检测并删除长前缀相同的提示。
   2. **限制提示数量**：每个用户的提示最多 200 条。
-  3. **数据集划分**：根据用户 ID 划分为训练、验证和测试数据集，确保验证集与测试集中不会出现训练集用户的数据。
-  4. **过滤敏感信息**：过滤并去除个人身份信息（personally identifiable information，PII）。
+  3. **数据集划分**：根据用户 ID 划分为训练、验证和测试集，确保「验证/测试集」和「训练集」不存在相同用户（减少可能的数据泄露，因为同一用户可能会重复的询问相同主题的问题）。
+  4. **过滤敏感信息**：如检测到个人身份信息（personally identifiable information，PII）会去除。
 
 ### 数据构建
 
-研究团队基于上述提示数据构建了三种数据集，用于模型的不同训练阶段：
+研究团队基于上述提示数据构建了三类数据集，用于不同训练阶段：
 
-- **SFT 数据集（监督微调）**：包含 12,725 个训练提示，其中来自标注员的提示为 11,295 条，来自 API 的提示为 1,430 条。
-- **RM 数据集（奖励模型）**：包含 33,207 个训练提示，其中来自标注员的提示为 6,623 条，来自 API 的提示为 26,584 条。
-- **PPO 数据集（RLHF 强化学习）**：包含 31,144 条训练提示，完全来自于 API。
+| 数据集类型 | 数据规模 | 数据来源                        | 用途             |
+| ---------- | -------- | ------------------------------- | ---------------- |
+| **SFT**    | 12,725   | 标注人员 (11,295) + API (1,430) | 有监督微调       |
+| **RM**     | 33,207   | 标注人员 (6,623) + API (26,584) | 奖励模型训练     |
+| **PPO**    | 31,144   | 完全来自 API                    | 强化学习策略优化 |
 
 ### 数据分布和示例
 
@@ -65,5 +71,5 @@ Long Ouyang et al. | [PDF](https://arxiv.org/pdf/2203.02155) | [精简版](https
 | Summarization<br />**摘要**     | Summarize this for a second-grade student:<br /><br />{text}<br />为二年级学生总结以下内容：<br /><br />{文本} |
 | Classification<br />**分类**    | {java code}<br /><br />What language is the code above written in?<br />上面的代码是用什么语言编写的？ |
 | Other<br />**其他**             | start with where<br />从哪里开始                             |
-| Closed QA<br />**封闭式问答**   | Answer the following question:<br />What shape is the earth?<br /><br />A) A circle <br />B) A sphere <br />C) An ellipse <br />D) A plane<br />一个选择题 |
+| Closed QA<br />**封闭式问答**   | Answer the following question:<br />What shape is the earth?<br /><br />A) A circle <br />B) A sphere <br />C) An ellipse <br />D) A plane<br />一个选择题。 |
 | Extract<br />**抽取**           | Extract all place names from the article below:<br /><br />{news article}<br />从下面的文章中提取所有的地名：<br /><br />{新闻文章} |
