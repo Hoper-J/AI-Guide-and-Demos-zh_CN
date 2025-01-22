@@ -3,10 +3,31 @@
 **Training language models to follow instructions with human feedback**
 Long Ouyang et al. | [PDF](https://arxiv.org/pdf/2203.02155) | [精简版](https://openai.com/index/instruction-following/) | OpenAI | 2022.03
 
+> **学习 & 参考资料**
+>
+> - **相关文章**
+>
+>   - [Transformer 论文精读](./Transformer%20论文精读.md)
+>   - [GPT 论文精读](./GPT%20论文精读.md)
+>
+> - **机器学习**
+>
+>   —— 李宏毅老师的 B 站搬运视频
+>
+>   - [ChatGPT (可能)是怎么炼成的](https://www.bilibili.com/video/BV1TD4y137mP/?p=6&share_source=copy_web&vd_source=e46571d631061853c8f9eead71bdb390)
+>
+> - **论文逐段精读**
+>
+>   —— 沐神的论文精读合集
+>
+>   - [InstructGPT 论文精读【论文精读·48】](https://www.bilibili.com/video/BV1hd4y187CR/?share_source=copy_web&vd_source=e46571d631061853c8f9eead71bdb390)
+>
 > 这是一篇重要的文章，在 [ChatGPT](https://openai.com/index/chatgpt/) 的 Method 中有提及：
 >
 > “We trained this model using Reinforcement Learning from Human Feedback (RLHF), using the same methods as [InstructGPT⁠](https://openai.com/index/instruction-following/), but with slight differences in the data collection setup. ”
 >
+
+
 
 ## 数据集
 
@@ -57,7 +78,7 @@ Long Ouyang et al. | [PDF](https://arxiv.org/pdf/2203.02155) | [精简版](https
 
 > **表 1**
 >
-> ![表 1](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/image-20250118122308319.png)
+> ![表 1](./assets/image-20250118122308319.png)
 
 上表展示了 API 数据集中提示的使用类别分布，其中生成任务占比最高，为 45.6%。论文在附录 A.2.1 提供了一些提示示例，摘选部分进行理解：
 
@@ -73,3 +94,63 @@ Long Ouyang et al. | [PDF](https://arxiv.org/pdf/2203.02155) | [精简版](https
 | Other<br />**其他**             | start with where<br />从哪里开始                             |
 | Closed QA<br />**封闭式问答**   | Answer the following question:<br />What shape is the earth?<br /><br />A) A circle <br />B) A sphere <br />C) An ellipse <br />D) A plane<br />一个选择题。 |
 | Extract<br />**抽取**           | Extract all place names from the article below:<br /><br />{news article}<br />从下面的文章中提取所有的地名：<br /><br />{新闻文章} |
+
+## 模型
+
+> InstructGPT 从 GPT-3 的预训练模型（1.3B、6B、175B）开始训练，但预训练模型并不能直接产生人类所期望的回答[^1]：
+>
+> ![文字接龙（预训练）](./assets/%E6%96%87%E5%AD%97%E6%8E%A5%E9%BE%99.svg)
+
+### 训练概览
+
+> ![图 2](./assets/Methods_Diagram_light_mode.jpg)
+>
+
+先通过图示来了解模型的训练过程，分三步（从左到右）：
+
+1. **收集示范数据并进行有监督微调（SFT）**
+
+   - 从提示数据集（prompt dataset）中抽取提示（如“向6岁儿童解释月球登陆”）。
+
+   - 标注人员根据提示撰写期望的答案（如“有些人去过月球……”）
+
+     > ![撰写期望的回答](./assets/%E6%92%B0%E5%86%99%E6%9C%9F%E6%9C%9B%E7%9A%84%E5%9B%9E%E7%AD%94.svg)
+
+   - 这些示范数据被用来有监督微调 GPT-3 模型。
+
+2. **收集对比数据并训练奖励模型（RM）**
+
+   - 针对同一提示，生成多个模型输出（如图中 A、B、C、D 的例子）。
+
+   - 标注人员根据输出质量对这些结果进行排序，从最优到最差（如 D > C > A = B）。
+
+   - 这些对比数据被用来训练一个奖励模型，让它能够正确给输出打分。
+
+     > 询问 ChatGPT 的时候，期望的回答通常是答案，而不是续写这个问题：
+     >
+     > ![对比输出以及训练奖励模型](./assets/%E5%AF%B9%E6%AF%94%E8%BE%93%E5%87%BA%E4%BB%A5%E5%8F%8A%E8%AE%AD%E7%BB%83%E5%A5%96%E5%8A%B1%E6%A8%A1%E5%9E%8B.svg)
+     >
+     > 所以在偏好（输出质量）上，「玉山」> 「谁来告诉我呀」。
+
+3. ###### **强化学习（RL）微调**
+
+   - 从提示数据集中抽取新的提示（如“写一个关于青蛙的故事”）。
+
+   - 模型生成输出。
+
+   - 奖励模型对生成的输出进行评分（作为奖励信号）。
+
+   - 采用近端策略优化（PPO）算法对模型进行梯度更新，使其更好地符合人类偏好。
+
+     > 下图中的增强式学习（Reinforcement learning）就是强化学习。
+     >
+     > - **最初（GPT）**
+     >
+     >   ![低分](./assets/%E4%BD%8E%E5%88%86.svg)
+     >
+     > - **强化学习后（ChatGPT）**
+     >
+     >   ![高分](./assets/%E9%AB%98%E5%88%86.svg)
+
+
+[^1]: [来自于李宏毅老师「ChatGPT 是怎么炼成的」课件](https://docs.google.com/presentation/d/1vDT11ec_nY6P0o--NHq9col5XEE4tHBw/edit#slide=id.p14)
