@@ -27,8 +27,6 @@ Long Ouyang et al. | [PDF](https://arxiv.org/pdf/2203.02155) | [精简版](https
 > “We trained this model using Reinforcement Learning from Human Feedback (RLHF), using the same methods as [InstructGPT⁠](https://openai.com/index/instruction-following/), but with slight differences in the data collection setup. ”
 >
 
-
-
 ## 数据集
 
 ### 数据来源
@@ -78,7 +76,7 @@ Long Ouyang et al. | [PDF](https://arxiv.org/pdf/2203.02155) | [精简版](https
 
 > **表 1**
 >
-> ![表 1](./assets/image-20250118122308319.png)
+> ![表 1](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/image-20250118122308319.png)
 
 上表展示了 API 数据集中提示的使用类别分布，其中生成任务占比最高，为 45.6%。论文在附录 A.2.1 提供了一些提示示例，摘选部分进行理解：
 
@@ -99,11 +97,11 @@ Long Ouyang et al. | [PDF](https://arxiv.org/pdf/2203.02155) | [精简版](https
 
 > InstructGPT 从 GPT-3 的预训练模型（1.3B、6B、175B）开始训练，但预训练模型并不能直接产生人类所期望的回答[^1]：
 >
-> ![文字接龙（预训练）](./assets/%E6%96%87%E5%AD%97%E6%8E%A5%E9%BE%99.svg)
+> ![文字接龙（预训练）](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/%E6%96%87%E5%AD%97%E6%8E%A5%E9%BE%99.svg)
 
 ### 训练概览
 
-> ![图 2](./assets/Methods_Diagram_light_mode.jpg)
+> ![图 2](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/Methods_Diagram_light_mode.jpg)
 >
 
 先通过图示来了解模型的训练过程，分三步（从左到右）：
@@ -114,7 +112,7 @@ Long Ouyang et al. | [PDF](https://arxiv.org/pdf/2203.02155) | [精简版](https
 
    - 标注人员根据提示撰写期望的答案（如“有些人去过月球……”）
 
-     > ![撰写期望的回答](./assets/%E6%92%B0%E5%86%99%E6%9C%9F%E6%9C%9B%E7%9A%84%E5%9B%9E%E7%AD%94.svg)
+     > ![撰写期望的回答](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/%E6%92%B0%E5%86%99%E6%9C%9F%E6%9C%9B%E7%9A%84%E5%9B%9E%E7%AD%94.svg)
 
    - 这些示范数据被用来有监督微调 GPT-3 模型。
 
@@ -128,7 +126,7 @@ Long Ouyang et al. | [PDF](https://arxiv.org/pdf/2203.02155) | [精简版](https
 
      > 询问 ChatGPT 的时候，期望的回答通常是答案，而不是续写这个问题：
      >
-     > ![对比输出以及训练奖励模型](./assets/%E5%AF%B9%E6%AF%94%E8%BE%93%E5%87%BA%E4%BB%A5%E5%8F%8A%E8%AE%AD%E7%BB%83%E5%A5%96%E5%8A%B1%E6%A8%A1%E5%9E%8B.svg)
+     > ![对比输出以及训练奖励模型](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/%E5%AF%B9%E6%AF%94%E8%BE%93%E5%87%BA%E4%BB%A5%E5%8F%8A%E8%AE%AD%E7%BB%83%E5%A5%96%E5%8A%B1%E6%A8%A1%E5%9E%8B.svg)
      >
      > 所以在偏好（输出质量）上，「玉山」> 「谁来告诉我呀」。
 
@@ -146,11 +144,77 @@ Long Ouyang et al. | [PDF](https://arxiv.org/pdf/2203.02155) | [精简版](https
      >
      > - **最初（GPT）**
      >
-     >   ![低分](./assets/%E4%BD%8E%E5%88%86.svg)
+     >   ![低分](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/%E4%BD%8E%E5%88%86.svg)
      >
      > - **强化学习后（ChatGPT）**
      >
-     >   ![高分](./assets/%E9%AB%98%E5%88%86.svg)
+     >   ![高分](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/%E9%AB%98%E5%88%86.svg)
 
 
 [^1]: [来自于李宏毅老师「ChatGPT 是怎么炼成的」课件](https://docs.google.com/presentation/d/1vDT11ec_nY6P0o--NHq9col5XEE4tHBw/edit#slide=id.p14)
+
+### 训练相关
+
+#### 有监督微调（Supervised Fine-tuning, SFT）
+
+- **数据来源**：标注人员为不同提示（prompt）提供高质量的示范答案，总共 12,725 条演示数据（提示 + 人工答案）。
+
+- **训练方式**：在 GPT-3 预训练模型上用示范数据进行有监督微调。
+
+- **训练超参**：
+  - 经过 16 个 epoch 的训练。
+  
+  - 使用余弦学习率衰减（cosine learning rate decay）。
+  
+  - 残差 dropout（residual dropout）率为 0.2。
+  
+- **模型选择**：根据验证集上的奖励模型（RM）得分进行最终的 SFT 模型选择。
+
+- **发现**：这个数据量比较少，所以验证损失在第 1 个 epoch 后就出现了过拟合，但更多 epoch 的训练能提升后续 RM 的分数和人类偏好评分（SFT 后并非直接放进生产环境部署，而是作为下一步的初始模型）。
+
+#### 奖励建模（Reward Modeling, RM）
+
+从移除 unembedding layer 的 SFT 模型开始，训练一个奖励模型（Reward Model） ，接受提示（prompt）和回答（response）作为输入，输出一个标量分数。
+
+- **模型规格**：论文使用 **6B 参数** 的 RM（175B 的 RM 训练可能不稳定）。
+
+- **数据来源**：对同一提示生成 K=4~9 条回答，标注人员对其进行排序，这一排序可以转化为 $\binom{K}{2}$ 组对比数据。
+
+  > [!tip]
+  >
+  > $\binom{K}{2}$ 也可以写成 $C_K^2$ 或者 $C(K, 2)$，表示从 $K$ 个元素中选出 2 个元素的组合数：
+  > $$
+  > C_k^2 = \binom{K}{2} = \frac{K!}{2!(K-2)!} = \frac{K(K-1)}{2}
+  > $$
+  > 恢复一下久远的中学记忆：
+  >
+  > - $K = 4$：
+  >   $$
+  >   C_4^2 = \binom{4}{2} = \frac{4 \cdot 3}{2} = 6
+  >   $$
+  >
+  > - $K = 9$：
+  >   $$
+  >   C_{9}^2 = \binom{9}{2} = \frac{9 \cdot 8}{2} = 36
+  >   $$
+  >
+  > **注意**：$K = 9$ 比 $K=4$ 多了 30 对数据。
+
+
+- 采用二元排序损失（pairwise ranking loss），公式为：
+  $$
+  \text{loss}(\theta) = -\frac{1}{\binom{K}{2}} \mathbb{E}_{(x, y_w, y_l) \sim \mathcal{D}} \left[\log \sigma \left(r_\theta(x, y_w) - r_\theta(x, y_l)\right)\right]
+  $$
+  其中：
+
+  - $r_\theta(x, y)$：奖励模型对「提示 $x$、回答 $y$」的打分，分值高表示该回答（给定提示）更符合人类偏好，分值低则表示不够好。
+    - 对 $(x, y_w)$ 和 $(x, y_l)$ 这两对进行。
+  - $y_w$ 和 $y_l$：分别代表在对比中更受偏好与不受偏好的回答。
+  - $\sigma(\cdot)$：sigmoid 函数，公式为 $\sigma(z) = \frac{1}{1 + e^{-z}}$。将打分差 $r_\theta(x, y_w) - r_\theta(x, y_l)$ 映射到 $(0, 1)$ 区间，$\sigma(r_\theta(x, y_w) - r_\theta(x, y_l))$ 可以看作 “模型判断 $y_w$ 优于 $y_l$ 的概率”。
+  - $\mathcal{D}$：(提示, 回答偏好) 数据集，包含各种 $(x, y_w, y_l)$ 三元组，表示对同一提示 $x$ 下的成对答案偏好信息。
+  - $(x, y_w, y_l) \sim \mathcal{D}$：从数据集 $\mathcal{D}$ 中随机抽取三元组，训练会对所有数据求期望（$\mathbb{E}$）。
+  - 负号 $-$ 与对数 $\log$  ：类似负对数似然/交叉熵损失。如果模型打分正确，使得 $r_\theta(x, y_w) - r_\theta(x, y_l) \gg 0$，则 $\sigma(\dots)\approx 1$，$\log(\dots)\approx 0$，损失较小，反之如果排序不正确，损失会增大。
+  
+- 训练时，将同一提示下的所有 $\binom{K}{2}$ 组对比作为单个批次（batch）中的元素进行处理，进行一次前向传播（而非 $\binom{K}{2}$ 次），从而提升计算效率并避免可能的过拟合。
+
+- 经过训练后，通过添加偏置项（bias）调整奖励模型输出，使标注示范数据的平均分为 0，防止奖励漂移。
