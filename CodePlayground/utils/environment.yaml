@@ -10,12 +10,14 @@ autogptq:
   install_instructions: |
     1. 如果仅在 CPU 上运行，请使用：
        pip install auto-gptq
-    2. 如果希望启用 CUDA 支持，从源码安装：
+    2. 如果希望启用 CUDA 支持，执行命令：
+       pip install auto-gptq --no-build-isolation
+       或从源码安装：
        git clone https://github.com/PanQiWei/AutoGPTQ.git && cd AutoGPTQ
        pip install -vvv --no-build-isolation -e .
   cuda_warning: |
-    警告：当前安装的 auto-gptq 版本不支持 CUDA。
-    请考虑卸载并从源码重新安装以启用 CUDA 支持。
+    警告：当前安装的 auto-gptq 版本可能不支持 CUDA（但不影响加载模型）。
+    可以考虑重新安装以启用 CUDA 增加推理速度。
     1. 卸载当前版本：pip uninstall auto-gptq
     2. 从源码安装：
        git clone https://github.com/PanQiWei/AutoGPTQ.git && cd AutoGPTQ
@@ -30,7 +32,17 @@ llama_cpp:
     1. 如果仅在 CPU 上运行，请使用：
        pip install llama-cpp-python
     2. 如果希望启用 GPU 加速，请确保系统已安装 CUDA（可通过 `nvcc --version` 检查）。
-       然后安装（设置 CUDA_HOME 参阅：https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/19b.%20从加载到对话：使用%20Llama-cpp-python%20本地运行量化%20LLM%20大模型（GGUF）.md
-       CMAKE_ARGS="-DGGML_CUDA=on -DCUDA_PATH=${CUDA_HOME} -DCMAKE_CUDA_COMPILER=${CUDA_HOME}/bin/nvcc" \
+       然后安装（设置 CUDA_HOME 参阅：https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/19b.%20从加载到对话：使用%20Llama-cpp-python%20本地运行量化%20LLM%20大模型（GGUF）.md）
+       CUDA_HOME="$(find /usr/local -name "cuda" -exec readlink -f {} \; \
+             | awk '{print length($0), $0}' \
+             | sort -n \
+             | head -n1 \
+             | cut -d ' ' -f 2)" && \
+       CMAKE_ARGS="-DGGML_CUDA=on \
+                   -DCUDA_PATH=${CUDA_HOME} \
+                   -DCUDAToolkit_ROOT=${CUDA_HOME} \
+                   -DCUDAToolkit_INCLUDE_DIR=${CUDA_HOME} \
+                   -DCUDAToolkit_LIBRARY_DIR=${CUDA_HOME}/lib64 \
+                   -DCMAKE_CUDA_COMPILER=${CUDA_HOME}/bin/nvcc" \
        FORCE_CMAKE=1 \
        pip install --upgrade --force-reinstall llama-cpp-python --no-cache-dir --verbose

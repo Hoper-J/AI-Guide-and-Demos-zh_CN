@@ -59,6 +59,44 @@
    ```bash
    pip install transformers diffusers peft tqdm numpy pyyaml pillow
    ```
+   
+   ### AI Chat 依赖
+   
+   根据模型文件对应配置。
+   
+   a. **GPTQ 模型文件**
+   
+   ```bash
+   pip install optimum
+   git clone https://github.com/PanQiWei/AutoGPTQ.git && %cd AutoGPTQ
+   pip install -vvv --no-build-isolation -e .
+   ```
+   
+   b. **AWQ 模型文件**
+   
+   ```bash
+   pip install autoawq autoawq-kernels
+   ```
+   
+   c. **GGUF 模型文件**
+   
+   ```bash
+   CUDA_HOME="$(find /usr/local -name "cuda" -exec readlink -f {} \; \
+             | awk '{print length($0), $0}' \
+             | sort -n \
+                | head -n1 \
+                | cut -d ' ' -f 2)" && \
+   CMAKE_ARGS="-DGGML_CUDA=on \
+            -DCUDA_PATH=${CUDA_HOME} \
+            -DCUDAToolkit_ROOT=${CUDA_HOME} \
+            -DCUDAToolkit_INCLUDE_DIR=${CUDA_HOME} \
+            -DCUDAToolkit_LIBRARY_DIR=${CUDA_HOME}/lib64 \
+               -DCMAKE_CUDA_COMPILER=${CUDA_HOME}/bin/nvcc" \
+   FORCE_CMAKE=1 \
+   pip install --upgrade --force-reinstall llama-cpp-python --no-cache-dir --verbose
+   ```
+   
+
 
 ## 当前的玩具
 
@@ -319,7 +357,7 @@ CodePlayground/
 >
 > [19b. 从加载到对话：使用 Llama-cpp-python 本地运行量化 LLM 大模型（GGUF）](../Guide/19b.%20从加载到对话：使用%20Llama-cpp-python%20本地运行量化%20LLM%20大模型（GGUF）.md)
 >
-> 建议阅读文章进行配置。
+> 根据 [AI Chat 依赖](#ai-chat-依赖)进行环境配置。
 
 **[chat.py](./chat.py)** 是一个 LLM 对话工具，用于与量化的大模型（LLM）进行对话。支持 GPTQ、AWQ 和 GGUF 格式的模型加载与推理。
 
@@ -337,13 +375,17 @@ python chat.py <model_path>
 
 替换 `<model_path>` 为 GPTQ、AWQ 或 GGUF 格式模型的路径，即可开始与模型进行交互。
 
-**注意，暂时仅支持拥有 `tokenizer.chat_template` 属性的模型进行正常对话，对于其他模型，需要自定义 [config.yaml](./config.yaml#L38) 中的 `custom_template` 参数。**
+以 [DeepSeek-R1-Distill-Qwen-7B-GGUF](https://huggingface.co/bartowski/DeepSeek-R1-Distill-Qwen-7B-GGUF) 为例，加载 Q5_K_L 量化版本：
 
-运行脚本会严格检查所有的环境并给出安装指引，你可以注释 [setup_chat()](./chat.py#L20) 对应的行来跳过这个行为（如果不需要加载 GPTQ 和 AWQ 的模型文件）。
+```bash
+python chat.py 'bartowski/DeepSeek-R1-Distill-Qwen-7B-GGUF/*Q5_K_L.gguf' --remote
+```
+
+**注意，暂时仅支持拥有 `tokenizer.chat_template` 属性的模型进行正常对话，对于其他模型，需要自定义 [config.yaml](./config.yaml#L38) 中的 `custom_template` 参数。**
 
 #### 使用方法
 
-你可以通过命令行运行 `chat.py`，并指定要加载的模型路径：
+可以通过命令行运行 `chat.py`，并指定要加载的模型路径：
 
 ```bash
 python chat.py <model_path> [--no_stream] [--max_length 512] [--io history.json] [其他可选参数]

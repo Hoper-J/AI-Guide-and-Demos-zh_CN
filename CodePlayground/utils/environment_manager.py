@@ -2,9 +2,6 @@ import os
 import sys
 import yaml
 
-import torch
-
-DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 class EnvironmentManager:
     def __init__(self, config_file='environment.yaml'):
@@ -73,10 +70,15 @@ class EnvironmentManager:
             self.config.get('transformers', {}).get('install_instructions', ''),
             required=True
         )
-        if DEVICE == 'cuda':
+
+        import torch
+    
+        if torch.cuda.is_available():
             print(f"检测到 CUDA 可用。当前 CUDA 版本: {torch.version.cuda}")
+            self.device = 'cuda'
         else:
             print("未检测到可用的 CUDA，将使用 CPU 进行推理。")
+            self.device = 'cpu'
 
     def check_autogptq(self):
         """
@@ -87,7 +89,7 @@ class EnvironmentManager:
             self.config.get('autogptq', {}).get('install_instructions', '')
         )
         # 检查 CUDA 支持
-        if DEVICE == 'cuda':
+        if self.device == 'cuda':
             gptq_version_info = os.popen("pip list | grep auto-gptq").read()
             if "cu" not in gptq_version_info:
                 print(self.config.get('autogptq', {}).get('cuda_warning', ''))
@@ -113,12 +115,46 @@ class EnvironmentManager:
             required=True
         )
 
-    def setup_chat(self):
+    def setup_chat_strict(self):
         """
-        根据配置文件逐一检查并设置依赖环境。
+        检查 torch, transformers, autogptq, autoawq 和 llama-cpp-python 是否安装。
         """
-        print("⚠️ 注意，当前是严格检查，你需要安装所有环境才能执行 chat.py，你也可以注释掉脚本文件中的 EnvironmentManager.setup_chat() 代码取消这个行为。")
+        print("⚠️ 注意，当前是严格检查，需要安装所有环境才能继续执行。")
         self.check_pytorch_transformers()
         self.check_autogptq()
         self.check_autoawq()
         self.check_llama_cpp()
+
+    def setup_chat_by_model(self, model_name_or_path):
+        """
+        根据传入的模型路径来判断需要检查哪些依赖。
+        例如:
+          - GGUF: 只需要 llama-cpp-python
+          - GPTQ: 需要 auto_gptq
+          - AWQ:  需要 autoawq
+          - 其他普通模型: 只要安装了 transformers/pytorch 即可
+        """
+        print("⚙️ 根据模型类型检查依赖...")
+        self.check_pytorch_transformers()
+
+        # 如果模型路径以 .gguf 结尾，检查 llama-cpp (GGUF 格式)
+        if model_name_or_path.lower().endswith('.gguf'):
+            print("检测到 GGUF 格式模型，检查 llama_cpp 依赖...")
+            self.check_llama_cpp()
+            return
+
+        # 如果模型路径包含 gptq，检查 auto_gptq
+        if "gptq" in model_name_or_path.lower():
+            print("检测到 GPTQ 模型，检查 auto_gptq 依赖...")
+            self.check_autogptq()
+
+        # 如果模型路径包含 awq，检查 autoawq
+        if "awq" in model_name_or_path.lower():
+            print("检测到 AWQ 模型，检查 autoawq 依赖...")
+            self.check_autoawq()
+
+        # 如果以上都不符合，就默认只检查 pytorch/transformers，够用即可。
+        print("✅ 依赖检查结束。")
+
+    def get_device(self):
+        return self.device

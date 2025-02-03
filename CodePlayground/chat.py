@@ -15,11 +15,6 @@
 # 查看完整帮助：使用 -h 或 --help
 # ===============================================================
 
-# ===== 严格检查所有的环境并给出安装指引，如果仅下载了 chat.py，注释以下两行来避免 utils 的报错 ======
-from utils.environment_manager import EnvironmentManager
-EnvironmentManager("utils/environment.yaml").setup_chat()
-# ===== 环境检查 ======
-
 import argparse
 import json
 import os
@@ -27,11 +22,9 @@ import sys
 import warnings
 
 import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer, TextStreamer
-from transformers import logging as transformers_logging
-from llama_cpp import Llama
 
 from utils.config_manager import load_config
+from utils.environment_manager import EnvironmentManager
 
 # 设置全局设备
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -140,6 +133,20 @@ class ChatSession:
 
             self.get_response(user_input)
 
+    def _append_user_message(self, user_input):
+        """
+        添加用户消息，同时检查是否存在连续用户输入，
+        如果检测到连续的用户输入，则输出中文警告并自动调整对话流程，确保消息角色交替以避免可能的报错：
+        jinja2.exceptions.TemplateError: Conversation roles must alternate user/assistant/user/assistant/...
+        """
+        if not self.messages or self.messages[-1]["role"] == "assistant":
+            self.add_message("user", user_input)
+        else:
+            print("警告：检测到连续的用户消息，正在自动调整会话流程。")
+            # 插入一条空的助手消息，保持对话角色交替
+            self.messages.append({"role": "assistant", "content": ""})
+            self.add_message("user", user_input)
+
 
 class LlamaChatSession(ChatSession):
     def __init__(self, llm, max_length=200, no_stream=False, history_path=None, output_path=None):
@@ -167,14 +174,7 @@ class LlamaChatSession(ChatSession):
         返回:
         - response (str): 完整的回复文本。
         """
-        # 添加用户消息时，确保对话角色交替，避免可能的报错：
-        # jinja2.exceptions.TemplateError: Conversation roles must alternate user/assistant/user/assistant/...
-        if len(self.messages) == 0 or self.messages[-1]["role"] == "assistant":
-            self.add_message("user", user_input)
-        else:
-            print("Warning: Detected consecutive user messages, adjusting conversation flow.")
-            self.messages.append({"role": "assistant", "content": ""})
-            self.add_message("user", user_input)
+        self._append_user_message(user_input)
 
         try:
             output = self.llm.create_chat_completion(
@@ -234,10 +234,12 @@ class TransformersChatSession(ChatSession):
         - output_path (str): 对话历史保存的文件路径。
         - custom_template (str): 自定义对话模板。
         """
+        from transformers import TextStreamer
         super().__init__(no_stream=no_stream, history_path=history_path, output_path=output_path)
         self.model = model
         self.tokenizer = tokenizer
         self.max_length = max_length
+        self.TextStreamer = TextStreamer
 
         # 如果 chat_template 不存在或其值为 None，使用自定义模板
         if not hasattr(self.tokenizer, 'chat_template') or self.tokenizer.chat_template is None:
@@ -258,18 +260,11 @@ class TransformersChatSession(ChatSession):
         返回:
         - response (str): 完整的回复文本。
         """
-        # 添加用户消息时，确保对话角色交替，避免可能的报错：
-        # jinja2.exceptions.TemplateError: Conversation roles must alternate user/assistant/user/assistant/...
-        if len(self.messages) == 0 or self.messages[-1]["role"] == "assistant":
-            self.add_message("user", user_input)
-        else:
-            print("Warning: Detected consecutive user messages, adjusting conversation flow.")
-            self.messages.append({"role": "assistant", "content": ""})
-            self.add_message("user", user_input)
+        self._append_user_message(user_input)
 
         input_ids = self.tokenizer.apply_chat_template(self.messages, return_tensors="pt").to(DEVICE)
 
-        streamer = TextStreamer(
+        streamer = self.TextStreamer(
             self.tokenizer, 
             skip_prompt=True,
             skip_special_tokens=True
@@ -313,6 +308,9 @@ def create_chat_session(model_name_or_path, max_length, no_stream, history_path,
 
     try:
         if is_gguf:
+            # 用 GGUF 模型时需要 llama_cpp
+            from llama_cpp import Llama
+            
             # 解析路径和文件名（用于远程加载时）
             if remote:
                 if '/' not in model_name_or_path:
@@ -345,6 +343,9 @@ def create_chat_session(model_name_or_path, max_length, no_stream, history_path,
                 output_path=output_path
             )
         else:
+            # 非 GGUF 模型用 transformers
+            from transformers import AutoModelForCausalLM, AutoTokenizer
+            
             # 加载 Transformers 模型并创建 TransformersChatSession
             tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, trust_remote_code=True)
             model = AutoModelForCausalLM.from_pretrained(
@@ -372,7 +373,6 @@ def create_chat_session(model_name_or_path, max_length, no_stream, history_path,
         raise
 
 
-
 def configure_logging(verbose):
     """
     配置日志输出和警告过滤。
@@ -380,6 +380,7 @@ def configure_logging(verbose):
     参数:
     - verbose (bool): 是否启用详细日志。
     """
+    from transformers import logging as transformers_logging
     if verbose:
         # 启用详细输出
         transformers_logging.set_verbosity_info()
@@ -419,6 +420,12 @@ def main():
         args.history_path = args.io
         args.output_path = args.io
 
+    # 创建 EnvironmentManager 实例
+    env_manager = EnvironmentManager("utils/environment.yaml")
+    
+    # 根据模型类型检测环境是否正确配置
+    env_manager.setup_chat_by_model(args.path)
+    
     # 创建 ChatSession 实例
     try:
         chat_session = create_chat_session(
