@@ -35,6 +35,19 @@
     - Kaggle：`Setting` -> `Accelerator` -> `选择 GPU`。
     - Colab：`代码执行程序` -> `更改运行时类型` -> `选择 GPU`。
 
+### DeepSeek 相关【DOING】
+
+> 当前模块暂时置顶，以方便大家索引更新。部分内容将直接由之前的文章（[导论部分](#导论)）重组得来，故存在重复，此模块将专注于 DeepSeek 相关模型。
+>
+
+| Guide                                                        | Tag  | Describe                                                     | File                                                   | Online                                                       |
+| ------------------------------------------------------------ | ---- | ------------------------------------------------------------ | ------------------------------------------------------ | ------------------------------------------------------------ |
+| [DeepSeek API 的获取与对话示例](./Guide/Deepseek%20API%20的获取与对话示例.md) | API  | 获取 DeepSeek API 的 N 种方法及其单轮对话样例：<br />- DeepSeek 官方<br />- 硅基流动<br />- 阿里云百炼<br />- 百度智能云 | [Code](./Demos/deepseek-api-guide-with-examples.ipynb) | [Kaggle](https://www.kaggle.com/code/aidemos/deepseek-api-guide-with-examples)<br />[Colab](https://colab.research.google.com/drive/1rdBEJT_oOxaScm3_10epoHX_TdbSm1Ty?usp=sharing) |
+
+---
+
+### 导论
+
 
 | Guide                                                        | Tag       | Describe                                                     | File                                                         | Online |
 | ------------------------------------------------------------ | --------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ---- |
@@ -66,7 +79,7 @@
 >
 > 如果你更喜欢拉取仓库到本地进行阅读 `.md`，那么在出现公式报错的时候，请使用 `Ctrl+F` 或者 `Command+F`，搜索`\\_`并全部替换为`\_`。
 
-**拓展阅读：**
+### 拓展阅读
 
 | Guide                                                        | Describe                                                     |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -79,6 +92,8 @@
 | [g. 嵌入层 nn.Embedding() 详解和要点提醒（PyTorch）](./Guide/g.%20嵌入层%20nn.Embedding()%20详解和要点提醒（PyTorch）.md) | - 了解嵌入层和词嵌入的概念。<br />- 使用预训练模型可视化 Embedding。<br />[Code](./Demos/20.%20嵌入层%20nn.Embedding()%20代码示例.ipynb) \| [Kaggle](https://www.kaggle.com/code/aidemos/20-nn-embedding) \| [Colab](https://colab.research.google.com/drive/1BLgmxasxOD1HQGrI0L1sPlYG40iba9SY?usp=sharing) |
 | [h. 使用 Docker 快速配置深度学习环境（Linux）](./Guide/使用%20Docker%20快速配置深度学习环境（Linux）.md)<br />[h. Docker 基础命令介绍和常见报错解决](./Guide/Docker%20基础命令介绍和常见报错解决.md) | - 使用两行命令配置好深度学习环境<br />- Docker 基础命令介绍<br />- 解决使用时的三个常见报错 |
 | [i. Epoch、Batch 和 Step 之间的关系以及梯度累积](./Guide/Epoch、Batch%20和%20Step%20之间的关系以及梯度累积.md) | 基础文章，可以在任意时候进行阅读<br />- Epoch、Batch、Step 三者之间的关系<br />- SGD、BGD、MBGD 方法的区别<br />- 梯度累积的使用 |
+
+---
 
 **文件夹解释：**
 
