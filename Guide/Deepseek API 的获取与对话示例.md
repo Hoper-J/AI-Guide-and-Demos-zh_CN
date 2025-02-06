@@ -113,7 +113,7 @@ response = client.chat.completions.create(
 <details>
     <summary> <h3> 硅基流动 </h3> </summary>
 
-> 下方硅基流动的邀请链接附带邀请码，最终因邀请所产生的每 2000 万 tokens 将被用于共享，预计在 [Discussions](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/discussions) 中免费示出用于学习。
+> 下方硅基流动的邀请链接附带邀请码，最终因邀请所产生所有 tokens 将被用于学习共享（[Discussions](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/discussions/6)）。
 
 访问 [https://cloud.siliconflow.cn/i/ofzj9IQy](https://cloud.siliconflow.cn/i/ofzj9IQy) 进行注册并登录：
 
@@ -164,6 +164,14 @@ response = client.chat.completions.create(
     # ...其他参数保持不变...
 )
 ```
+
+> [!note]
+>
+> **注意**，硅基流动官方对于非实名用户的用量做了限制（100 次/天）：
+>
+> ![实名限制](./assets/image-20250206162334302.png)
+>
+> 如果有更高的用量需求，则需要进行[实名认证](https://cloud.siliconflow.cn/account/authentication)。
 
 </details>
 
@@ -317,4 +325,6 @@ response = client.chat.completions.create(
 
 ## 📝 作业
 
-尝试非官方平台来感知代码上的差异（对应于代码注释中的 #1 #2 #3 所在行）。
+1. 尝试非官方平台来感知代码上的差异（对应于代码注释中的 #1 #2 #3 所在行）。
+2. 根据文章《[DeepSeek 联网满血版使用指南](./DeepSeek%20联网满血版使用指南.md) 》进行多平台配置并对话。
+
