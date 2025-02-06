@@ -98,7 +98,7 @@ print(completion.model_dump_json())
 
 ```python
 # 切换推理模型
-response = client.chat.completions.create(
+completion = client.chat.completions.create(
     model="deepseek-reasoner",  # 修改此处标识
     # ...其他参数保持不变...
 )
@@ -113,7 +113,9 @@ response = client.chat.completions.create(
 <details>
     <summary> <h3> 硅基流动 </h3> </summary>
 
-> 下方硅基流动的邀请链接附带邀请码，最终因邀请所产生所有 tokens 将被用于学习共享（[Discussions](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/discussions/6)）。
+> 下方硅基流动的注册链接附带邀请码，因邀请所产生所有 tokens 将被用于学习共享（[Discussions](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/discussions/6)）。
+>
+> **感谢注册，因为你才有了该分享的诞生**。
 
 访问 [https://cloud.siliconflow.cn/i/ofzj9IQy](https://cloud.siliconflow.cn/i/ofzj9IQy) 进行注册并登录：
 
@@ -159,7 +161,7 @@ print(completion.model_dump_json())
 
 ```python
 # 切换推理模型
-response = client.chat.completions.create(
+completion = client.chat.completions.create(
     model="deepseek-ai/DeepSeek-R1",  # 修改此处标识
     # ...其他参数保持不变...
 )
@@ -240,7 +242,7 @@ print(completion.model_dump_json())
 
 ```python
 # 切换推理模型
-response = client.chat.completions.create(
+completion = client.chat.completions.create(
     model="deepseek-r1",  # 修改此处标识
     # ...其他参数保持不变...
 )
@@ -303,7 +305,7 @@ print(completion.model_dump_json())
 
 ```python
 # 切换推理模型
-response = client.chat.completions.create(
+completion = client.chat.completions.create(
     model="deepseek-r1",  # 修改此处标识
     # ...其他参数保持不变...
 )
