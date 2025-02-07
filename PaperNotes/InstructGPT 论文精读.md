@@ -95,9 +95,13 @@ Long Ouyang et al. | [PDF](https://arxiv.org/pdf/2203.02155) | [精简版](https
 
 ## 模型
 
-> InstructGPT 从 GPT-3 的预训练模型（1.3B、6B、175B）开始训练，但预训练模型并不能直接产生人类所期望的回答[^1]：
+> 传统预训练语言模型并不能直接产生人类所期望的回答[^1]：
 >
 > ![文字接龙（预训练）](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/%E6%96%87%E5%AD%97%E6%8E%A5%E9%BE%99.svg)
+>
+> *图示：原始 GPT-3 以文字接龙（language modeling）方式生成回答，而非遵循指令*
+
+InstructGPT 从 GPT-3 的预训练模型（1.3B、6B、175B）进行改进，通过三阶段训练实现指令对齐。
 
 ### 训练概览
 
@@ -150,6 +154,10 @@ Long Ouyang et al. | [PDF](https://arxiv.org/pdf/2203.02155) | [精简版](https
      >
      >   ![高分](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/PaperNotes/assets/%E9%AB%98%E5%88%86.svg)
 
+> [!note]
+>
+> 步骤 2 和 3 可循环执行：用当前最优策略收集新对比数据，训练更新的 RM 和策略"
+
 
 [^1]: [来自于李宏毅老师「ChatGPT 是怎么炼成的」课件](https://docs.google.com/presentation/d/1vDT11ec_nY6P0o--NHq9col5XEE4tHBw/edit#slide=id.p14)
 
@@ -201,7 +209,7 @@ Long Ouyang et al. | [PDF](https://arxiv.org/pdf/2203.02155) | [精简版](https
   > **注意**：$K = 9$ 比 $K=4$ 多了 30 对数据。
 
 
-- 采用二元排序损失（pairwise ranking loss），公式为：
+- **损失函数**：采用二元排序损失（pairwise ranking loss）：
   $$
   \text{loss}(\theta) = -\frac{1}{\binom{K}{2}} \mathbb{E}_{(x, y_w, y_l) \sim \mathcal{D}} \left[\log \sigma \left(r_\theta(x, y_w) - r_\theta(x, y_l)\right)\right]
   $$
@@ -210,11 +218,91 @@ Long Ouyang et al. | [PDF](https://arxiv.org/pdf/2203.02155) | [精简版](https
   - $r_\theta(x, y)$：奖励模型对「提示 $x$、回答 $y$」的打分，分值高表示该回答（给定提示）更符合人类偏好，分值低则表示不够好。
     - 对 $(x, y_w)$ 和 $(x, y_l)$ 这两对进行。
   - $y_w$ 和 $y_l$：分别代表在对比中更受偏好与不受偏好的回答。
-  - $\sigma(\cdot)$：sigmoid 函数，公式为 $\sigma(z) = \frac{1}{1 + e^{-z}}$。将打分差 $r_\theta(x, y_w) - r_\theta(x, y_l)$ 映射到 $(0, 1)$ 区间，$\sigma(r_\theta(x, y_w) - r_\theta(x, y_l))$ 可以看作 “模型判断 $y_w$ 优于 $y_l$ 的概率”。
-  - $\mathcal{D}$：(提示, 回答偏好) 数据集，包含各种 $(x, y_w, y_l)$ 三元组，表示对同一提示 $x$ 下的成对答案偏好信息。
+  - $\mathcal{D}$：(提示, 回答偏好对) 数据集，包含各种 $(x, y_w, y_l)$ 三元组，表示对同一提示 $x$ 下的成对答案偏好信息。
   - $(x, y_w, y_l) \sim \mathcal{D}$：从数据集 $\mathcal{D}$ 中随机抽取三元组，训练会对所有数据求期望（$\mathbb{E}$）。
-  - 负号 $-$ 与对数 $\log$  ：类似负对数似然/交叉熵损失。如果模型打分正确，使得 $r_\theta(x, y_w) - r_\theta(x, y_l) \gg 0$，则 $\sigma(\dots)\approx 1$，$\log(\dots)\approx 0$，损失较小，反之如果排序不正确，损失会增大。
+  - 负号 $-$ 与对数 $\log$  ：这两一组合出现就有了「负对数似然/交叉熵损失」的影子。如果模型打分正确，使得 $r_\theta(x, y_w) - r_\theta(x, y_l) \gg 0$，则 $\sigma(\dots)\approx 1$，$\log(\dots)\approx 0$，损失较小，反之如果排序不正确，损失会增大。
+    - $\sigma(\cdot)$：sigmoid 函数，公式为 $\sigma(z) = \frac{1}{1 + e^{-z}}$。将打分差 $r_\theta(x, y_w) - r_\theta(x, y_l)$ 映射到 $(0, 1)$ 区间，$\sigma(r_\theta(x, y_w) - r_\theta(x, y_l))$ 可以看作 “模型判断 $y_w$ 优于 $y_l$ 的概率”。
   
 - 训练时，将同一提示下的所有 $\binom{K}{2}$ 组对比作为单个批次（batch）中的元素进行处理，进行一次前向传播（而非 $\binom{K}{2}$ 次），从而提升计算效率并避免可能的过拟合。
 
 - 经过训练后，通过添加偏置项（bias）调整奖励模型输出，使标注示范数据的平均分为 0，防止奖励漂移。
+
+#### 强化学习（Reinforcement Learning, RL）
+
+在有监督微调（SFT）和奖励建模（RM）之后，论文延续了 Stiennon et al. (2020) 的思路，利用 近端策略优化（Proximal Policy Optimization, PPO, Schulman et al., 2017） 算法对 SFT 模型进行强化学习微调，以生成更符合人类偏好的回答。具体如下：
+
+- **初始模型**：基于 SFT 模型（有监督微调后的模型）进行强化学习。
+
+- **参考模型**：和初始模型（SFT）一致，但冻结参数。
+
+- **算法**：PPO-ptx。
+
+- **环境设定**：将对话/任务场景视为一个老虎机（Bandit）环境，每次随机抽取用户提示 $x$，基于当前策略生成回答 $y$，将 $(x, y)$ 输入到之前训练好的 RM 中，得到标量奖励 $r_\theta(x, y)$。
+
+  > *“The environment is a bandit environment which presents a random customer prompt and expects a response to the prompt. Given the prompt and response, it produces a reward determined by the reward model and ends the episode.”*
+
+- **策略（Policy）定义**：
+
+  在强化学习中，策略可以理解为**模型**在给定状态（提示）下选择动作（生成回答）的概率分布。
+
+  - $\pi_{\phi}^{\text{RL}}$：待学习的 RL 策略（当前训练的模型参数 $\phi$）。
+
+  - $\pi^{\text{SFT}}$：冻结参数的 SFT 策略。
+  - $\pi(y \mid x)$：在给定提示 $x$ 下，策略 $\pi$ 生成输出 $y$ 的概率。
+
+- **目标函数**
+
+
+$$
+\text{objective}(\phi) = \mathbb{E}_{(x, y) \sim \mathcal{D}_{\pi_{\phi}^{\text{RL}}}} 
+\left[r_\theta(x, y) - \beta \log \left(\frac{\pi_{\phi}^{\text{RL}}(y \mid x)}{\pi^{\text{SFT}}(y \mid x)}\right)\right] 
++ \gamma \mathbb{E}_{x \sim \mathcal{D}_{\text{pretrain}}} 
+\left[\log \pi_{\phi}^{\text{RL}}(x)\right]
+$$
+其中：
+
+- $r_\theta(x, y)$：**奖励项**，由 RM 打出的分数，衡量生成的质量。
+
+- $-\beta \log \left(\frac{\pi_{\phi}^{\text{RL}}(y \mid x)}{\pi^{\text{SFT}}(y \mid x)}\right)$：**KL 惩罚项**，通过计算当前策略 $\pi_{\phi}^{\text{RL}}$ 与参考 SFT 策略 $\pi^{\text{SFT}}$ 在生成回答时的相对熵（KL 散度），对策略的偏离程度进行惩罚。
+
+  - 对于每个生成的 token 计算 per-token 的 KL 散度。
+  - 惩罚系数 $\beta$ 越大，约束越强。
+
+  > **关于 KL 惩罚**
+  >
+  > 更通俗的解释是，我们并不想模型得到一个与答案无关的高分回答，这是没有意义的，真正想要的是一个高分且和 SFT 模型输出类似的回答，也就是说输出分布和 SFT 模型类似，这就引出了 KL 散度（因为减去所以充当惩罚）。
+  >
+  > **Q：公式哪个部分反映了 per-token 的 KL？**
+  >
+  > 对于自回归模型，生成一个回答 $y = (y_1, y_2, \ldots, y_T)$ 的概率可以分解为：
+  > 
+  > $$
+  > \pi(y \mid x) = \prod_{t=1}^T \pi(y_t \mid x, y_{<t})
+  > $$
+  > 
+  > 因此，当前策略与 SFT 策略的概率比率为：
+  > 
+  > $$
+  > \frac{\pi_{\phi}^{\text{RL}}(y \mid x)}{\pi^{\text{SFT}}(y \mid x)} = \prod_{t=1}^T \frac{\pi_{\phi}^{\text{RL}}(y_t \mid x, y_{<t})}{\pi^{\text{SFT}}(y_t \mid x, y_{<t})}
+  > $$
+  > 
+  > 取对数后得到：
+  > 
+  > $$
+  > \log \left(\frac{\pi_{\phi}^{\text{RL}}(y \mid x)}{\pi^{\text{SFT}}(y \mid x)}\right) = \sum_{t=1}^T \log \left(\frac{\pi_{\phi}^{\text{RL}}(y_t \mid x, y_{<t})}{\pi^{\text{SFT}}(y_t \mid x, y_{<t})}\right)
+  > $$
+  > 
+  > 原公式中没有显式写出 “per-token”，但实际上等价于 per-token KL 的累加。  
+
+- $\gamma \, \mathbb{E}_{x \sim \mathcal{D}_{\text{pretrain}}} \left[\log \pi_{\phi}^{\text{RL}}(x)\right]$：**预训练梯度项**，对应于语言模型的预训练目标。系数 $\gamma$ 控制这部分梯度的贡献。
+
+  > **PPO 与 PPO-ptx 的区别**
+  >
+  > - **PPO**（$\gamma=0$）：最大化 RM 奖励，同时最小化策略偏离（KL 惩罚）。
+  > - **PPO-ptx**（$\gamma>0$）：在 PPO 基础上，混合预训练梯度（pretraining gradients），使模型在优化人类偏好的同时保留通用语言建模能力，减少在公共 NLP 任务上的性能退化。
+  >   - 论文中默认讨论的 InstructGPT 就是 PPO-ptx 模型。
+
+- **数据分布**：
+
+  - $\mathcal{D}_{\pi_{\phi}^{\text{RL}}}$：动态分布，通过当前策略生成 $(x, y)$（随机采样提示 $x$，模型自回归生成回答 $y$）
+  - $\mathcal{D}_{\text{pretrain}}$：静态分布，来自 GPT-3 原始预训练数据。
