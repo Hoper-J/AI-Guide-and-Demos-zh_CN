@@ -89,8 +89,9 @@ completion = client.chat.completions.create(
     model="deepseek-chat", # 3
     messages=[
         {'role': 'system', 'content': 'You are a helpful assistant.'},
-        {'role': 'user', 'content': '你是谁？'}]
-    )
+        {'role': 'user', 'content': '你是谁？'}
+    ]
+)
 print(completion.model_dump_json())
 ```
 
@@ -152,8 +153,9 @@ completion = client.chat.completions.create(
     model="deepseek-ai/DeepSeek-V3", # 3
     messages=[
         {'role': 'system', 'content': 'You are a helpful assistant.'},
-        {'role': 'user', 'content': '你是谁？'}]
-    )
+        {'role': 'user', 'content': '你是谁？'}
+    ]
+)
 print(completion.model_dump_json())
 ```
 
@@ -233,8 +235,9 @@ completion = client.chat.completions.create(
     model="deepseek-v3", # 3
     messages=[
         {'role': 'system', 'content': 'You are a helpful assistant.'},
-        {'role': 'user', 'content': '你是谁？'}]
-    )
+        {'role': 'user', 'content': '你是谁？'}
+    ]
+)
 print(completion.model_dump_json())
 ```
 
@@ -296,8 +299,9 @@ completion = client.chat.completions.create(
     model="deepseek-v3", # 3
     messages=[
         {'role': 'system', 'content': 'You are a helpful assistant.'},
-        {'role': 'user', 'content': '你是谁？'}]
-    )
+        {'role': 'user', 'content': '你是谁？'}
+    ]
+)
 print(completion.model_dump_json())
 ```
 
