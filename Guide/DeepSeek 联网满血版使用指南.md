@@ -113,3 +113,8 @@
 | 通用对话            | 1.3  |
 | 翻译                | 1.3  |
 | 创意类写作/诗歌创作 | 1.5  |
+
+> [!CAUTION]
+>
+> 对于推理模型 `deepseek-reasoner`，传入参数 `temperature`、`top_p`、`presence_penalty`、`frequency_penalty`、`logprobs`、`top_logprobs` 均不会生效，故无需纠结。
+
