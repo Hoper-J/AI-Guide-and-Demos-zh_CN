@@ -42,7 +42,7 @@
 
 | Guide                                                        | Tag  | Describe                                                     | File                                                   | Online                                                       |
 | ------------------------------------------------------------ | ---- | ------------------------------------------------------------ | ------------------------------------------------------ | ------------------------------------------------------------ |
-| [DeepSeek API 的获取与对话示例](./Guide/Deepseek%20API%20的获取与对话示例.md) | API  | 获取 DeepSeek API 的 N 种方法及其单轮对话样例：<br />- DeepSeek 官方<br />- 硅基流动<br />- 阿里云百炼<br />- 百度智能云 | [Code](./Demos/deepseek-api-guide-with-examples.ipynb) | [Kaggle](https://www.kaggle.com/code/aidemos/deepseek-api-guide-with-examples)<br />[Colab](https://colab.research.google.com/drive/1rdBEJT_oOxaScm3_10epoHX_TdbSm1Ty?usp=sharing) |
+| [DeepSeek API 的获取与对话示例](./Guide/DeepSeek%20API%20的获取与对话示例.md) | API  | 获取 DeepSeek API 的 N 种方法及其单轮对话样例：<br />- DeepSeek 官方<br />- 硅基流动<br />- 阿里云百炼<br />- 百度智能云<br />- 字节火山引擎 | [Code](./Demos/deepseek-api-guide-with-examples.ipynb) | [Kaggle](https://www.kaggle.com/code/aidemos/deepseek-api-guide-with-examples)<br />[Colab](https://colab.research.google.com/drive/1rdBEJT_oOxaScm3_10epoHX_TdbSm1Ty?usp=sharing) |
 | [DeepSeek 联网满血版使用指南](./Guide/DeepSeek%20联网满血版使用指南.md) | API  | 通过 Chatbox 和 API 绕开 DeepSeek 网页对话的卡顿。           |                                                        |                                                              |
 
 ---

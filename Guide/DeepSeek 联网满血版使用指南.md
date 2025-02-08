@@ -26,7 +26,7 @@
 1. 网页版（深度思考 - R1）由于访问过多经常服务器繁忙导致对话卡顿。
 2. 使用 Chatbox 可以在多个平台间进行无缝切换（聊天记录会“同步”），这意味着当前服务瘫痪时可以直接更换平台，从而减少等待时间。
 3. 注册平台所赠送的 tokens 足以覆盖个人长期使用需求。
-4. 可以自定义参数温度值（Temperature）和系统消息（System message），拥有更多的定制空间。
+4. 可以自定义系统消息（System message），拥有更多的定制空间。
 5. 本地存储完整对话历史。
 
 ## ▌配置指南（附多平台参数对照）
@@ -51,7 +51,7 @@
 
 ### DeepSeek
 
-如果已经获取了 DeepSeek 的 API（[获取步骤](./Deepseek%20API%20的获取与对话示例.md#-deepseek-官方)），则从打开的界面中选择 `DeepSeeK API`，直接填充 API 密钥，然后点击 `保存`：
+如果已经获取了 DeepSeek 的 API（[获取步骤](./DeepSeek%20API%20的获取与对话示例.md#-deepseek-官方)），则从打开的界面中选择 `DeepSeeK API`，直接填充 API 密钥，然后点击 `保存`：
 
 ![设置 DeepSeek API](./assets/image-20250206114220266.png)
 
@@ -69,11 +69,13 @@
 
 参照下表填写对应平台信息，完成后点击保存，最终呈现如右图：
 
-|            | 获取步骤                                                    | API 域名                                          | 模型 - 聊天             | 模型 - 推理             | 设置 - 推理                                              |
-| ---------- | ----------------------------------------------------------- | ------------------------------------------------- | ----------------------- | ----------------------- | -------------------------------------------------------- |
-| 硅基流动   | [图文](./Deepseek%20API%20的获取与对话示例.md#-硅基流动-)   | https://api.siliconflow.cn/v1                     | deepseek-ai/DeepSeek-V3 | deepseek-ai/DeepSeek-R1 | ![设置 - 硅基流动](./assets/image-20250206113805132.png) |
-| 阿里云百炼 | [图文](./Deepseek%20API%20的获取与对话示例.md#-阿里云百炼-) | https://dashscope.aliyuncs.com/compatible-mode/v1 | deepseek-v3             | deepseek-r1             | ![设置 - 阿里云](./assets/image-20250206115713516.png)   |
-| 百度智能云 | [图文](./Deepseek%20API%20的获取与对话示例.md#-百度智能云-) | https://qianfan.baidubce.com/v2                   | deepseek-v3             | deepseek-r1             | ![设置 - 百度](./assets/image-20250206120017418.png)     |
+|              | 获取步骤                                                     | API 域名                                          | 模型 - 聊天                                                  | 模型 - 推理                                                  | 设置 - 推理                                              |
+| ------------ | ------------------------------------------------------------ | ------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | -------------------------------------------------------- |
+| 硅基流动     | [图文](./DeepSeek%20API%20的获取与对话示例.md#-硅基流动-)    | https://api.siliconflow.cn/v1                     | deepseek-ai/DeepSeek-V3                                      | deepseek-ai/DeepSeek-R1                                      | ![设置 - 硅基流动](./assets/image-20250206113805132.png) |
+| 阿里云百炼   | [图文](./DeepSeek%20API%20的获取与对话示例.md#-阿里云百炼-)  | https://dashscope.aliyuncs.com/compatible-mode/v1 | deepseek-v3                                                  | deepseek-r1                                                  | ![设置 - 阿里云](./assets/image-20250206115713516.png)   |
+| 百度智能云   | [图文](./DeepSeek%20API%20的获取与对话示例.md#-百度智能云-)  | https://qianfan.baidubce.com/v2                   | deepseek-v3                                                  | deepseek-r1                                                  | ![设置 - 百度](./assets/image-20250206120017418.png)     |
+| 字节火山引擎 | [图文](./DeepSeek%20API%20的获取与对话示例.md#-字节火山引擎-) | https://ark.cn-beijing.volces.com/api/v3          | 访问[推理点](https://console.volcengine.com/ark/region:ark+cn-beijing/endpoint?config=%7B%7D)获取 | 访问[推理点](https://console.volcengine.com/ark/region:ark+cn-beijing/endpoint?config=%7B%7D)获取 | ![设置 - 字节](./assets/image-20250208215034817.png)     |
+|              |                                                              |                                                   |                                                              |                                                              |                                                          |
 
 ## ▌QA
 
@@ -116,5 +118,6 @@
 
 > [!CAUTION]
 >
-> 对于推理模型 `deepseek-reasoner`，传入参数 `temperature`、`top_p`、`presence_penalty`、`frequency_penalty`、`logprobs`、`top_logprobs` 均不会生效，故无需纠结。
+> 对于推理模型 `deepseek-reasoner`，传入参数 `temperature`、`top_p`、`presence_penalty`、`frequency_penalty`、`logprobs`、`top_logprobs` 均不会生效[^2]，故无需纠结。
 
+[^2]: [DeepSeek 官方文档](https://api-docs.deepseek.com/zh-cn/quick_start/parameter_settings).

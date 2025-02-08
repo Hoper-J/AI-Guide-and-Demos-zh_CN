@@ -12,6 +12,7 @@
    - [ 硅基流动 ](#-硅基流动-)
    - [ 阿里云百炼 ](#-阿里云百炼-)
    - [ 百度智能云 ](#-百度智能云-)
+   - [ 字节火山引擎 ](#-字节火山引擎-)
 - [在线体验地址](#在线体验地址)
 - [📝 作业](#-作业)
 
@@ -29,12 +30,13 @@ pip install openai
 
 **不同平台参数对照表**：
 
-|            | api_key_name          | base_url                                            | chat_model_id             | reasoner_model_id         |
-| ---------- | --------------------- | --------------------------------------------------- | ------------------------- | ------------------------- |
-| DeepSeek   | "DEEPSEEK_API_KEY"    | "https://api.deepseek.com"                          | "deepseek-chat"           | "deepseek-reasoner"       |
-| 硅基流动   | "SILICONFLOW_API_KEY" | "https://api.siliconflow.cn/v1"                     | "deepseek-ai/DeepSeek-V3" | "deepseek-ai/DeepSeek-R1" |
-| 阿里云百炼 | "DASHSCOPE_API_KEY"   | "https://dashscope.aliyuncs.com/compatible-mode/v1" | "deepseek-v3"             | "deepseek-r1"             |
-| 百度智能云 | "BAIDU_API_KEY"       | "https://qianfan.baidubce.com/v2"                   | "deepseek-v3"             | "deepseek-r1"             |
+|              | api_key_name          | base_url                                            | chat_model_id             | reasoner_model_id         |
+| ------------ | --------------------- | --------------------------------------------------- | ------------------------- | ------------------------- |
+| DeepSeek     | "DEEPSEEK_API_KEY"    | "https://api.deepseek.com"                          | "deepseek-chat"           | "deepseek-reasoner"       |
+| 硅基流动     | "SILICONFLOW_API_KEY" | "https://api.siliconflow.cn/v1"                     | "deepseek-ai/DeepSeek-V3" | "deepseek-ai/DeepSeek-R1" |
+| 阿里云百炼   | "DASHSCOPE_API_KEY"   | "https://dashscope.aliyuncs.com/compatible-mode/v1" | "deepseek-v3"             | "deepseek-r1"             |
+| 百度智能云   | "BAIDU_API_KEY"       | "https://qianfan.baidubce.com/v2"                   | "deepseek-v3"             | "deepseek-r1"             |
+| 字节火山引擎 | "ARK_API_KEY"         | "https://ark.cn-beijing.volces.com/api/v3"          | "your-chat-model-id"      | "your-reasoner-model-id"  |
 
 参数说明：
 
@@ -48,7 +50,10 @@ pip install openai
 <details>
     <summary> <h3> DeepSeek 官方 </h3> </summary>
 
-> 目前已恢复正常，所有新平台的注册都会赠送一定数量的 tokens，择一即可。
+
+> ~~目前已恢复正常，所有新平台的注册都会赠送一定数量的 tokens，择一即可。~~
+>
+> 目前 DeepSeek 平台的新用户注册暂时不再赠送余额。
 
 访问 [https://platform.deepseek.com/sign_in](https://platform.deepseek.com/sign_in) 进行注册并登录：
 
@@ -190,7 +195,9 @@ completion = client.chat.completions.create(
 
 ![DeepSeek-V3](./assets/image-20250205172736707.png)
 
-> **注意**：目前仅供免费体验，免费额度用完之后不可继续调用（个人使用可以忽略）
+> **注意**：目前仅供免费体验，免费额度用完之后不可继续调用（个人使用可以忽略），随着时间的推移，赠送的额度或有变化。
+>
+> 目前国内所有赠送额度的平台都需要实名才能正常使用 API：[阿里云实名入口](https://myaccount.console.aliyun.com/certificate?spm=a2c4g.11186623.0.0.27695bbfNxX04T)，进入后点击 `个人支付宝认证 `/ `个人扫脸认证`。
 
 点开左侧的 `模型广场`，点击 `开通模型服务`：
 
@@ -317,6 +324,107 @@ completion = client.chat.completions.create(
 
 </details>
 
+
+<details>
+    <summary> <h3> 字节火山引擎 </h3> </summary>
+
+
+> 这是一个稍显繁杂的流程。
+
+访问[火山引擎](https://console.volcengine.com/auth/signup?redirectURI=%2Fark%2Fregion%3Aark%2Bcn-beijing%2Fmodel%3FprojectName%3Dundefined%26vendor%3DBytedance%26view%3DLIST_VIEW)进行注册并登录：
+
+![注册](./assets/image-20250208202359743.png)
+
+对于每个模型，将赠送 50 万 tokens 的额度。
+
+![赠送额度](./assets/image-20250208202730457.png)
+
+点击左侧的 `API Key 管理` 或者访问 [API 入口](https://console.volcengine.com/ark/region:ark+cn-beijing/apiKey?apikey=%7B%7D)，然后点击 `创建 API Key`：
+
+![API Key 管理](./assets/image-20250208203228869.png)
+
+默认名称基于时间自动生成，修改或直接点击 `创建`：
+
+![创建](./assets/image-20250208203353628.png)
+
+点击箭头位置，然后复制 `API Key`：
+
+![复制 API Key](./assets/image-20250208203519527.png)
+
+接下来，点击左侧的 `开通服务`，找到 `DeepSeek`，然后点击右侧的 `开通服务`：
+
+![开通服务](./assets/image-20250208205347081.png)
+
+勾选想用的模型，点击 `立即开通`：
+
+![勾选模型](./assets/image-20250208205416948.png)
+
+点击左侧的 `在线推理`，点击 `创建推理接入点`：
+
+![创建推理接入点](./assets/image-20250208210231034.png)
+
+接入点名称可以随意命名，命名完之后进行 `模型选择`：
+
+![添加模型](./assets/image-20250208211542842.png)
+
+选择步骤参考下图（注意，不能同时选择两个，需要分开创建）：
+
+| 聊天模型                                             | 推理模型                                             |
+| ---------------------------------------------------- | ---------------------------------------------------- |
+| ![DeepSeek-v3](./assets/image-20250208211303600.png) | ![DeepSeek-R1](./assets/image-20250208211137993.png) |
+
+然后点击右侧的 `确认接入`：
+
+![接入](./assets/image-20250208211625447.png)
+
+在接入点名称处复制想要接入模型的 ID。
+
+![复制 model id](./assets/image-20250208211917550.png)
+
+以上图的 DeepSeek-V3 为例，此时 `model_id = "ep-20250208211645-hrlmt"`，而非 `DeepSeek-V3`。
+
+#### 代码示例
+
+> 字节与其他家完全不同的点在于 `model_id` 不固定，在创建完接入点之后才可以得知对应 ID，这固然提高了可操作性，但对于刚注册的用户来说实在不够明确，在使用时需要注意它们的不同，如果在之前没有保存 `api_key` 和 `model`，可以通过入口进行复制：
+>
+> - **api_key**：[入口](https://console.volcengine.com/ark/region:ark+cn-beijing/apiKey?apikey=%7B%7D)
+> - **model**：[入口](https://console.volcengine.com/ark/region:ark+cn-beijing/endpoint?config=%7B%7D)
+
+```python
+from openai import OpenAI
+import os
+
+# 临时环境变量配置
+os.environ["ARK_API_KEY"] = "your-api-key" # 1
+
+client = OpenAI(
+    api_key=os.getenv("ARK_API_KEY"),
+    base_url="https://ark.cn-beijing.volces.com/api/v3", # 2
+)
+
+# 单轮对话示例
+completion = client.chat.completions.create(
+    model="your-chat-model-id", # 3
+    messages=[
+        {'role': 'system', 'content': 'You are a helpful assistant.'},
+        {'role': 'user', 'content': '你是谁？'}
+    ]
+)
+print(completion.model_dump_json())
+```
+
+#### 模型切换
+
+```python
+# 切换推理模型
+response = client.chat.completions.create(
+    model="your-reasoner-model-id",  # 修改此处标识
+    # ...其他参数保持不变...
+)
+```
+
+</details>
+
 ---
 
 ## 在线体验地址
@@ -328,6 +436,7 @@ completion = client.chat.completions.create(
 | DeepSeek 官方 | [官方](https://chat.deepseek.com)                            |
 | 硅基流动      | [DeepSeek-V3](https://cloud.siliconflow.cn/playground/chat/17885302723)<br />[DeepSeek-R1](https://cloud.siliconflow.cn/playground/chat/17885302724) |
 | 百度智能云    | [DeepSeek-V3](https://console.bce.baidu.com/qianfan/ais/console/onlineTest/LLM/DeepSeek-V3)<br />[DeepSeek-R1](https://console.bce.baidu.com/qianfan/ais/console/onlineTest/LLM/DeepSeek-R1) |
+| 火山引擎      | [模型广场选择体验](https://console.volcengine.com/ark/region:ark+cn-beijing/model?vendor=Bytedance&view=LIST_VIEW) |
 
 ## 📝 作业
 
