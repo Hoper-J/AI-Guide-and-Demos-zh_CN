@@ -1,8 +1,8 @@
 # DeepSeek API 的获取与对话示例
 
-> **代码文件下载**：[Code](../Demos/deepseek-api-guide-with-examples.ipynb)
+> **代码文件下载**：[Code](../Demos/deepseek-api-guide-1.ipynb)
 >
-> **在线链接**：[Kaggle](https://www.kaggle.com/code/aidemos/deepseek-api-guide-with-examples) | [Colab](https://colab.research.google.com/drive/1rdBEJT_oOxaScm3_10epoHX_TdbSm1Ty?usp=sharing)
+> **在线链接**：[Kaggle](https://www.kaggle.com/code/aidemos/deepseek-api-guide-1) | [Colab](https://colab.research.google.com/drive/1rdBEJT_oOxaScm3_10epoHX_TdbSm1Ty?usp=sharing)
 
 ## 目录
 

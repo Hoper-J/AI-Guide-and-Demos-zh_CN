@@ -26,7 +26,7 @@
 1. 网页版（深度思考 - R1）由于访问过多经常服务器繁忙导致对话卡顿。
 2. 使用 Chatbox 可以在多个平台间进行无缝切换（聊天记录会“同步”），这意味着当前服务瘫痪时可以直接更换平台，从而减少等待时间。
 3. 注册平台所赠送的 tokens 足以覆盖个人长期使用需求。
-4. 可以自定义系统消息（System message），拥有更多的定制空间。
+4. 可以自定义系统消息（System message），拥有更多的定制空间（注意，官方并不建议在使用推理模型的时候添加系统消息，对于该点需谨慎使用）。
 5. 本地存储完整对话历史。
 
 ## ▌配置指南（附多平台参数对照）
@@ -121,3 +121,5 @@
 > 对于推理模型 `deepseek-reasoner`，传入参数 `temperature`、`top_p`、`presence_penalty`、`frequency_penalty`、`logprobs`、`top_logprobs` 均不会生效[^2]，故无需纠结。
 
 [^2]: [DeepSeek 官方文档](https://api-docs.deepseek.com/zh-cn/quick_start/parameter_settings).
+
+**下一章**：[DeepSeek API 输出解析 - OpenAI SDK](./DeepSeek%20API%20输出解析%20-%20OpenAI%20SDK.md)
