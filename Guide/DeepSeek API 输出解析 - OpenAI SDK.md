@@ -104,9 +104,13 @@ completion = client.chat.completions.create(
 `print(completion.model_dump())` 的输出并不适合阅读，使用 `Pretty Print` 进行打印：
 
 ```python
+# 结构化打印
 from pprint import pprint
-
 pprint(completion.model_dump())
+    
+# 下方代码作用和 pprint 一样
+# import json
+# print(json.dumps(completion.model_dump(), indent=4, ensure_ascii=False))
 ```
 
 下面以 DeepSeek API 的聊天模型和推理模型为例进行解读，涉及的知识对于使用了 OpenAI SDK 的平台是通用的：
@@ -115,7 +119,7 @@ pprint(completion.model_dump())
 
 **输出**：
 
-```json
+```yaml
 {'choices': [{'finish_reason': 'stop',
               'index': 0,
               'logprobs': None,
@@ -138,7 +142,7 @@ pprint(completion.model_dump())
            'total_tokens': 48}}
 ```
 
-通过字段来做些文章（详细说明见[附录](#附录)）：
+**通过输出的字段我们能做些什么？**（详细说明见[附录](#附录)）：
 
 - **获取模型回复（choices）**
 
@@ -167,7 +171,7 @@ pprint(completion.model_dump())
       
       # 按 DeepSeek 定价计算成本（单位：元）
       # - 输入: 2元/百万 Tokens（缓存命中 0.5元/百万 Tokens）
-  	# - 输出: 8元/百万 Tokens
+      # - 输出: 8元/百万 Tokens
       # 官方价格文档：https://api-docs.deepseek.com/zh-cn/quick_start/pricing/
       input_cost = (hit * 0.5 + miss * 2) / 1_000_000
       output_cost = stats.completion_tokens * 8 / 1_000_000
@@ -209,7 +213,7 @@ pprint(completion.model_dump())
   > 
   >     按 DeepSeek 聊天模型定价设定默认成本（单位：元）：
   >     - 输入: 2元/百万 Tokens（缓存命中 0.5元/百万 Tokens）
-  > 	- 输出: 8元/百万 Tokens
+  >     - 输出: 8元/百万 Tokens
   >     官方价格文档：https://api-docs.deepseek.com/zh-cn/quick_start/pricing/
   >     """
   >     stats = completion.usage
@@ -256,12 +260,13 @@ pprint(completion.model_dump())
 
 > 其他平台参考下表[^1]，对应 `reasoner_model_id` 列：
 >
-> |            | base_url                                            | chat_model_id             | reasoner_model_id         |
-> | ---------- | --------------------------------------------------- | ------------------------- | ------------------------- |
-> | DeepSeek   | "https://api.deepseek.com"                          | "deepseek-chat"           | "deepseek-reasoner"       |
-> | 硅基流动   | "https://api.siliconflow.cn/v1"                     | "deepseek-ai/DeepSeek-V3" | "deepseek-ai/DeepSeek-R1" |
-> | 阿里云百炼 | "https://dashscope.aliyuncs.com/compatible-mode/v1" | "deepseek-v3"             | "deepseek-r1"             |
-> | 百度智能云 | "https://qianfan.baidubce.com/v2"                   | "deepseek-v3"             | "deepseek-r1"             |
+> |              | base_url                                            | chat_model_id                                                | reasoner_model_id                                            |
+> | ------------ | --------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+> | DeepSeek     | "https://api.deepseek.com"                          | "deepseek-chat"                                              | "deepseek-reasoner"                                          |
+> | 硅基流动     | "https://api.siliconflow.cn/v1"                     | "deepseek-ai/DeepSeek-V3"                                    | "deepseek-ai/DeepSeek-R1"                                    |
+> | 阿里云百炼   | "https://dashscope.aliyuncs.com/compatible-mode/v1" | "deepseek-v3"                                                | "deepseek-r1"                                                |
+> | 百度智能云   | "https://qianfan.baidubce.com/v2"                   | "deepseek-v3"                                                | "deepseek-r1"                                                |
+> | 字节火山引擎 | https://ark.cn-beijing.volces.com/api/v3/           | 访问[推理点](https://console.volcengine.com/ark/region:ark+cn-beijing/endpoint?config=%7B%7D)获取 | 访问[推理点](https://console.volcengine.com/ark/region:ark+cn-beijing/endpoint?config=%7B%7D)获取 |
 
 修改后运行代码：
 
@@ -276,16 +281,20 @@ client = OpenAI(
 
 # 单轮对话示例
 completion = client.chat.completions.create(
-    model="deepseek-ai/DeepSeek-R1", # 3
+    model="deepseek-ai/DeepSeek-R1", # 3：换成推理模型
     messages=[
         {'role': 'system', 'content': 'You are a helpful assistant.'},
-        {'role': 'user', 'content': '你是谁？'}]
+        {'role': 'user', 'content': '你是谁？'}
+    ]
 )
+
+from pprint import pprint
+pprint(completion.model_dump())
 ```
 
 **输出**：
 
-```json
+```yaml
 {'choices': [{'finish_reason': 'stop',
               'index': 0,
               'logprobs': None,
@@ -417,7 +426,7 @@ completion = client.chat.completions.create(
       
       # 按 DeepSeek 定价计算成本（单位：元）
       # - 输入Token: 4元/百万Tokens（未命中缓存 1元/百万Tokens）
-  	# - 输出Token: 16元/百万Tokens
+      # - 输出Token: 16元/百万Tokens
       # 官方价格文档：https://api-docs.deepseek.com/zh-cn/quick_start/pricing/
       input_cost = (hit * 1 + miss * 4) / 1_000_000
       output_cost = stats.completion_tokens * 16 / 1_000_000
@@ -453,8 +462,8 @@ completion = client.chat.completions.create(
   >
   > ```python
   > def print_reasoner_usage(completion, input_cost=4.0, output_cost=16.0, cache_hit_cost=1.0):
-  >        """
-  >        参数：
+  >     """
+  >     参数：
   >     - input_cost: 输入价格（元/百万 Tokens）
   >     - output_cost: 输出价格（元/百万 Tokens）
   >     - cache_hit_cost: 缓存命中价格（当平台不支持时自动退化到全价模式）
@@ -465,19 +474,19 @@ completion = client.chat.completions.create(
   >     官方价格文档：https://api-docs.deepseek.com/zh-cn/quick_start/pricing/
   >     """
   >     stats = completion.usage
-  >         
+  >     
   >     # 尝试获取字段（兼容其他平台）
   >     hit = getattr(stats, 'prompt_cache_hit_tokens', 0)
   >     miss = getattr(stats, 'prompt_cache_miss_tokens', 
   >                   stats.prompt_tokens - hit if hasattr(stats, 'prompt_tokens') else 0)
-  >         
+  >     
   >     print(f"===== TOKEN 消耗明细 =====")
   >     # 仅在存在缓存机制时显示细节
   >     if hit + miss > 0:
   >         print(f"输入: {stats.prompt_tokens} tokens [缓存命中: {hit} | 未命中: {miss}]")
   >     else:
   >         print(f"输入: {stats.prompt_tokens} tokens")
-  >         
+  >     
   >     print(f"输出: {stats.completion_tokens} tokens")
   > 
   >     # 尝试获取推理过程详情
@@ -488,20 +497,20 @@ completion = client.chat.completions.create(
   >             details = getattr(details, 'dict', lambda: {})()
   >         # 尝试获取 reasoning_tokens
   >         reasoning = details.get('reasoning_tokens', 0)
-  >                 
+  >         
   >         # 仅在存在推理tokens数量字段时处理
   >         if reasoning > 0:
   >             final = stats.completion_tokens - reasoning
   >             print(f"├─ 推理过程: {reasoning} tokens")
   >             print(f"└─ 最终回答: {final} tokens")
-  >         
+  >     
   >     print(f"总消耗: {stats.total_tokens} tokens")
-  >         
+  >     
   >     # 动态成本计算
   >     input_cost_total = (hit * cache_hit_cost + miss * input_cost) / 1_000_000
   >     output_cost_total = stats.completion_tokens * output_cost / 1_000_000
   >     total_cost = input_cost_total + output_cost_total
-  >         
+  >     
   >     print(f"\n===== 成本明细 =====")
   >     print(f"输入成本: ￥{input_cost_total:.4f} 元")
   >     print(f"输出成本: ￥{output_cost_total:.4f} 元")
@@ -530,77 +539,115 @@ completion = client.chat.completions.create(
 对话补全（chat completion）的响应字段解释如下：
 
 - **id** (string)
+  
   对话补全的唯一标识符。
-
+  
 - **choices** (array)
+  
   对话补全选项的列表。如果请求参数 `n` 大于 1，则会返回多个选项。
-
+  
   每个选项包含以下字段：
-
+  
   - **finish_reason** (string)
+  
     模型停止生成 tokens 的原因。可能的取值包括：
+  
     - `stop`：模型自然结束生成或匹配到提供的 `stop` 序列。
     - `length`：达到请求中指定的最大 tokens 数量。
     - `content_filter`：被内容过滤器标记而省略部分内容时。
     - `tool_calls`：当模型调用了工具时。
     - `function_call` (Deprecated)：当模型调用了函数时。
-
+  
   > [!note]
   >
   > “选项”（choice）指的是模型生成的每个可能的对话回复。
   >
   > 当我们在请求中设置参数 `n` 大于 1 时，模型会生成多个备选回复，然后这些回复会以列表（array）的形式返回，字段 **index** 表示该回复在列表中的位置（从 0 开始计数），当 `n` 为 1 的时候“选项”就是指当前“对话补全”，此时获取 `message` 的代码就是常见的 `choices[0].message.content`。
-
+  
   - **index** (integer)
+  
     该选项在选项列表中的索引位置。
+  
   - **message** (object)
+    
     模型生成的对话补全消息，包含以下字段：
+    
     - **content** (string or null)
+    
       消息的文本内容。
+    
     - **refusal** (string or null)
+      
       模型生成的拒绝消息。
+      
     - **tool_calls** (array)
+      
       模型生成的工具调用记录，例如函数调用。
+      
     - **role** (string)
+      
       生成该消息的角色，也就是消息的发送者身份。比如：
+      
       - `system`：系统消息。
       - `user`：用户输入。
       - `assistant`：由模型生成的回复。
+      
     - **function_call** (Deprecated, object)
+      
       已废弃，已由 `tool_calls` 替代。原用于描述模型生成的函数调用的名称及参数。
+      
     - **audio** (object or null)
+      
       当请求音频输出模式时，此对象包含模型音频响应的数据。
+    
   - **logprobs** (object or null)
+    
     关于该选项的 log probability 信息。
-
+  
 - **created** (integer)
+  
   对话补全生成时的 Unix 时间戳（单位：秒）。
-
+  
 - **model** (string)
+
   用于生成对话补全的模型名称。
 
 - **service_tier** (string or null)
+
   处理该请求所使用的服务层级。
 
 - **system_fingerprint** (string)
+
   表示模型运行时后端配置的指纹。
+
   可与请求参数 `seed` 配合使用，用于判断后端配置更改是否可能影响结果的确定性。
 
 - **object** (string)
-  对象类型，始终为 `chat.completion`。
-
+  
+  对象类型，总是 `chat.completion`。
+  
 - **usage** (object)
+  
   本次补全请求的使用统计信息，包含以下字段：
-
+  
   - **completion_tokens** (integer)
+  
     生成的补全文本中的 tokens 数量。
+  
   - **prompt_tokens** (integer)
+  
     提示（prompt）中的 tokens 数量。
+  
   - **total_tokens** (integer)
+  
     请求中使用的 tokens 总数（prompt + completion），即用户的提示 + 模型的生成。
+  
   - **completion_tokens_details** (object)
+  
     对补全中使用 tokens 的详细拆分统计。
+  
   - **prompt_tokens_details** (object)
+  
     对提示中使用 tokens 的详细拆分统计。
 
 > [!note]
