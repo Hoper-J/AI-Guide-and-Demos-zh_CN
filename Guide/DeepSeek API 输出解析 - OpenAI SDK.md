@@ -248,7 +248,7 @@ pprint(completion.model_dump())
 
 ### DeepSeek-Reasoner
 
-修改代码中的 `model`，DeepSeek API 代码对应修改：
+修改代码中的 `model` 参数即可切换模型（以 DeepSeek 官方平台为例）：
 
 ```diff
 - completion = client.chat.completions.create(
@@ -531,6 +531,8 @@ pprint(completion.model_dump())
 > 注意，字段 `usage.prompt_cache_hit_tokens` 和 `usage.prompt_cache_miss_tokens` 仅存在于 DeepSeek API，故代码部分做了特殊处理。
 
 [^2]: [对话补全 - DeepSeek API 文档](https://api-docs.deepseek.com/zh-cn/api/create-chat-completion)
+
+**下一章**：[DeepSeek API 流式输出解析 - OpenAI SDK](./DeepSeek%20API%20流式输出解析%20-%20OpenAI%20SDK.md)
 
 ## 附录
 
