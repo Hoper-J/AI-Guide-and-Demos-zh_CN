@@ -27,6 +27,32 @@ Long Ouyang et al. | [PDF](https://arxiv.org/pdf/2203.02155) | [精简版](https
 > “We trained this model using Reinforcement Learning from Human Feedback (RLHF), using the same methods as [InstructGPT⁠](https://openai.com/index/instruction-following/), but with slight differences in the data collection setup. ”
 >
 
+InstructGPT 基于 GPT-3（175B 版本） 进行微调，引入了一些微调和对齐的实验细节，是 GPT-3 到 ChatGPT 的重要环节。
+
+## 动机
+
+无论是小说还是电影，人们对 AI 的期待都是希望它能成为真正的助手，帮助我们高效地完成各类任务。然而，早期的 GPT 系列（如 GPT-1、GPT-2、GPT-3）由于主要训练目标是生成/预测下一个 token，它们在很多情况下生成的内容并不总是符合用户实际需求。也就是说，模型倾向于“继续写作”而非精准响应指令，这就引出了一个需要解决的问题——如何实现模型与人类意图的对齐（alignment）。
+
+> 对齐的目标是打造一个“与人类意图一致的新版本 GPT-3”，具体要求为[^1]：
+>
+> - **Helpful（有帮助的）**：能帮助用户解决问题或完成任务。
+>
+>   - **反例**
+>
+>     传统预训练语言模型并不能直接产生人类所期望的回答[^2]：GPT-3 以文字接龙（language modeling）方式生成回答，而非遵循指令。
+>
+>     ![文字接龙（预训练）](./assets/%E6%96%87%E5%AD%97%E6%8E%A5%E9%BE%99.svg)
+>
+>     在相同的 prompt 下，InstructGPT 在「回答问题」，而 GPT-3 在「续写问题」。
+>
+>     ![对比](./assets/image-20250204210153227.png)
+>
+> - **Truthful（真实的）**：不捏造信息或误导用户（幻觉问题）。
+>
+> - **Harmless（无害的）**：不对人或环境造成生理、心理或社会伤害。
+>
+> [^1]: [OpenAI's InstructGPT: Aligning Language Models with Human Intent](https://www.youtube.com/watch?v=QGpaBWOaHQI).
+
 ## 数据集
 
 ### 数据来源
@@ -37,7 +63,7 @@ Long Ouyang et al. | [PDF](https://arxiv.org/pdf/2203.02155) | [精简版](https
 
   要求标注人员编写以下三种类型的提示：
 
-  - **普通（Plain）**：编写任意任务，需要确保任务多样性
+  - **普通（Plain）**：编写任意任务，需要确保任务多样性。
 
   - **少样本（Few-shot）**：提供一条指令以及多个问/答（query/response）示例对。
 
@@ -95,13 +121,7 @@ Long Ouyang et al. | [PDF](https://arxiv.org/pdf/2203.02155) | [精简版](https
 
 ## 模型
 
-> 传统预训练语言模型并不能直接产生人类所期望的回答[^1]：
->
-> ![文字接龙（预训练）](./assets/%E6%96%87%E5%AD%97%E6%8E%A5%E9%BE%99.svg)
->
-> *图示：原始 GPT-3 以文字接龙（language modeling）方式生成回答，而非遵循指令*
-
-InstructGPT 从 GPT-3 的预训练模型（1.3B、6B、175B）进行改进，通过三阶段训练实现指令对齐。
+InstructGPT 从 GPT-3 的预训练模型（1.3B、6B、175B）开始，通过三阶段训练实现指令对齐。
 
 ### 训练概览
 
@@ -159,7 +179,7 @@ InstructGPT 从 GPT-3 的预训练模型（1.3B、6B、175B）进行改进，通
 > 步骤 2 和 3 可循环执行：用当前最优策略收集新对比数据，训练更新的 RM 和策略"
 
 
-[^1]: [来自于李宏毅老师「ChatGPT 是怎么炼成的」课件](https://docs.google.com/presentation/d/1vDT11ec_nY6P0o--NHq9col5XEE4tHBw/edit#slide=id.p14)
+[^2]: [来自于李宏毅老师「ChatGPT 是怎么炼成的」课件](https://docs.google.com/presentation/d/1vDT11ec_nY6P0o--NHq9col5XEE4tHBw/edit#slide=id.p14)
 
 ### 训练相关
 
