@@ -43,7 +43,7 @@ completion = client.chat.completions.create(
 
 当前大模型平台都适配了 OpenAI SDK，所以只需要对应修改三个参数（分别对应于代码中的注释）：
 
-1. api_key：《[DeepSeek API 的获取与对话示例](./Deepseek%20API%20的获取与对话示例.md)》。
+1. api_key：《[DeepSeek API 的获取与对话示例](./DeepSeek%20API%20的获取与对话示例.md)》。
 2. base_url。
 
 3. model。
@@ -97,7 +97,7 @@ completion = client.chat.completions.create(
 )
 ```
 
-[^1]: [DeepSeek API 的获取与对话示例](./Deepseek%20API%20的获取与对话示例.md).
+[^1]: [DeepSeek API 的获取与对话示例](./DeepSeek%20API%20的获取与对话示例.md).
 
 ## 认识输出
 

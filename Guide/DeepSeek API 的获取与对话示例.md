@@ -203,15 +203,11 @@ completion = client.chat.completions.create(
 
 ![模型广场](./assets/20240910092523.png)
 
-打勾，并点击 `确认开通`：
-
-![开通服务](./assets/20240910092523.png)
-
-在[控制台](https://bailian.console.aliyun.com/)点击右上角的 `用户图标` - `API-KEY`：
+在弹窗中打勾，并点击 `确认开通`，然后在[控制台](https://bailian.console.aliyun.com/)点击右上角的 `用户图标` - `API-KEY`：
 
 ![创建 API Key](./assets/20240910092938.png)
 
-点击`创建`
+点击`创建`：
 
 ![创建](./assets/20240910093036.png)
 
