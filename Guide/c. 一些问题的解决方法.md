@@ -6,12 +6,14 @@
 
 - [如何拉取远程仓库覆盖本地的一切修改？](#如何拉取远程仓库覆盖本地的一切修改)
 - [Hugging Face 相关](#hugging-face-相关)
-  - [怎么查看 Hugging Face 下载的文件？](#怎么查看-hugging-face-下载的文件)
-  - [怎么修改 Hugging Face 文件的保存路径？](#怎么修改-hugging-face-文件的保存路径)
-     - [方法一：手动编辑配置文件](#方法一手动编辑配置文件)
-     - [方法二：使用 echo 命令自动添加配置](#方法二使用-echo-命令自动添加配置)
-     - [将 HF_HOME 添加到 .bashrc 并避免重复](#将-hf_home-添加到-bashrc-并避免重复)
-  - [参考链接](#参考链接)
+  * [怎么查看 Hugging Face 下载的文件？](#怎么查看-hugging-face-下载的文件)
+  * [怎么修改 Hugging Face 文件的保存路径？](#怎么修改-hugging-face-文件的保存路径)
+    * [方法一：手动编辑配置文件](#方法一手动编辑配置文件)
+    * [方法二：使用 echo 命令自动添加配置](#方法二使用-echo-命令自动添加配置)
+    * [将 HF_HOME 添加到 .bashrc 并避免重复](#将-hf_home-添加到-bashrc-并避免重复)
+- [在线平台相关](#在线平台相关)
+  * [Kaggle 怎么开启 GPU？](#kaggle-怎么开启-gpu)
+  * [Colab 怎么开启 GPU？](#colab-怎么开启-gpu)
 
 ---
 
@@ -37,7 +39,7 @@ git reset --hard origin/master
 
 > 你一定会在未来的某个时刻有这个需求，因为实在是太占空间了，如果你热衷于试验不同的模型，或许一个星期之后你就会发现自己的磁盘开始报警。
 
-Hugging Face 通常会将下载的模型或数据保存在目录 `~/.cache/huggingface/` 中。如果你想删除不需要的模型，先切换文件夹：
+Hugging Face 通常会将下载的模型或数据保存在目录 `~/.cache/huggingface/` 中[^1]。如果你想删除不需要的模型，先切换文件夹：
 
 ```bash
 cd ~/.cache/huggingface
@@ -97,6 +99,8 @@ du -h --max-depth=1 . | sort -h
 ```bash
 rm -rf ./models--gpt2-large
 ```
+
+[^1]: [HF_HOME](https://huggingface.co/docs/huggingface_hub/main/en/package_reference/environment_variables#hfhome).
 
 ### 怎么修改 Hugging Face 文件的保存路径？
 
@@ -194,7 +198,7 @@ grep -qxF 'export HF_HOME=/path/to/your/custom/cache' ~/.bashrc || echo 'export 
 
 ### Kaggle 怎么开启 GPU？
 
-> [完整配置文件]()
+> [完整使用指南](./Kaggle：免费%20GPU%20使用指南，Colab%20的理想替代方案.md)
 
 1. **设置 GPU**：在 Notebook 界面，点击左上角的 `Settings` 按钮，以 GPU T4 为例，在下拉菜单中点击 `Accelerator`，选择 `GPU T4 x2`。
 
@@ -214,10 +218,18 @@ grep -qxF 'export HF_HOME=/path/to/your/custom/cache' ~/.bashrc || echo 'export 
 
 ### Colab 怎么开启 GPU？
 
+1. **设置 GPU**：点击顶部菜单中的 `代码执行程序`，从下拉选项中选择 `更改运行时类型`。
 
+   ![更改运行时类型](./assets/image-20250215170044979.png)
 
+2. **选择 GPU 类型**：在弹出的设置窗口中，从 `硬件加速器` 选项中选择 `T4 GPU`，然后点击 `保存`。
 
+   ![选择 GPU](./assets/image-20250215170215575.png)
 
-### 参考链接
+3. **查看当前计算资源**：点击右上角图示位置，可以查看当前的计算资源状态。
 
-[HF_HOME](https://huggingface.co/docs/huggingface_hub/main/en/package_reference/environment_variables#hfhome)
+   ![查看资源](./assets/image-20250215170635717.png)
+
+4. **节省时间**：在不需要使用 GPU 时，可以点击右上角的 `▼`，选择 `断开连接并删除运行时`，以节省 GPU 时间。
+
+   ![断开 GPU](./assets/image-20250215170853991.png)

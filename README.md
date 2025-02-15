@@ -90,7 +90,7 @@
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | [a. 使用 HFD 加快 Hugging Face 模型和数据集的下载](./Guide/a.%20使用%20HFD%20加快%20Hugging%20Face%20模型和数据集的下载.md) | 如果你觉得模型下载实在是太慢了，可以参考这篇文章进行配置。<br />遇到代理相关的 443 错误，也可以试着查看这篇文章。 |
 | [b. 命令行基础指令速查（Linux/Mac适用）](./Guide/b.%20命令行基础指令速查（Linux%3AMac适用）.md) | 一份命令行的指令速查，基本包含当前仓库的涉及的所有指令，在感到疑惑时去查看它。 |
-| [c. 一些问题的解决方法](./Guide/c.%20一些问题的解决方法.md)  | 这里会解决一些项目运行过程中可能遇到的问题。<br />- 如何拉取远程仓库覆盖本地的一切修改？<br />- 怎么查看和删除 Hugging Face 下载的文件，怎么修改保存路径？ |
+| [c. 一些问题的解决方法](./Guide/c.%20一些问题的解决方法.md)  | 这里会解决一些项目运行过程中可能遇到的问题。<br />- 如何拉取远程仓库覆盖本地的一切修改？<br />- 怎么查看和删除 Hugging Face 下载的文件，怎么修改保存路径？<br />- 在线平台 Kaggle/Colab 怎么开启 GPU？ |
 | [d. 如何加载 GGUF 模型（分片/Shared/Split/00001-of-0000...的解决方法）](./Guide/d.%20如何加载%20GGUF%20模型（分片%3AShared%3ASplit%3A00001-of-0000...的解决方法）.md) | - 了解 Transformers 关于 GGUF 的新特性。<br />- 使用 Transformers/Llama-cpp-python/Ollama 加载 GGUF 格式的模型文件。<br />- 学会合并分片的 GGUF 文件。<br />- 解决 LLama-cpp-python 无法 offload 的问题。 |
 | [e. 数据增强：torchvision.transforms 常用方法解析](./Guide/e.%20数据增强：torchvision.transforms%20常用方法解析.md) | - 了解常用的图像数据增强方法。<br />[Code](./Demos/18.%20数据增强：torchvision.transforms%20常用方法演示.ipynb) \| [Kaggle](https://www.kaggle.com/code/aidemos/18-torchvision-transforms) \| [Colab](https://colab.research.google.com/drive/1cOy8LFMUVfDaBe7iV-YWxcZ1W2bFgg4w?usp=sharing) |
 | [f. 交叉熵损失函数 nn.CrossEntropyLoss() 详解和要点提醒（PyTorch）](./Guide/f.%20交叉熵损失函数%20nn.CrossEntropyLoss()%20详解和要点提醒（PyTorch）.md) | - 了解交叉熵损失的数学原理及 PyTorch 实现。<br />- 了解初次使用时需要注意的地方。 |
