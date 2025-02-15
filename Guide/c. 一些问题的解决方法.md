@@ -198,11 +198,11 @@ grep -qxF 'export HF_HOME=/path/to/your/custom/cache' ~/.bashrc || echo 'export 
 
 1. **设置 GPU**：在 Notebook 界面，点击左上角的 `Settings` 按钮，以 GPU T4 为例，在下拉菜单中点击 `Accelerator`，选择 `GPU T4 x2`。
 
-   ![选择 GPU](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/Guide/assets/20241107130851.png)
+   ![选择 GPU](./assets/20241107130851.png)
 
 2. **确认启用**：系统会提示每周有 30 小时的 GPU 使用时间，点击 `Turn on GPU T4 x2` 进行确认。
 
-   ![确认](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/Guide/assets/20241107130854.png)
+   ![确认](./assets/20241107130854.png)
 
    - 用于日常学习是足够的，不够的话就多开 :)
 
@@ -210,7 +210,7 @@ grep -qxF 'export HF_HOME=/path/to/your/custom/cache' ~/.bashrc || echo 'export 
 
 4. **节省时间**：在不需要 GPU 时，可将 `Accelerator` 设置为 `None`，以节省 GPU 时间。
 
-   ![节省时间](/Users/home/Downloads/agent/LLM-API-Guide-and-Demos/Guide/assets/20241107130859.png)
+   ![节省时间](./assets/20241107130859.png)
 
 ### Colab 怎么开启 GPU？
 
