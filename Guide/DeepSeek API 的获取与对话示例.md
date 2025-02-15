@@ -384,7 +384,10 @@ completion = client.chat.completions.create(
 > 字节与其他家完全不同的点在于 `model_id` 不固定，在创建完接入点之后才可以得知对应 ID，这固然提高了可操作性，但对于刚注册的用户来说实在不够明确，在使用时需要注意它们的不同，如果在之前没有保存 `api_key` 和 `model`，可以通过入口进行复制：
 >
 > - **api_key**：[入口](https://console.volcengine.com/ark/region:ark+cn-beijing/apiKey?apikey=%7B%7D)
+>
 > - **model**：[入口](https://console.volcengine.com/ark/region:ark+cn-beijing/endpoint?config=%7B%7D)
+>
+>   ![model_id](./assets/image-20250215145209072.png)
 
 ```python
 from openai import OpenAI

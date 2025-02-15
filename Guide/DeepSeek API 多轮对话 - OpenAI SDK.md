@@ -6,6 +6,21 @@
 >
 > **在线链接**：[Kaggle](https://www.kaggle.com/code/aidemos/deepseek-api-guide-4) | [Colab](https://colab.research.google.com/drive/11REpPevN4bSL8yeJzQs7LAiV2cm9lUmh?usp=sharing)
 
+## 目录
+
+- [认识多轮对话](#认识多轮对话)
+   - [DeepSeek-Chat](#deepseek-chat)
+      - [单轮对话](#单轮对话)
+      - [两轮对话](#两轮对话)
+      - [多轮对话](#多轮对话)
+      - [封装对话逻辑](#封装对话逻辑)
+   - [DeepSeek-Reasoner](#deepseek-reasoner)
+      - [单轮对话](#单轮对话-1)
+      - [两轮对话](#两轮对话-1)
+      - [多轮对话](#多轮对话-1)
+      - [封装对话逻辑](#封装对话逻辑-1)
+- [📝 作业](#-作业)
+
 ## 认识多轮对话
 
 > **“多次单轮对话就是多轮对话吗？”**
