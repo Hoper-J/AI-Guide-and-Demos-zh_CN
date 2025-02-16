@@ -108,7 +108,13 @@
 
 > [!caution]
 >
-> 对于推理模型 `deepseek-reasoner`，传入参数 `temperature`、`top_p`、`presence_penalty`、`frequency_penalty`、`logprobs`、`top_logprobs` 均不会生效[^2]，故无需纠结温度设置。
+> 对于推理模型 `deepseek-reasoner`，传入参数 `temperature`、`top_p`、`presence_penalty`、`frequency_penalty`、`logprobs`、`top_logprobs` 均不会生效[^1]，故无需纠结温度设置。
+>
+> 也可以遵循官方的部署建议[^2]，将 `deepseek-reasoner` 的 `temperature` 默认设置为 0.6，以应对未来可能被允许的参数修改。
+
+[^1]: [DeepSeek 官方文档](https://api-docs.deepseek.com/zh-cn/quick_start/parameter_settings).
+
+[^2]: [Usage Recommendations - DeepSeek R1](https://github.com/deepseek-ai/DeepSeek-R1#usage-recommendations).
 
 #### Q3：如何备份数据？
 
@@ -134,7 +140,7 @@
 
 ## ▌Chatbox 配置
 
-根据系统下载对应版本的 APP[^1]：
+根据系统下载对应版本的 APP[^3]：
 
 - **电脑**
   - [Windows](https://chatboxai.app/?c=download-windows)
@@ -146,7 +152,7 @@
   - [苹果 / IOS](https://apps.apple.com/app/chatbox-ai/id6471368056)
   - [安卓/ Android](https://chatboxai.app/install?download=android_apk)
 
-[^1]: [https://github.com/Bin-Huang/chatbox](https://github.com/Bin-Huang/chatbox).
+[^3]: [https://github.com/Bin-Huang/chatbox](https://github.com/Bin-Huang/chatbox).
 
 下面以电脑端进行演示，打开 Chatbox，点击 `使用自己的 API Key 或本地模型`：
 
@@ -224,8 +230,9 @@
 
 > [!CAUTION]
 >
-> 对于推理模型 `deepseek-reasoner`，传入参数 `temperature`、`top_p`、`presence_penalty`、`frequency_penalty`、`logprobs`、`top_logprobs` 均不会生效[^2]，故无需纠结。
-
-[^2]: [DeepSeek 官方文档](https://api-docs.deepseek.com/zh-cn/quick_start/parameter_settings).
+> 对于推理模型 `deepseek-reasoner`，传入参数 `temperature`、`top_p`、`presence_penalty`、`frequency_penalty`、`logprobs`、`top_logprobs` 均不会生效[^1]，故无需纠结。
+>
+> 可以遵循官方的部署建议[^2]，将 `deepseek-reasoner` 的 `temperature` 默认设置为 0.6，以应对未来可能被允许的参数修改。
 
 **下一章**：[DeepSeek API 输出解析 - OpenAI SDK](./DeepSeek%20API%20输出解析%20-%20OpenAI%20SDK.md)
+
