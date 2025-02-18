@@ -174,6 +174,20 @@ config = {
 session = ChatSession(**config)
 ```
 
+> [!note]
+>
+> `**` 是 Python 中的解包操作符，它将字典中的键值对解包为函数的关键字参数。在这里，`**config` 将字典中的参数逐一传递给 `ChatSession()` ， `ChatSession(**config)`等价于：
+>
+> ```python
+> ChatSession(
+>        api_key="your-api-key",
+>        base_url="https://api.deepseek.com",
+>        model="deepseek-chat",
+>        system_message="You are a helpful assistant."
+> )
+> ```
+>
+
 **对话**：
 
 ```python
