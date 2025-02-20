@@ -48,6 +48,7 @@
 | [DeepSeek API 输出解析 - OpenAI SDK](./Guide/DeepSeek%20API%20输出解析%20-%20OpenAI%20SDK.md) | API  | 关于 OpenAI SDK 的通用知识，以 DeepSeek 聊天/推理模型为例进行演示：<br />- 认识 API 的返回字段<br />- 打印模型回复和每次对话的用量信息<br /> | [Code](./Demos/deepseek-api-guide-2.ipynb) | [Kaggle](https://www.kaggle.com/code/aidemos/deepseek-api-guide-2)<br />[Colab](https://colab.research.google.com/drive/1WT0jpeIzWewoN5cT12Uwi92d5_tNff2J?usp=sharing) |
 | └─[流式输出解析](./Guide/DeepSeek%20API%20流式输出解析%20-%20OpenAI%20SDK.md) | API  | API 解析 - 流式输出篇<br />- 认识 chunk 的结构<br />- 处理各平台聊天/推理模型的流式输出<br /> | [Code](./Demos/deepseek-api-guide-3.ipynb) | [Kaggle](https://www.kaggle.com/code/aidemos/deepseek-api-guide-3)<br />[Colab](https://colab.research.google.com/drive/1Hfm7qU75GSvU8cO6RL108ZcmwaugXemo?usp=sharing) |
 | [DeepSeek API 多轮对话 - OpenAI SDK](./Guide/DeepSeek%20API%20多轮对话%20-%20OpenAI%20SDK.md) | API  | DeepSeek API 的多轮对话示例 - 非流式输出篇：<br />- 认识单轮对话和多轮对话时 `messages` 的差异<br />- 尝试封装对话类 | [Code](./Demos/deepseek-api-guide-4.ipynb) | [Kaggle](https://www.kaggle.com/code/aidemos/deepseek-api-guide-4)<br />[Colab](https://colab.research.google.com/drive/11REpPevN4bSL8yeJzQs7LAiV2cm9lUmh?usp=sharing) |
+| └─[统一模型对话逻辑与流式输出](./Guide/DeepSeek%20API%20统一模型对话逻辑与流式输出.md) | API  | - 统一聊天模型和推理模型对话类<br />- 引入流式输出处理<br /><br />【代码文件】<br />- 使用 `APIConfigManager` 进行各平台配置，不再分散逻辑 | [Code](./Demos/deepseek-api-guide-5.ipynb) | [Kaggle](https://www.kaggle.com/code/aidemos/deepseek-api-guide-5)<br />[Colab](https://colab.research.google.com/drive/14u47q-lGfH7l1ehkBuTU0kgIsNarap9J?usp=sharing) |
 
 ---
 

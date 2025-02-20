@@ -421,6 +421,8 @@ print(f"===== 模型回复 =====\n{content}")
 
 1. 思考如何获取流式输出时的 TOKEN 消耗明细？（提示：观察 `usage` 字段）
 
+**下一章**：[DeepSeek API 多轮对话 - OpenAI SDK](./DeepSeek%20API%20多轮对话%20-%20OpenAI%20SDK.md)
+
 ## 附录
 
 > 参考链接：[The message delta object - OpenAI 官方文档](https://platform.openai.com/docs/api-reference/assistants-streaming/message-delta-object).

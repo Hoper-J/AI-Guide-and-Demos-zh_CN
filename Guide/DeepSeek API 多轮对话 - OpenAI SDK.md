@@ -558,3 +558,5 @@ while True:
 1. 等待输出总是煎熬的，特别是推理模型，怎么修改 `ReasonerSession` 类使其正确处理流式输出（`stream=True`）？
 
    > **提示**：回顾文章《[DeepSeek API 流式输出解析 - OpenAI SDK](./Guide/DeepSeek%20API%20流式输出解析%20-%20OpenAI%20SDK.md)》
+
+**下一章**：[DeepSeek API 统一模型对话逻辑与流式输出](./DeepSeek%20API%20统一模型对话逻辑与流式输出.md)
