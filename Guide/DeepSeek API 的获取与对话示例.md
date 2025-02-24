@@ -119,7 +119,7 @@ completion = client.chat.completions.create(
 <details>
     <summary> <h3> 硅基流动 </h3> </summary>
 
-> 下方硅基流动的注册链接附带邀请码，因邀请所产生所有 tokens 将被用于学习共享（[Discussions](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/discussions/6)）。
+> 下方硅基流动的注册链接附带邀请码，因邀请所产生**所有** tokens 将被用于学习共享（[Discussions](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/discussions/6)）。
 >
 > **感谢注册，因为你才有了该分享的诞生**。
 
@@ -323,11 +323,13 @@ completion = client.chat.completions.create(
 
 <details>
     <summary> <h3> 字节火山引擎 </h3> </summary>
-
-
 > 这是一个稍显繁杂的流程。
+>
+> 下方火山引擎的注册链接附带邀请码，因邀请所产生**所有** tokens 将被用于学习共享（[Discussions](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/discussions/6)）。
+>
+> **感谢注册，因为你才有了该分享的诞生**。
 
-访问[火山引擎](https://console.volcengine.com/auth/signup?redirectURI=%2Fark%2Fregion%3Aark%2Bcn-beijing%2Fmodel%3FprojectName%3Dundefined%26vendor%3DBytedance%26view%3DLIST_VIEW)进行注册并登录：
+访问[火山引擎](https://www.volcengine.com/experience/ark?utm_term=202502dsinvite&ac=DSASUQY5&rc=ON2SBXC1)进行注册并登录：
 
 ![注册](./assets/image-20250208202359743.png)
 
@@ -440,5 +442,5 @@ response = client.chat.completions.create(
 ## 📝 作业
 
 1. 尝试非官方平台来感知代码上的差异（对应于代码注释中的 #1 #2 #3 所在行）。
-2. 根据文章《[DeepSeek 联网满血版使用指南](./DeepSeek%20联网满血版使用指南.md) 》进行多平台配置并对话。
+2. 根据文章《[DeepSeek 联网满血版使用指南](./DeepSeek%20联网满血版使用指南.md)》进行多平台配置并对话。
 
