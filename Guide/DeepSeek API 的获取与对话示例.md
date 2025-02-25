@@ -90,21 +90,23 @@ client = OpenAI(
 )
 
 # 单轮对话示例
-completion = client.chat.completions.create(
+response = client.chat.completions.create(
     model="deepseek-chat", # 3
     messages=[
         {'role': 'system', 'content': 'You are a helpful assistant.'},
         {'role': 'user', 'content': '你是谁？'}
     ]
 )
-print(completion.model_dump_json())
+
+# 打印模型回复内容
+print(response.choices[0].message.content)
 ```
 
 #### 模型切换
 
 ```python
 # 切换推理模型
-completion = client.chat.completions.create(
+response = client.chat.completions.create(
     model="deepseek-reasoner",  # 修改此处标识
     # ...其他参数保持不变...
 )
@@ -154,21 +156,23 @@ client = OpenAI(
 )
 
 # 单轮对话示例
-completion = client.chat.completions.create(
+response = client.chat.completions.create(
     model="deepseek-ai/DeepSeek-V3", # 3
     messages=[
         {'role': 'system', 'content': 'You are a helpful assistant.'},
         {'role': 'user', 'content': '你是谁？'}
     ]
 )
-print(completion.model_dump_json())
+
+# 打印模型回复内容
+print(response.choices[0].message.content)
 ```
 
 #### 模型切换
 
 ```python
 # 切换推理模型
-completion = client.chat.completions.create(
+response = client.chat.completions.create(
     model="deepseek-ai/DeepSeek-R1",  # 修改此处标识
     # ...其他参数保持不变...
 )
@@ -234,21 +238,23 @@ client = OpenAI(
 )
 
 # 单轮对话示例
-completion = client.chat.completions.create(
+response = client.chat.completions.create(
     model="deepseek-v3", # 3
     messages=[
         {'role': 'system', 'content': 'You are a helpful assistant.'},
         {'role': 'user', 'content': '你是谁？'}
     ]
 )
-print(completion.model_dump_json())
+
+# 打印模型回复内容
+print(response.choices[0].message.content)
 ```
 
 #### 模型切换
 
 ```python
 # 切换推理模型
-completion = client.chat.completions.create(
+response = client.chat.completions.create(
     model="deepseek-r1",  # 修改此处标识
     # ...其他参数保持不变...
 )
@@ -298,21 +304,23 @@ client = OpenAI(
 )
 
 # 单轮对话示例
-completion = client.chat.completions.create(
+response = client.chat.completions.create(
     model="deepseek-v3", # 3
     messages=[
         {'role': 'system', 'content': 'You are a helpful assistant.'},
         {'role': 'user', 'content': '你是谁？'}
     ]
 )
-print(completion.model_dump_json())
+
+# 打印模型回复内容
+print(response.choices[0].message.content)
 ```
 
 #### 模型切换
 
 ```python
 # 切换推理模型
-completion = client.chat.completions.create(
+response = client.chat.completions.create(
     model="deepseek-r1",  # 修改此处标识
     # ...其他参数保持不变...
 )
@@ -323,6 +331,7 @@ completion = client.chat.completions.create(
 
 <details>
     <summary> <h3> 字节火山引擎 </h3> </summary>
+
 > 这是一个稍显繁杂的流程。
 >
 > 下方火山引擎的注册链接附带邀请码，因邀请所产生**所有** tokens 将被用于学习共享（[Discussions](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/discussions/6)）。
@@ -404,14 +413,16 @@ client = OpenAI(
 )
 
 # 单轮对话示例
-completion = client.chat.completions.create(
+response = client.chat.completions.create(
     model="your-chat-model-id", # 3
     messages=[
         {'role': 'system', 'content': 'You are a helpful assistant.'},
         {'role': 'user', 'content': '你是谁？'}
     ]
 )
-print(completion.model_dump_json())
+
+# 打印模型回复内容
+print(response.choices[0].message.content)
 ```
 
 #### 模型切换
