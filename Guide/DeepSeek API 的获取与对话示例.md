@@ -36,7 +36,7 @@ pip install openai
 | 硅基流动     | "SILICONFLOW_API_KEY" | "https://api.siliconflow.cn/v1"                     | "deepseek-ai/DeepSeek-V3" | "deepseek-ai/DeepSeek-R1" |
 | 阿里云百炼   | "DASHSCOPE_API_KEY"   | "https://dashscope.aliyuncs.com/compatible-mode/v1" | "deepseek-v3"             | "deepseek-r1"             |
 | 百度智能云   | "BAIDU_API_KEY"       | "https://qianfan.baidubce.com/v2"                   | "deepseek-v3"             | "deepseek-r1"             |
-| 字节火山引擎 | "ARK_API_KEY"         | "https://ark.cn-beijing.volces.com/api/v3"          | "your-chat-model-id"      | "your-reasoner-model-id"  |
+| 字节火山引擎 | "ARK_API_KEY"         | "https://ark.cn-beijing.volces.com/api/v3"          | "deepseek-v3-241226"      | "deepseek-r1-250120"      |
 
 参数说明：
 
@@ -332,8 +332,6 @@ response = client.chat.completions.create(
 <details>
     <summary> <h3> 字节火山引擎 </h3> </summary>
 
-> 这是一个稍显繁杂的流程。
->
 > 下方火山引擎的注册链接附带邀请码，因邀请所产生**所有** tokens 将被用于学习共享（[Discussions](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/discussions/6)）。
 >
 > **感谢注册，因为你才有了该分享的诞生**。
@@ -366,6 +364,17 @@ response = client.chat.completions.create(
 
 ![勾选模型](./assets/image-20250208205416948.png)
 
+字节终于有了预置的推理接入点：
+
+![自动创建模型接入点](./assets/image-20250307113923851.png)
+
+- 聊天模型：`deepseek-v3-241226`
+- 推理模型：`deepseek-r1-250120`
+
+现在可以跳过下面的「自定义推理接入点」部分。
+
+<details>
+    <summary> <h4> 自定义推理接入点 </h4> </summary>
 点击左侧的 `在线推理`，点击 `创建推理接入点`：
 
 ![创建推理接入点](./assets/image-20250208210231034.png)
@@ -390,15 +399,13 @@ response = client.chat.completions.create(
 
 以上图的 DeepSeek-V3 为例，此时 `model_id = "ep-20250208211645-hrlmt"`，而非 `DeepSeek-V3`。
 
+</details>
+
 #### 代码示例
 
-> 字节与其他家完全不同的点在于 `model_id` 不固定，在创建完接入点之后才可以得知对应 ID，这固然提高了可操作性，但对于刚注册的用户来说实在不够明确，在使用时需要注意它们的不同，如果在之前没有保存 `api_key` 和 `model`，可以通过入口进行复制：
+> ~~字节与其他家完全不同的点在于 `model_id` 不固定，在创建完接入点之后才可以得知对应 ID，这固然提高了可操作性，但对于刚注册的用户来说实在不够明确，在使用时需要注意它们的不同，如果在之前没有保存 `api_key` 和 `model`，可以通过入口进行复制：~~
 >
-> - **api_key**：[入口](https://console.volcengine.com/ark/region:ark+cn-beijing/apiKey?apikey=%7B%7D)
->
-> - **model**：[入口](https://console.volcengine.com/ark/region:ark+cn-beijing/endpoint?config=%7B%7D)
->
->   ![model_id](./assets/image-20250215145209072.png)
+> 目前已经有了预置接入点，参见下方代码的 `model` 参数。
 
 ```python
 from openai import OpenAI
@@ -414,7 +421,7 @@ client = OpenAI(
 
 # 单轮对话示例
 response = client.chat.completions.create(
-    model="your-chat-model-id", # 3
+    model="deepseek-v3-241226", # 3
     messages=[
         {'role': 'system', 'content': 'You are a helpful assistant.'},
         {'role': 'user', 'content': '你是谁？'}
@@ -430,7 +437,7 @@ print(response.choices[0].message.content)
 ```python
 # 切换推理模型
 response = client.chat.completions.create(
-    model="your-reasoner-model-id",  # 修改此处标识
+    model="deepseek-r1-250120",  # 修改此处标识
     # ...其他参数保持不变...
 )
 ```

@@ -50,13 +50,13 @@ completion = client.chat.completions.create(
 
 **不同平台参数对照表**[^1]：
 
-|              | base_url                                            | chat_model_id                                                | reasoner_model_id                                            |
-| ------------ | --------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| DeepSeek     | "https://api.deepseek.com"                          | "deepseek-chat"                                              | "deepseek-reasoner"                                          |
-| 硅基流动     | "https://api.siliconflow.cn/v1"                     | "deepseek-ai/DeepSeek-V3"                                    | "deepseek-ai/DeepSeek-R1"                                    |
-| 阿里云百炼   | "https://dashscope.aliyuncs.com/compatible-mode/v1" | "deepseek-v3"                                                | "deepseek-r1"                                                |
-| 百度智能云   | "https://qianfan.baidubce.com/v2"                   | "deepseek-v3"                                                | "deepseek-r1"                                                |
-| 字节火山引擎 | https://ark.cn-beijing.volces.com/api/v3            | 访问[推理点](https://console.volcengine.com/ark/region:ark+cn-beijing/endpoint?config=%7B%7D)获取 | 访问[推理点](https://console.volcengine.com/ark/region:ark+cn-beijing/endpoint?config=%7B%7D)获取 |
+|              | base_url                                            | chat_model_id             | reasoner_model_id         |
+| ------------ | --------------------------------------------------- | ------------------------- | ------------------------- |
+| DeepSeek     | "https://api.deepseek.com"                          | "deepseek-chat"           | "deepseek-reasoner"       |
+| 硅基流动     | "https://api.siliconflow.cn/v1"                     | "deepseek-ai/DeepSeek-V3" | "deepseek-ai/DeepSeek-R1" |
+| 阿里云百炼   | "https://dashscope.aliyuncs.com/compatible-mode/v1" | "deepseek-v3"             | "deepseek-r1"             |
+| 百度智能云   | "https://qianfan.baidubce.com/v2"                   | "deepseek-v3"             | "deepseek-r1"             |
+| 字节火山引擎 | https://ark.cn-beijing.volces.com/api/v3            | "deepseek-v3-241226"      | "deepseek-r1-250120"      |
 
 以硅基流动平台为例，使用 chat 模型，修改如下：
 

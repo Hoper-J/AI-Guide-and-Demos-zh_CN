@@ -81,12 +81,12 @@
 
 参照下表填写对应平台信息，最终呈现如右图：
 
-|                       | 获取步骤                                                     | API 域名                                           | 模型 - 聊天                                                  | 模型 - 推理                                                  | 设置 - 推理                                              |
-| --------------------- | ------------------------------------------------------------ | -------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | -------------------------------------------------------- |
-| 硅基流动              | [图文](./DeepSeek%20API%20的获取与对话示例.md#-硅基流动-)    | https://api.siliconflow.cn                         | deepseek-ai/DeepSeek-V3                                      | deepseek-ai/DeepSeek-R1                                      | ![设置 - 硅基流动](./assets/image-20250210134851206.png) |
-| 阿里云百炼            | [图文](./DeepSeek%20API%20的获取与对话示例.md#-阿里云百炼-)  | https://dashscope.aliyuncs.com/compatible-mode/v1/ | deepseek-v3                                                  | deepseek-r1                                                  | ![设置 - 阿里云](./assets/image-20250210135415680.png)   |
-| 百度智能云/百度云千帆 | [图文](./DeepSeek%20API%20的获取与对话示例.md#-百度智能云-)  | https://qianfan.baidubce.com/v2/                   | deepseek-v3                                                  | deepseek-r1                                                  | ![设置 - 百度](./assets/image-20250210140222077.png)     |
-| 字节火山引擎          | [图文](./DeepSeek%20API%20的获取与对话示例.md#-字节火山引擎-) | https://ark.cn-beijing.volces.com/api/v3/          | 访问[推理点](https://console.volcengine.com/ark/region:ark+cn-beijing/endpoint?config=%7B%7D)获取 | 访问[推理点](https://console.volcengine.com/ark/region:ark+cn-beijing/endpoint?config=%7B%7D)获取 | ![设置 - 字节](./assets/image-20250210141105629.png)     |
+|                       | 获取步骤                                                     | API 域名                                           | 模型 - 聊天             | 模型 - 推理             | 设置 - 推理                                              |
+| --------------------- | ------------------------------------------------------------ | -------------------------------------------------- | ----------------------- | ----------------------- | -------------------------------------------------------- |
+| 硅基流动              | [图文](./DeepSeek%20API%20的获取与对话示例.md#-硅基流动-)    | https://api.siliconflow.cn                         | deepseek-ai/DeepSeek-V3 | deepseek-ai/DeepSeek-R1 | ![设置 - 硅基流动](./assets/image-20250210134851206.png) |
+| 阿里云百炼            | [图文](./DeepSeek%20API%20的获取与对话示例.md#-阿里云百炼-)  | https://dashscope.aliyuncs.com/compatible-mode/v1/ | deepseek-v3             | deepseek-r1             | ![设置 - 阿里云](./assets/image-20250210135415680.png)   |
+| 百度智能云/百度云千帆 | [图文](./DeepSeek%20API%20的获取与对话示例.md#-百度智能云-)  | https://qianfan.baidubce.com/v2/                   | deepseek-v3             | deepseek-r1             | ![设置 - 百度](./assets/image-20250210140222077.png)     |
+| 字节火山引擎          | [图文](./DeepSeek%20API%20的获取与对话示例.md#-字节火山引擎-) | https://ark.cn-beijing.volces.com/api/v3/          | "deepseek-v3-241226"    | "deepseek-r1-250120"    | ![设置 - 字节](./assets/image-20250210141105629.png)     |
 
 ### QA
 
@@ -178,12 +178,12 @@
 
 参照下表填写对应平台信息，完成后点击保存，最终呈现如右图：
 
-|              | 获取步骤                                                     | API 域名                                          | 模型 - 聊天                                                  | 模型 - 推理                                                  | 设置 - 推理                                              |
-| ------------ | ------------------------------------------------------------ | ------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | -------------------------------------------------------- |
-| 硅基流动     | [图文](./DeepSeek%20API%20的获取与对话示例.md#-硅基流动-)    | https://api.siliconflow.cn/v1                     | deepseek-ai/DeepSeek-V3                                      | deepseek-ai/DeepSeek-R1                                      | ![设置 - 硅基流动](./assets/image-20250206113805132.png) |
-| 阿里云百炼   | [图文](./DeepSeek%20API%20的获取与对话示例.md#-阿里云百炼-)  | https://dashscope.aliyuncs.com/compatible-mode/v1 | deepseek-v3                                                  | deepseek-r1                                                  | ![设置 - 阿里云](./assets/image-20250206115713516.png)   |
-| 百度智能云   | [图文](./DeepSeek%20API%20的获取与对话示例.md#-百度智能云-)  | https://qianfan.baidubce.com/v2                   | deepseek-v3                                                  | deepseek-r1                                                  | ![设置 - 百度](./assets/image-20250206120017418.png)     |
-| 字节火山引擎 | [图文](./DeepSeek%20API%20的获取与对话示例.md#-字节火山引擎-) | https://ark.cn-beijing.volces.com/api/v3          | 访问[推理点](https://console.volcengine.com/ark/region:ark+cn-beijing/endpoint?config=%7B%7D)获取 | 访问[推理点](https://console.volcengine.com/ark/region:ark+cn-beijing/endpoint?config=%7B%7D)获取 | ![设置 - 字节](./assets/image-20250208215034817.png)     |
+|              | 获取步骤                                                     | API 域名                                          | 模型 - 聊天             | 模型 - 推理             | 设置 - 推理                                              |
+| ------------ | ------------------------------------------------------------ | ------------------------------------------------- | ----------------------- | ----------------------- | -------------------------------------------------------- |
+| 硅基流动     | [图文](./DeepSeek%20API%20的获取与对话示例.md#-硅基流动-)    | https://api.siliconflow.cn/v1                     | deepseek-ai/DeepSeek-V3 | deepseek-ai/DeepSeek-R1 | ![设置 - 硅基流动](./assets/image-20250206113805132.png) |
+| 阿里云百炼   | [图文](./DeepSeek%20API%20的获取与对话示例.md#-阿里云百炼-)  | https://dashscope.aliyuncs.com/compatible-mode/v1 | deepseek-v3             | deepseek-r1             | ![设置 - 阿里云](./assets/image-20250206115713516.png)   |
+| 百度智能云   | [图文](./DeepSeek%20API%20的获取与对话示例.md#-百度智能云-)  | https://qianfan.baidubce.com/v2                   | deepseek-v3             | deepseek-r1             | ![设置 - 百度](./assets/image-20250206120017418.png)     |
+| 字节火山引擎 | [图文](./DeepSeek%20API%20的获取与对话示例.md#-字节火山引擎-) | https://ark.cn-beijing.volces.com/api/v3          | "deepseek-v3-241226"    | "deepseek-r1-250120"    | ![设置 - 字节](./assets/image-20250208215034817.png)     |
 
 > [!note]
 >
