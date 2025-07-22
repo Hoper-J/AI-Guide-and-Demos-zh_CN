@@ -35,9 +35,17 @@
     - Kaggle：`Setting` -> `Accelerator` -> `选择 GPU`。
     - Colab：`代码执行程序` -> `更改运行时类型` -> `选择 GPU`。
 
-### DeepSeek 使用手册【DOING】
+### ✨ New
 
-> 当前模块置顶，以方便大家索引更新。部分内容将直接由之前的文章（[导论部分](#导论)）重组得来，故存在重复，此模块将暂时专注于 DeepSeek API 的使用，是 OpenAI SDK 相关的通用知识，也可以作为导论 API 部分的拓展。
+> 好久不见，更新一篇 MCP 相关的中间文章，或许会对你有所帮助。
+>
+> 因为还没想好模块标题，所以暂时置顶。
+
+[深入 FastMCP 源码：认识 tool()、resource() 和 prompt() 装饰器](./Guide/深入%20FastMCP%20源码：认识%20tool()、resource()%20和%20prompt()%20装饰器.md)
+
+### DeepSeek 使用手册
+
+> 这部分内容将直接由之前的文章（[导论部分](#导论)）重组得来，故存在重复，此模块将暂时专注于 DeepSeek API 的使用，是 OpenAI SDK 相关的通用知识，也可以作为导论 API 部分的拓展。
 >
 > [DeepSeek API【共享】](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/discussions/6) 
 
@@ -401,10 +409,10 @@ cd AI-Guide-and-Demos-zh_CN
 
 ### 虚拟环境（可选，推荐）
 
-版本不限制，可以更高:
+Python 版本最好 >=3.10:
 
 ```bash
-conda create -n aigc python=3.9
+conda create -n aigc python=3.10
 ```
 
 按`y`回车以继续，等创建完成后，激活虚拟环境:
