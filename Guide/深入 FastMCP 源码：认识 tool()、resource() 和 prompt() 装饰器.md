@@ -36,7 +36,9 @@
 ## 安装库
 
 ```bash
-pip install mcp
+# 项目依赖已在 pyproject.toml 中配置，运行 uv sync 即可安装
+# 文章中重复的 uv add 是旧版本 pip install 的遗留（默认仅配置了 PyTorch 等基础深度学习环境）
+uv add mcp
 ```
 
 ## server.py

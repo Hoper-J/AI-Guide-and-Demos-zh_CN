@@ -1,0 +1,24 @@
+[project]
+name = "ai-guide-and-demos-zh-cn"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = "==3.12.*"
+dependencies = [
+    "accelerate>=1.9.0",
+    "datasets>=4.0.0",
+    "gradio>=5.41.0",
+    "jupyterlab>=4.4.5",
+    "matplotlib>=3.10.5",
+    "mcp>=1.12.3",
+    "notebook>=7.4.5",
+    "numpy>=2.1.3",
+    "openai>=1.99.1",
+    "peft>=0.17.0",
+    "scipy>=1.16.1",
+    "seaborn>=0.13.2",
+    "torch>=2.6",
+    "torchaudio>=2.6",
+    "torchvision>=0.19",
+    "tqdm>=4.67.1",
+    "transformers>=4.55.0",
+]

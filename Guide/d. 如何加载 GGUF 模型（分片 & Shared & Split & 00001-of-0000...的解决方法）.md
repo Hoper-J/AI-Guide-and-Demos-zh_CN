@@ -49,9 +49,11 @@
 命令行执行以下命令：
 
 ```bash
-pip install numpy==1.24.4
-pip install gguf
-pip install --upgrade transformers
+# 项目依赖已在 pyproject.toml 中配置，运行 uv sync 即可安装
+# 文章中重复的 uv add 是旧版本 pip install 的遗留（默认仅配置了 PyTorch 等基础深度学习环境）
+uv add numpy==1.24.4
+uv add gguf
+uv add --upgrade transformers
 ```
 
 ### 加载单个 GGUF 文件
@@ -123,7 +125,9 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
    首先，安装 `huggingface-hub`：
 
    ```bash
-   pip install huggingface-hub
+   # 项目依赖已在 pyproject.toml 中配置，运行 uv sync 即可安装
+   # 文章中重复的 uv add 是旧版本 pip install 的遗留（默认仅配置了 PyTorch 等基础深度学习环境）
+   uv add huggingface-hub
    ```
 
    然后，下载分片文件：
@@ -199,8 +203,10 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
 使用 `psutil` 和 `pynvml` 库来监测内存占用情况，先进行安装：
 
 ```bash
-pip install psutil
-pip install pynvml
+# 项目依赖已在 pyproject.toml 中配置，运行 uv sync 即可安装
+# 文章中重复的 uv add 是旧版本 pip install 的遗留（默认仅配置了 PyTorch 等基础深度学习环境）
+uv add psutil
+uv add pynvml
 ```
 
 然后，在代码中添加内存监控（不用关心这里的代码细节，看结果）：
@@ -406,7 +412,9 @@ CMAKE_ARGS="-DGGML_CUDA=on \
             -DCUDAToolkit_LIBRARY_DIR=${CUDA_HOME}/lib64 \
             -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc" \
 FORCE_CMAKE=1 \
-pip install --upgrade --force-reinstall llama-cpp-python --no-cache-dir --verbose
+# 项目依赖已在 pyproject.toml 中配置，运行 uv sync 即可安装
+# 文章中重复的 uv add 是旧版本 pip install 的遗留（默认仅配置了 PyTorch 等基础深度学习环境）
+uv add --upgrade --force-reinstall llama-cpp-python --no-cache-dir --verbose
 ```
 
 ### 加载单个 GGUF 文件
@@ -462,8 +470,10 @@ llm = Llama(model_path=model_path, additional_files=additional_files)
 安装 `psutil` 和 `pynvml` 库：
 
 ```bash
-pip install psutil
-pip install pynvml
+# 项目依赖已在 pyproject.toml 中配置，运行 uv sync 即可安装
+# 文章中重复的 uv add 是旧版本 pip install 的遗留（默认仅配置了 PyTorch 等基础深度学习环境）
+uv add psutil
+uv add pynvml
 ```
 
 现在，来看看正确的内存占用应该是什么样的，执行：

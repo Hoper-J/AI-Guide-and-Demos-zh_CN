@@ -51,10 +51,12 @@
 ## 环境配置
 
 ```python
-pip install pillow            # 图像处理
-pip install matplotlib        # 绘图
-pip install numpy             # 数组和矩阵操作
-# pip install torch torchvision # 默认已正确安装
+# 项目依赖已在 pyproject.toml 中配置，运行 uv sync 即可安装
+# 文章中重复的 uv add 是旧版本 pip install 的遗留（默认仅配置了 PyTorch 等基础深度学习环境）
+uv add pillow            # 图像处理
+uv add matplotlib        # 绘图
+uv add numpy             # 数组和矩阵操作
+# uv add torch torchvision # 默认已正确安装
 ```
 
 ## 下载用于演示的图片

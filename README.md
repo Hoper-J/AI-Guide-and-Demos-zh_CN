@@ -40,6 +40,11 @@
 > 好久不见，更新一篇 MCP 相关的中间文章，或许会对你有所帮助。
 >
 > 因为还没想好模块标题，所以暂时置顶。
+>
+> 另外，目前项目将在叙述上全面使用 uv 进行环境的配置，后续会出一篇文章对 uv 进行介绍（这是一次并不“友好”的改动，但考虑到其目前已经被广泛应用，「长痛不如短痛」，索性从本项目开始“折腾”，希望能让你熟悉 uv 的使用）。
+>
+> 需要注意的是，因为目前的库版本更迭，或许会出现一些关于版本冲突的报错，计划在 8
+> 月全面更新代码进行修复（当然，复制报错去问 AI 基本都可以临时解决）。
 
 [深入 FastMCP 源码：认识 tool()、resource() 和 prompt() 装饰器](./Guide/深入%20FastMCP%20源码：认识%20tool()、resource()%20和%20prompt()%20装饰器.md)
 
@@ -215,8 +220,8 @@
 
 - **Git**：用于克隆代码仓库。
 - **Wget 和 Curl**：用于下载脚本和文件。
-- **Conda**：用于创建和管理虚拟环境。
 - **pip**：用于安装 Python 依赖包。
+- **uv**：仓库将不再采用 conda 而是全面转为 uv。
 
 ### 安装 Git
 
@@ -227,7 +232,7 @@
   sudo apt-get install git
   ```
 
-- **macOS**：
+- **Mac**：
 
   - 先安装 Homebrew：
 
@@ -254,7 +259,7 @@
   sudo apt-get install wget curl
   ```
 
-- **macOS**：
+- **Mac**：
 
   ```bash
   brew install wget curl
@@ -263,97 +268,6 @@
 - **Windows**：
 
   从 [Wget for Windows](https://eternallybored.org/misc/wget/) 和 [Curl 官方网站](https://curl.se/windows/) 下载并安装。
-
-### 安装 Conda
-
-#### 图形化界面
-
-访问 [Anaconda 官方网站](https://www.anaconda.com/products/distribution#Downloads)，输入邮箱地址后检查邮箱，你应该能看到：
-
-![Anaconda](./Guide/assets/image-20241106150105078.png)
-
-点击 `Download Now`，选择合适的版本并下载（Anaconda 和 Miniconda 都可以）：
-
-![Download](./Guide/assets/image-20241106150214043.png)
-
-#### 命令行安装
-
-- **Linux (Ubuntu)**：
-
-  - **安装 Anaconda**
-
-    访问 [repo.anaconda.com](https://repo.anaconda.com/archive/) 进行版本选择。
-
-    ```bash
-    # 下载 Anaconda 安装脚本（以最新版本为例）
-    wget https://repo.anaconda.com/archive/Anaconda3-2024.10-1-Linux-x86_64.sh
-    
-    # 运行安装脚本
-    bash Anaconda3-2024.10-1-Linux-x86_64.sh
-    
-    # 按照提示完成安装（先回车，空格一直翻页，翻到最后输入 yes，回车）
-    
-    # 安装完成后，刷新环境变量或者重新打开终端
-    source ~/.bashrc
-    ```
-
-  - **安装 Miniconda**（推荐）
-
-    访问 [repo.anaconda.com/miniconda](https://repo.anaconda.com/miniconda/) 进行版本选择。Miniconda 是一个精简版的 Anaconda，只包含 Conda 和 Python。
-
-    ```bash
-    # 下载 Miniconda 安装脚本
-    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-    
-    # 运行安装脚本
-    bash Miniconda3-latest-Linux-x86_64.sh
-    
-    # 按照提示完成安装（先回车，空格一直翻页，翻到最后输入 yes，回车）
-    
-    # 安装完成后，刷新环境变量或者重新打开终端
-    source ~/.bashrc
-    ```
-
-- **macOS**：
-
-  对应替换 Linux 命令中的网址。
-
-  - **安装 Anaconda**
-
-    访问 [repo.anaconda.com](https://repo.anaconda.com/archive/) 进行版本选择。
-
-  - **安装 Miniconda**（推荐）
-
-    访问 [repo.anaconda.com/miniconda](https://repo.anaconda.com/miniconda/) 进行版本选择。
-
-#### 验证安装
-
-在终端中输入以下命令，如果显示版本信息，则说明安装成功。
-
-```bash
-conda --version
-```
-
-#### 配置国内镜像源（可选，建议）
-
-```bash
-cat <<'EOF' > ~/.condarc
-channels:
-  - defaults
-show_channel_urls: true
-default_channels:
-  - https://mirror.nju.edu.cn/anaconda/pkgs/main
-  - https://mirror.nju.edu.cn/anaconda/pkgs/r
-  - https://mirror.nju.edu.cn/anaconda/pkgs/msys2
-custom_channels:
-  conda-forge: https://mirror.nju.edu.cn/anaconda/cloud
-  pytorch: https://mirror.nju.edu.cn/anaconda/cloud
-EOF
-```
-
-> [!note]
->
-> 很多去年可用的镜像源已经不可用，目前其余镜像站配置可以参考南大这个非常 nice 的文档：[镜像使用帮助](https://mirror.nju.edu.cn/mirrorz-help/anaconda/?mirror=NJU)。
 
 ### 安装 pip
 
@@ -366,7 +280,7 @@ EOF
   sudo apt-get install python3-pip
   ```
 
-- **macOS**：
+- **Mac**：
 
   ```bash
   brew install python3
@@ -396,6 +310,56 @@ pip --version
 pip config set global.index-url https://mirrors.aliyun.com/pypi/simple
 ```
 
+### 安装 uv
+
+- **Linux/Mac**：
+
+  ```bash
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+  # 或者 pip install uv
+  ```
+
+  查看目前的 Shell：
+
+  ```bash
+  echo $SHELL
+  ```
+
+  然后将 uv 加到 PATH 中，根据 `echo $SHELL` 的输出选择对应的命令执行：
+
+  - sh, bash, zsh：
+
+    ```bash
+    source $HOME/.local/bin/env
+    ```
+
+  - fish
+
+    ```bash
+    source $HOME/.local/bin/env.fish
+    ```
+
+- **Windows**：
+
+  ```bash
+  powershell -c "irm https://astral.sh/uv/install.ps1 | more"
+  # 或者 pip install uv
+  ```
+
+#### 配置国内镜像源（可选，建议）
+
+```bash
+# 创建配置目录
+mkdir -p ~/.config/uv
+
+# 创建配置文件（Linux/Mac），Windows 在 %APPDATA%\uv\uv.toml
+cat > ~/.config/uv/uv.toml << EOF
+[[index]]
+url = "https://mirrors.aliyun.com/pypi/simple/"
+default = true
+EOF
+```
+
 </details>
 
 ### 克隆仓库项目
@@ -407,55 +371,65 @@ git clone https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN.git
 cd AI-Guide-and-Demos-zh_CN
 ```
 
-### 虚拟环境（可选，推荐）
-
-Python 版本最好 >=3.10:
+### 同步项目依赖
 
 ```bash
-conda create -n aigc python=3.10
+uv sync
 ```
 
-按`y`回车以继续，等创建完成后，激活虚拟环境:
+该命令会自动同步当前项目的主要依赖：
 
-```bash
-conda activate aigc
-```
+- torch>=2.6
+- torchvision>=0.19
+- torchaudio>=2.6
+- ...（详见 `pyproject.toml`）
 
-### 依赖安装
+这样就成功配置好了所有需要的环境，准备开始学习 :) 如果缺少显卡或者系统原因导致无法完全同步，也不用担心，其余依赖在每个文章中会单独列出，可以尝试直接到对应的文章中进行一部分依赖的下载。
 
-接下来需要进行基础的依赖安装，参考 [PyTorch 官网](https://pytorch.org/get-started/locally/)，以 CUDA 11.8 为例（如果显卡不支持11.8，需要更换命令），二选一进行安装：
+### 激活虚拟环境（可选）
 
-```bash
-# pip
-pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
-
-# conda
-conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia
-```
-
-现在我们成功配置好了所有需要的环境，准备开始学习 :) 其余依赖在每个文章中会单独列出。
-
-> [!note]
+>如果不激活的话需要使用 `uv run` + 命令执行，比如：
 >
-> Docker 镜像已经预装了依赖，不用重新安装。
+>```bash
+>uv run python script.py
+>uv run jupyter lab
+>```
 
-### 安装并启动 Jupyter Lab
+- **Linux/Mac**：
 
-先安装 `jupyter-lab`，这比 `jupyter notebook` 好用很多。
+  ```bash
+  source .venv/bin/activate
+  ```
+
+- **Windows**：
+
+  ```bash
+  .venv\Scripts\activate
+  ```
+
+### 使用 Jupyter-Lab
+
+执行下面的命令：
 
 ```bash
-pip install jupyterlab
-```
-
-安装完成后，执行下面的命令：
-
-```bash
-jupyter-lab
+uv run jupyter-lab
 ```
 
 ![image-20240928110805693](./Guide/assets/image-20240928110805693.png)
 
-现在你将可以通过弹出的链接进行访问，一般位于 8888 端口。对于图形化界面，Windows/Linux 摁住 `Ctrl`，mac 按住 `Command`，然后点击链接可以直接跳转。至此，你将获得项目的全貌：
+> [!note]
+>
+> 如果在 AutoDL 租服务器运行的话，建议先注册内核，方便切换版本：
+>
+> ```python
+> UV_DIR=$(dirname $(which uv)) uv run python -m ipykernel install --user --name=ai --display-name="ai" --env PATH "$UV_DIR:$PATH"
+> ```
+>
+> 注册后可以在左上角`内核`->`更改内核`：
+>
+> ![image-20250807230736922](./Guide/assets/image-20250808005910358.png)
+
+可以通过弹出的链接进行访问，一般位于 8888 端口。对于图形化界面，Windows/Linux 按住 `Ctrl`，Mac 按住 `Command`，然后点击链接可以直接跳转。至此，你将获得项目的全貌：
 
 ![image-20240928115726301](./Guide/assets/image-20240928115726301.png)
 
@@ -467,6 +441,8 @@ jupyter-lab
 > 没有安装 Docker 的同学可以阅读文章《[使用 Docker 快速配置深度学习环境（Linux）](./Guide/使用%20Docker%20快速配置深度学习环境（Linux）.md)》，建议初学者阅读《[Docker 基础命令介绍和常见报错解决](./Guide/Docker%20基础命令介绍和常见报错解决.md)》。
 
 ### 镜像介绍
+
+> 未来将更新为 uv 安装。
 
 [所有版本](https://hub.docker.com/repository/docker/hoperj/quickstart/tags)都预装了 `sudo`、`pip`、`conda`、`wget`、`curl` 和 `vim` 等常用工具，且已经配置好 `pip` 和 `conda` 的国内镜像源。同时，集成了 `zsh` 和一些实用的命令行插件（命令自动补全、语法高亮、以及目录跳转工具 `z`）。此外，已预装 `jupyter notebook` 和 `jupyter lab`，设置了其中的默认终端为 `zsh`，方便进行深度学习开发，并优化了容器内的中文显示，避免出现乱码问题。其中还预配置了 Hugging Face 的国内镜像地址。
 
@@ -535,7 +511,7 @@ jupyter-lab
   - `matplotlib`、`seaborn`：数据可视化
   - `scikit-learn`：机器学习工具
 - **深度学习框架**：
-  - `tensorflow`、`tensorflow-addons`：另一种流行的深度学习框架
+  - `tensorflow`：另一种流行的深度学习框架
   - `tf-keras`：Keras 接口的 TensorFlow 实现
 - **NLP 相关库**：
   - `transformers`、`datasets`：Hugging Face 提供的 NLP 工具

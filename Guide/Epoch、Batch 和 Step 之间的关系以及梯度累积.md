@@ -431,7 +431,9 @@ for i, (inputs, targets) in enumerate(dataloader):
 `accelerate` 可以自动管理设备与梯度累积逻辑，先进行安装：
 
 ```python
-pip install accelerate
+# 项目依赖已在 pyproject.toml 中配置，运行 uv sync 即可安装
+# 文章中重复的 uv add 是旧版本 pip install 的遗留（默认仅配置了 PyTorch 等基础深度学习环境）
+uv add accelerate
 ```
 
 **修改如下**[^1]：

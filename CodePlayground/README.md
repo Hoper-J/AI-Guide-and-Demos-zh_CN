@@ -13,26 +13,14 @@
    cd AI-Guide-and-Demos-zh_CN/CodePlayground
    ```
 
-2. 创建并激活虚拟环境（可选）：
+2. 同步项目依赖并激活对应环境：
 
    ```bash
-   conda create -n playground python=3.9
-   conda activate playground
+   uv sync
+   source .venv/bin/activate
    ```
 
 3. 安装依赖
-
-   ### PyTorch 依赖
-
-   选择以下两种方式之一安装 PyTorch：
-
-   ```python
-   # pip
-   pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
-   
-   # conda
-   conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia
-   ```
 
    ### AI Summarizer 依赖
 
@@ -50,14 +38,18 @@
    b. **Python 库**
    
    ```python
-   pip install openai-whisper openai pyyaml librosa srt certifi
-   pip install numpy==1.26.4  # >= 2.0.0 会无法正常执行 summarizer.py
+   # 项目依赖已在 pyproject.toml 中配置，运行 uv sync 即可安装
+   # 文章中重复的 uv add 是旧版本 pip install 的遗留（默认仅配置了 PyTorch 等基础深度学习环境）
+   uv add openai-whisper openai pyyaml librosa srt certifi
+   uv add numpy==1.26.4  # >= 2.0.0 会无法正常执行 summarizer.py
    ```
    
    ### SD LoRA 依赖
    
    ```bash
-   pip install transformers diffusers peft tqdm numpy pyyaml pillow
+   # 项目依赖已在 pyproject.toml 中配置，运行 uv sync 即可安装
+   # 文章中重复的 uv add 是旧版本 pip install 的遗留（默认仅配置了 PyTorch 等基础深度学习环境）
+   uv add transformers diffusers peft tqdm numpy pyyaml pillow
    ```
    
    ### AI Chat 依赖
@@ -67,15 +59,15 @@
    a. **GPTQ 模型文件**
    
    ```bash
-   pip install optimum
+   uv add optimum
    git clone https://github.com/PanQiWei/AutoGPTQ.git && %cd AutoGPTQ
-   pip install -vvv --no-build-isolation -e .
+   uv pip install -vvv --no-build-isolation -e .
    ```
    
    b. **AWQ 模型文件**
    
    ```bash
-   pip install autoawq autoawq-kernels
+   uv add autoawq autoawq-kernels
    ```
    
    c. **GGUF 模型文件**
@@ -93,7 +85,7 @@
             -DCUDAToolkit_LIBRARY_DIR=${CUDA_HOME}/lib64 \
                -DCMAKE_CUDA_COMPILER=${CUDA_HOME}/bin/nvcc" \
    FORCE_CMAKE=1 \
-   pip install --upgrade --force-reinstall llama-cpp-python --no-cache-dir --verbose
+   uv pip install --upgrade --force-reinstall llama-cpp-python --no-cache-dir --verbose
    ```
    
 
@@ -116,7 +108,7 @@
 #### 快速使用
 
 ```bash
-python summarizer.py examples/summarizer.mp4
+uv run python summarizer.py examples/summarizer.mp4
 ```
 
 仓库提供了一个样例视频供你运行，以防止可能存在的选择困难症 :)
@@ -126,7 +118,7 @@ python summarizer.py examples/summarizer.mp4
 你可以通过命令行运行 `summarizer.py`，并指定要处理的文件路径：
 
    ```bash
-python summarizer.py file_path [--api_key YOUR_API_KEY] [--output_dir OUTPUT_DIR] [其他可选参数]
+uv run python summarizer.py file_path [--api_key YOUR_API_KEY] [--output_dir OUTPUT_DIR] [其他可选参数]
    ```
 
    - `file_path`：替换为要处理的文件路径，可以是视频、音频或字幕文件。
@@ -196,7 +188,7 @@ summarizer:
 你可以通过命令行运行 `sd_lora.py`，并根据需要指定参数：
 
 ```bash
-python sd_lora.py [可选参数]
+uv run python sd_lora.py [可选参数]
 ```
 
 默认使用 `config.yaml` 中的配置进行训练和图像生成。
@@ -214,8 +206,8 @@ python sd_lora.py [可选参数]
 
    ```bash
    # 因为已经在 config.yaml 中配置，所以可以不指定参数
-   python sd_lora.py
-   # python sd_lora.py -d ./Datasets/Brad -gp ./Datasets/prompts/validation_prompt.txt
+   uv run python sd_lora.py
+   # uv run python sd_lora.py -d ./Datasets/Brad -gp ./Datasets/prompts/validation_prompt.txt
    ```
 
    - `-d` 或 `--dataset_path`：数据集路径。
@@ -224,7 +216,7 @@ python sd_lora.py [可选参数]
 3. **跳过训练，仅生成图像**，使用 `--no-train` 参数：
 
    ```bash
-   python sd_lora.py --no-train
+   uv run python sd_lora.py --no-train
    ```
 
    请确保在 `args.model_path` 指定的路径下存在已微调的模型权重。
@@ -232,13 +224,13 @@ python sd_lora.py [可选参数]
 4. **跳过图像生成，仅进行训练**，使用 `--no-generate` 参数：
 
    ```bash
-   python sd_lora.py --no-generate
+   uv run python sd_lora.py --no-generate
    ```
 
 5. **指定其他参数**：
 
    ```bash
-   python sd_lora.py -e 500 -b 4 -u 1e-4 -t 1e-5
+   uv run python sd_lora.py -e 500 -b 4 -u 1e-4 -t 1e-5
    ```
 
    - `-e` 或 `--max_train_steps`：总训练步数。
@@ -370,7 +362,7 @@ CodePlayground/
 #### 快速使用
 
 ```bash
-python chat.py <model_path>
+uv run python chat.py <model_path>
 ```
 
 替换 `<model_path>` 为 GPTQ、AWQ 或 GGUF 格式模型的路径，即可开始与模型进行交互。
@@ -378,7 +370,7 @@ python chat.py <model_path>
 以 [DeepSeek-R1-Distill-Qwen-7B-GGUF](https://huggingface.co/bartowski/DeepSeek-R1-Distill-Qwen-7B-GGUF) 为例，加载 Q5_K_L 量化版本：
 
 ```bash
-python chat.py 'bartowski/DeepSeek-R1-Distill-Qwen-7B-GGUF/*Q5_K_L.gguf' --remote
+uv run python chat.py 'bartowski/DeepSeek-R1-Distill-Qwen-7B-GGUF/*Q5_K_L.gguf' --remote
 ```
 
 **注意，暂时仅支持拥有 `tokenizer.chat_template` 属性的模型进行正常对话，对于其他模型，需要自定义 [config.yaml](./config.yaml#L38) 中的 `custom_template` 参数。**
@@ -388,7 +380,7 @@ python chat.py 'bartowski/DeepSeek-R1-Distill-Qwen-7B-GGUF/*Q5_K_L.gguf' --remot
 可以通过命令行运行 `chat.py`，并指定要加载的模型路径：
 
 ```bash
-python chat.py <model_path> [--no_stream] [--max_length 512] [--io history.json] [其他可选参数]
+uv run python chat.py <model_path> [--no_stream] [--max_length 512] [--io history.json] [其他可选参数]
 ```
 
 - `model_path`：模型的名称或本地路径，可以是 GPTQ、AWQ 或 GGUF 格式的模型。
