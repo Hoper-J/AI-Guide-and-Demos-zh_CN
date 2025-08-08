@@ -46,7 +46,8 @@
 > 需要注意的是，因为目前的库版本更迭，或许会出现一些关于版本冲突的报错，计划在 8
 > 月全面更新代码进行修复（当然，复制报错去问 AI 基本都可以临时解决）。
 
-[深入 FastMCP 源码：认识 tool()、resource() 和 prompt() 装饰器](./Guide/深入%20FastMCP%20源码：认识%20tool()、resource()%20和%20prompt()%20装饰器.md)
+- [深入 FastMCP 源码：认识 tool()、resource() 和 prompt() 装饰器](./Guide/深入%20FastMCP%20源码：认识%20tool()、resource()%20和%20prompt()%20装饰器.md)
+- [Claude Code 使用指南：安装与进阶技巧](./Guide/Claude%20Code%20使用指南：安装与进阶技巧.md)
 
 ### DeepSeek 使用手册
 
@@ -421,7 +422,7 @@ uv run jupyter-lab
 >
 > 如果在 AutoDL 租服务器运行的话，建议先注册内核，方便切换版本：
 >
-> ```python
+> ```bash
 > UV_DIR=$(dirname $(which uv)) uv run python -m ipykernel install --user --name=ai --display-name="ai" --env PATH "$UV_DIR:$PATH"
 > ```
 >

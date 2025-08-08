@@ -1,12 +1,13 @@
 [project]
 name = "ai-guide-and-demos-zh-cn"
-version = "0.1.0"
+version = "1.0.0"
 description = "Add your description here"
 requires-python = "==3.12.*"
 dependencies = [
     "accelerate>=1.9.0",
     "datasets>=4.0.0",
     "gradio>=5.41.0",
+    "ipywidgets>=8.1.7",
     "jupyterlab>=4.4.5",
     "matplotlib>=3.10.5",
     "mcp>=1.12.3",
