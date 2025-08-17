@@ -48,6 +48,8 @@
 
 - [深入 FastMCP 源码：认识 tool()、resource() 和 prompt() 装饰器](./Guide/深入%20FastMCP%20源码：认识%20tool()、resource()%20和%20prompt()%20装饰器.md)
 - [Claude Code 使用指南：安装与进阶技巧](./Guide/Claude%20Code%20使用指南：安装与进阶技巧.md)
+  - [Claude Code 必备的用量监控工具：claude-monitor 实践指南](./Guide/Claude%20Code%20必备的用量监控工具：claude-monitor%20实践指南.md)
+
 
 ### DeepSeek 使用手册
 

@@ -1,6 +1,8 @@
 # Claude Code 使用指南：安装与进阶技巧
 
 > 如果你“正好”有一个 Claude 帐号，这篇文章或许能够带来一些启发。
+>
+> **相关文章**：[Claude Code 必备的用量监控工具：claude-monitor 实践指南](./Claude%20Code%20必备的用量监控工具：claude-monitor%20实践指南.md)
 
 ## 目录
 
@@ -361,10 +363,10 @@ Claude Code 不会自觉思考，需要在 Prompt 中加上 `think` 关键词。
 >    # 感觉这次的代码写得不错，先存档
 >    git add .
 >    git commit -m "tmp"
->             
+>                   
 >    # 让 Claude 继续优化
 >    # ...Claude 开始大刀阔斧地改造...
->             
+>                   
 >    # 改的乱七八糟，回滚
 >    git reset --hard HEAD  # 重置已跟踪文件
 >    git clean -fd          # 删除未跟踪文件和目录（可选）
