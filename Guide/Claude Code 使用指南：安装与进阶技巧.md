@@ -33,26 +33,89 @@
 
 ### 环境准备
 
-```bash
-# 更新系统包管理器
-sudo apt-get update
-sudo apt-get install npm
+- **Linux**
 
-# 安装 NVM (Node Version Manager)
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+  ```bash
+  # 更新系统包管理器
+  sudo apt-get update
+  sudo apt-get install npm
+  
+  # 安装 NVM (Node Version Manager)
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+  
+  # 立即启用 NVM（不需要重启终端）
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+  
+  # 设置 Node.js 镜像源
+  export NVM_NODEJS_ORG_MIRROR=https://npmmirror.com/mirrors/node
+  
+  # 安装并使用最新 LTS 版本
+  nvm install --lts
+  nvm use --lts
+  ```
 
-# 立即启用 NVM（不需要重启终端）
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+- **Mac**
 
-# 设置 Node.js 镜像源
-export NVM_NODEJS_ORG_MIRROR=https://npmmirror.com/mirrors/node
+  ```bash
+  # 如果没有安装 Homebrew，取消下面的命令注释
+  # /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  # 使用 Homebrew 安装 nvm
+  brew update
+  brew install nvm
+  
+  # 初始化 nvm（当前会话生效）
+  mkdir -p ~/.nvm
+  export NVM_DIR="$HOME/.nvm"
+  source "$(brew --prefix nvm)/nvm.sh"
+  
+  # 可选：设置 Node.js 镜像（国内建议）
+  export NVM_NODEJS_ORG_MIRROR=https://npmmirror.com/mirrors/node
+  
+  # 安装并使用最新 LTS 版本
+  nvm install --lts
+  nvm use --lts
+  ```
 
-# 安装并使用最新 LTS 版本
-nvm install --lts
-nvm use --lts
-```
+- **Windows（PowerShell）**
+
+  ```powershell
+  # 安装 NVM for Windows
+  winget install --id CoreyButler.NVMforWindows -e --source winget
+  
+  # 关闭并重新打开终端后：
+  
+  # （可选）设置国内镜像
+  nvm node_mirror https://npmmirror.com/mirrors/node/
+  nvm npm_mirror  https://npmmirror.com/mirrors/npm/
+  
+  # 安装并使用 LTS 版本 Node.js
+  nvm install lts
+  nvm use lts
+  ```
+
+  如果 `lts` 别名不可用，先执行：
+
+  ```powershell
+  nvm list available   # 查看可用版本
+  nvm install <LTS版本号>
+  nvm use <LTS版本号>
+  ```
+
+  如果不使用 nvm，也可直接安装 LTS 版 Node：
+
+  ```powershell
+  winget install OpenJS.NodeJS.LTS
+  ```
+
+  后续需要代理时（当前会话生效）：
+
+  ```powershell
+  $env:HTTPS_PROXY = "http://127.0.0.1:7890"
+  $env:HTTP_PROXY  = "http://127.0.0.1:7890"
+  $env:ALL_PROXY   = "socks5://127.0.0.1:7890"
+  ```
 
 ### 安装 Claude Code
 
@@ -363,10 +426,10 @@ Claude Code 不会自觉思考，需要在 Prompt 中加上 `think` 关键词。
 >    # 感觉这次的代码写得不错，先存档
 >    git add .
 >    git commit -m "tmp"
->                   
+>                      
 >    # 让 Claude 继续优化
 >    # ...Claude 开始大刀阔斧地改造...
->                   
+>                      
 >    # 改的乱七八糟，回滚
 >    git reset --hard HEAD  # 重置已跟踪文件
 >    git clean -fd          # 删除未跟踪文件和目录（可选）
