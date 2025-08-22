@@ -50,6 +50,7 @@
 - [Claude Code 使用指南：安装与进阶技巧](./Guide/Claude%20Code%20使用指南：安装与进阶技巧.md)
   - [Claude Code 必备的用量监控工具：claude-monitor 实践指南](./Guide/Claude%20Code%20必备的用量监控工具：claude-monitor%20实践指南.md)
 
+- [Cursor 与 Claude Code Max 5x 订阅体验分享以及建议](./Guide/$125%20订阅撬动%20$2000%20API%20额度：这是我最终选择%20Claude%20Code%20Max%205x%20的理由.md)
 
 ### DeepSeek 使用手册
 

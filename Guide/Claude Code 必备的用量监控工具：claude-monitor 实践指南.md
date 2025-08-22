@@ -17,8 +17,10 @@
 > - PyPI：[claude-monitor](https://pypi.org/project/claude-monitor/)
 > - 许可：MIT License
 >
-> **相关文章**：[Claude Code 使用指南：安装与进阶技巧](./Claude%20Code%20使用指南：安装与进阶技巧.md)
+> **相关文章**：
 >
+> - [Claude Code 使用指南：安装与进阶技巧](./Claude%20Code%20使用指南：安装与进阶技巧.md)
+> - [Cursor 与 Claude Code Max 5x 订阅体验分享以及建议](./$125%20订阅撬动%20$2000%20API%20额度：这是我最终选择%20Claude%20Code%20Max%205x%20的理由.md)
 
 ## 目录
 
@@ -234,7 +236,7 @@ claude-monitor --plan max5  # 可选值：pro / max5 / max20 / custom
 >           continue
 >       if key not in cli_provided_fields:
 >           setattr(settings, key, value)
->               
+>                   
 >   # 若本次显式指定了 plan=custom 且未提供 custom_limit_tokens，则清空历史自定义限额，强制走 P90 估算或回退默认值
 >   if (
 >       "plan" in cli_provided_fields
