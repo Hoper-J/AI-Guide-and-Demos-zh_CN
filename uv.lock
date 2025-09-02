@@ -43,6 +43,8 @@ dependencies = [
     { name = "notebook" },
     { name = "numpy" },
     { name = "openai" },
+    { name = "optimum" },
+    { name = "pandas" },
     { name = "peft" },
     { name = "sacremoses" },
     { name = "scipy" },
@@ -78,6 +80,8 @@ requires-dist = [
     { name = "notebook", specifier = ">=7.4.5" },
     { name = "numpy", specifier = ">=2.1.3" },
     { name = "openai", specifier = ">=1.99.1" },
+    { name = "optimum", specifier = ">=1.27.0" },
+    { name = "pandas", specifier = ">=2.3.1" },
     { name = "peft", specifier = ">=0.17.0" },
     { name = "sacremoses", specifier = ">=0.1.1" },
     { name = "scipy", specifier = ">=1.16.1" },
@@ -1780,6 +1784,22 @@ wheels = [
 ]
 
 [[package]]
+name = "optimum"
+version = "1.27.0"
+source = { registry = "https://mirrors.aliyun.com/pypi/simple/" }
+dependencies = [
+    { name = "huggingface-hub" },
+    { name = "numpy" },
+    { name = "packaging" },
+    { name = "torch" },
+    { name = "transformers" },
+]
+sdist = { url = "https://mirrors.aliyun.com/pypi/packages/f9/58/fd6c82021697ae2f1de710af65fa177ad46a620a10c16974546085d1e7a8/optimum-1.27.0.tar.gz", hash = "sha256:ad80d80de336ca5e1e6b4f5ade824da731a945846208871acd2e2ada91002a7b" }
+wheels = [
+    { url = "https://mirrors.aliyun.com/pypi/packages/98/2d/4978f9b0ddb6a6af12ff71831f78f84e9dd488f401367290d11a92870b97/optimum-1.27.0-py3-none-any.whl", hash = "sha256:11efa8934860d7456704456405a4bd2d3007bcce098c4430d95840dfdb80e16d" },
+]
+
+[[package]]
 name = "orjson"
 version = "3.11.1"
 source = { registry = "https://mirrors.aliyun.com/pypi/simple/" }
@@ -2486,11 +2506,11 @@ wheels = [
 
 [[package]]
 name = "setuptools"
-version = "80.9.0"
+version = "79.0.1"
 source = { registry = "https://mirrors.aliyun.com/pypi/simple/" }
-sdist = { url = "https://mirrors.aliyun.com/pypi/packages/18/5d/3bf57dcd21979b887f014ea83c24ae194cfcd12b9e0fda66b957c69d1fca/setuptools-80.9.0.tar.gz", hash = "sha256:f36b47402ecde768dbfafc46e8e4207b4360c654f1f3bb84475f0a28628fb19c" }
+sdist = { url = "https://mirrors.aliyun.com/pypi/packages/bb/71/b6365e6325b3290e14957b2c3a804a529968c77a049b2ed40c095f749707/setuptools-79.0.1.tar.gz", hash = "sha256:128ce7b8f33c3079fd1b067ecbb4051a66e8526e7b65f6cec075dfc650ddfa88" }
 wheels = [
-    { url = "https://mirrors.aliyun.com/pypi/packages/a3/dc/17031897dae0efacfea57dfd3a82fdd2a2aeb58e0ff71b77b87e44edc772/setuptools-80.9.0-py3-none-any.whl", hash = "sha256:062d34222ad13e0cc312a4c02d73f059e86a4acbfbdea8f8f76b28c99f306922" },
+    { url = "https://mirrors.aliyun.com/pypi/packages/0d/6d/b4752b044bf94cb802d88a888dc7d288baaf77d7910b7dedda74b5ceea0c/setuptools-79.0.1-py3-none-any.whl", hash = "sha256:e147c0549f27767ba362f9da434eab9c5dc0045d5304feb602a0af001089fc51" },
 ]
 
 [[package]]
