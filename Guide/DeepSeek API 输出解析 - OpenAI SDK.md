@@ -206,7 +206,7 @@ pprint(completion.model_dump())
   > ```python
   > def print_chat_usage(completion, input_cost=2.0, output_cost=8.0, cache_hit_cost=0.5):
   >      """
-  >      参数：
+  >      参数:
   >     - input_cost: 输入价格（元/百万 Tokens）
   >     - output_cost: 输出价格（元/百万 Tokens）
   >     - cache_hit_cost: 缓存命中价格（当平台不支持时自动退化到全价模式）
@@ -353,10 +353,10 @@ pprint(completion.model_dump())
   > 
   > def parse_reasoner_response(completion):
   >     """
-  >     参数：
+  >     参数:
   >     - completion (object): API 返回的对象
   >     
-  >     返回：
+  >     返回:
   >     - (reasoning_content, reply_content)
   >     
   >     处理两种平台格式：

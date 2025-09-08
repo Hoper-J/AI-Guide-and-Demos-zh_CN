@@ -38,10 +38,10 @@ def get_file_type(file_path):
     根据文件扩展名判断文件类型。
 
     参数:
-    - file_path (str): 文件的路径。
-
+        file_path (str): 文件的路径
+    
     返回:
-    - str: 文件类型，返回 'video', 'audio', 'subtitle' 或 'unknown'。
+        str: 文件类型，返回 'video', 'audio', 'subtitle' 或 'unknown'
     """
     ext = os.path.splitext(file_path)[1].lower()
     if ext in ['.mp4', '.avi', '.mov', '.mkv', '.flv']:
@@ -58,12 +58,12 @@ def video_to_audio(video_path, audio_path=None):
     使用 ffmpeg 将视频文件转换为音频文件（WAV 格式）。
 
     参数:
-    - video_path (str): 视频文件的路径。
-    - audio_path (str): 保存音频文件的路径。如果未指定，将使用视频文件名并保存为同名的 WAV 文件。
-
+        video_path (str): 视频文件的路径
+        audio_path (str): 保存音频文件的路径。如果未指定，将使用视频文件名并保存为同名的 WAV 文件
+    
     返回:
-    - str: 转换后的音频文件路径。
-    - None: 如果转换失败，返回 None。
+        str: 转换后的音频文件路径
+        None: 如果转换失败，返回 None
     """
     try:
         # 如果未指定 audio_path，则使用视频文件名生成音频文件名
@@ -85,14 +85,14 @@ def transcribe_audio(audio_path, subtitle_path, decode_options, model_name="medi
     使用 Whisper 模型转录音频，并保存为字幕文件（SRT 格式）。
 
     参数:
-    - audio_path (str): 音频文件的路径。
-    - subtitle_path (str): 要保存的字幕文件的路径。
-    - decode_options (dict): Whisper 模型的解码选项，如语言、初始提示、温度等。
-    - model_name (str): Whisper 模型的名称（默认为 "medium"）。
-
+        audio_path (str): 音频文件的路径
+        subtitle_path (str): 要保存的字幕文件的路径
+        decode_options (dict): Whisper 模型的解码选项，如语言、初始提示、温度等
+        model_name (str): Whisper 模型的名称（默认为 "medium"）
+    
     返回:
-    - str: 转录的字幕文件路径。
-    - None: 如果转录失败，返回 None。
+        str: 转录的字幕文件路径
+        None: 如果转录失败，返回 None
     """
     try:
         # 设置 SSL 证书路径
@@ -141,10 +141,10 @@ def format_timestamp(timestamp):
     格式化时间戳，去掉小数点后部分。
 
     参数:
-    - timestamp (datetime.timedelta): Whisper 模型生成的时间戳。
+        timestamp (datetime.timedelta): Whisper 模型生成的时间戳
 
     返回:
-    - str: 去掉小数点后部分的时间戳，格式为 'HH:MM:SS'。
+        str: 去掉小数点后部分的时间戳，格式为 'HH:MM:SS'
     """
     # 去掉小数点后部分的时间
     formatted_timestamp = str(timestamp).split('.')[0]  # 只保留秒之前的部分
@@ -155,12 +155,12 @@ def read_subtitle(file_path, timestamped=False):
     读取字幕文件内容，并根据参数决定是否包含时间信息。
     
     参数:
-    - file_path (str): 字幕文件的路径。
-    - timestamped (bool): 如果为 True，返回包含时间戳的字幕文本，默认为 False。
+        file_path (str): 字幕文件的路径
+        timestamped (bool): 如果为 True，返回包含时间戳的字幕文本，默认为 False
 
     返回:
-    - list 或 str: 如果 timestamped=True，返回带有时间信息的字幕列表；否则返回纯文本字符串。
-    - None: 如果读取失败，返回 None。
+        list | str: 若 timestamped=True，返回带有时间信息的字幕列表；否则返回纯文本字符串
+        None: 如果读取失败，返回 None
     """
     try:
         # 打开文件并读取内容
@@ -197,16 +197,16 @@ def summarize_text(text, client, timestamped=False, model="qwen-vl-max-0809", ll
     只是使用 Prompt 指导模型生成摘要。即（美名其曰）：In-context Learning.
 
     参数:
-    - text (str): 要生成摘要的字幕或文本内容。
-    - client (OpenAI): OpenAI 客户端实例。
-    - timestamped (bool): 是否基于时间戳生成摘要，默认为 False。
-    - model (str): 使用的 OpenAI 模型名称，默认为 'qwen-vl-max-0809'。
-    - llm_temperature (float): 生成摘要时的温度，默认为 0.2。
-    - max_tokens (int): 生成摘要时的最大 token 数，默认为 1000。
+        text (str): 要生成摘要的字幕或文本内容
+        client (OpenAI): OpenAI 客户端实例
+        timestamped (bool): 是否基于时间戳生成摘要，默认为 False
+        model (str): 使用的 OpenAI 模型名称，默认为 'qwen-vl-max-0809'
+        llm_temperature (float): 生成摘要时的温度，默认为 0.2
+        max_tokens (int): 生成摘要时的最大 token 数，默认为 1000
 
     返回:
-    - str: 生成的摘要文本。
-    - None: 如果生成摘要失败，返回 None。
+        str: 生成的摘要文本
+        None: 如果生成摘要失败，返回 None
     """
     try:
         if timestamped:
@@ -264,18 +264,18 @@ def process_file(file_path, client, output_dir=None, timestamped=False, model_na
     根据文件类型处理文件并生成摘要。处理包括视频文件转换为音频、音频转录为字幕等。
 
     参数:
-    - file_path (str): 要处理的文件路径。
-    - client (OpenAI): OpenAI 客户端实例。
-    - output_dir (str): 保存生成文件的目录。如果为 None，保存到当前文件夹。
-    - timestamped (bool): 如果为 True，生成包含时间戳的摘要，默认为 False。
-    - model_name (str): Whisper 模型的名称，默认为 "medium"。
-    - language (str): Whisper 模型的转录语言，默认为 "zh"。
-    - whisper_temperature (float): 音频转字幕时的温度，默认为 0.2。
-    - llm_temperature (float): 生成摘要时的温度，默认为 0.2。
-    - max_tokens (int): 生成摘要时的最大 token 数，默认为 1000。
+        file_path (str): 要处理的文件路径
+        client (OpenAI): OpenAI 客户端实例
+        output_dir (str | None): 保存生成文件的目录。None 表示保存到当前文件夹
+        timestamped (bool): 若为 True，生成包含时间戳的摘要，默认为 False
+        model_name (str): Whisper 模型名称，默认为 "medium"
+        language (str): Whisper 模型的转录语言，默认为 "zh"
+        whisper_temperature (float): 音频转字幕时的温度，默认为 0.2
+        llm_temperature (float): 生成摘要时的温度，默认为 0.2
+        max_tokens (int): 生成摘要时的最大 token 数，默认为 1000
 
     返回:
-    - str: 生成的摘要文本或错误消息。
+        str: 生成的摘要文本或错误消息
     """
     if output_dir is None:
         output_dir = os.getcwd()  # 默认当前目录

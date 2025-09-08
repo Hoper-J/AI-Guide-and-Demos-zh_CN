@@ -7,11 +7,11 @@ def load_config(config_file='config.yaml', script_name='summarizer') -> dict:
     从 YAML 配置文件中加载指定脚本的默认配置。
     
     参数:
-    - config_file (str): 配置文件的路径，默认为 'config.yaml'。
-    - script_name (str): 当前脚本的名称，用于区分配置项。
+        config_file (str): 配置文件的路径，默认为 'config.yaml'
+        script_name (str): 当前脚本的名称，用于区分配置项
 
     返回:
-    - dict: 当前脚本的配置。
+        dict: 当前脚本的配置
     """
     try:
         with open(config_file, 'r', encoding='utf-8') as file:
@@ -30,9 +30,9 @@ def save_config(config, config_file='config.yaml', script_name='summarizer'):
     将配置保存到 YAML 文件中。如果文件已存在，则更新其中的内容。
     
     参数:
-    - config (dict): 要保存的配置。
-    - config_file (str): 配置文件的路径，默认为 'config.yaml'。
-    - script_name (str): 当前脚本的名称，用于区分配置项。
+        config (dict): 要保存的配置
+        config_file (str): 配置文件的路径，默认为 'config.yaml'
+        script_name (str): 当前脚本的名称，用于区分配置项
     """
     try:
         if os.path.exists(config_file):
@@ -55,7 +55,7 @@ def get_api_key(config, config_file='config.yaml', script_name='summarizer') -> 
     验证密钥是否有效，如果无效则提示重新输入。
 
     返回:
-    - str: 验证后的 API 密钥。
+        str: 验证后的 API 密钥
     """
     from openai import OpenAI
 

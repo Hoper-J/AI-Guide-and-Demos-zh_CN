@@ -24,9 +24,10 @@ class Message(BaseModel):
 
 
 class UserMessage(Message):
-    """来自用户的消息
+    """
+    来自用户的消息
 
-    注意：role 字段允许 "user" 或 "assistant"，默认为 "user"
+    注意: role 字段允许 "user" 或 "assistant"，默认为 "user"
     """
     role: Literal["user", "assistant"] = "user"
 
@@ -35,9 +36,10 @@ class UserMessage(Message):
 
 
 class AssistantMessage(Message):
-    """来自助手的消息
+    """
+    来自助手的消息
 
-    注意：role 字段允许 "user" 或 "assistant"，默认为 "assistant"
+    注意: role 字段允许 "user" 或 "assistant"，默认为 "assistant"
     """
     role: Literal["user", "assistant"] = "assistant"
 

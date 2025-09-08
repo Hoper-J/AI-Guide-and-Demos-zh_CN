@@ -9,7 +9,7 @@ class EnvironmentManager:
         初始化环境管理器，并加载配置文件。
         
         参数:
-        - config_file (str): 配置文件路径，默认为 'environment.yaml'。
+            config_file (str): 配置文件路径，默认为 'environment.yaml'
         """
         self.config = self.load_config(config_file)
         print("环境管理器已初始化。")
@@ -19,10 +19,10 @@ class EnvironmentManager:
         加载 YAML 配置文件。
         
         参数:
-        - config_file (str): 配置文件路径。
+            config_file (str): 配置文件路径
         
         返回:
-        - dict: 配置字典。
+            dict: 配置字典
         """
         try:
             with open(config_file, 'r', encoding='utf-8') as file:
@@ -39,9 +39,9 @@ class EnvironmentManager:
         检查是否已安装模块并提供安装提示。
         
         参数:
-        - module_name (str): 模块名称。
-        - install_instructions (str): 如果未安装模块时，显示的安装指引。
-        - required (bool): 是否强制要求安装，如果是，则在缺失时退出。
+            module_name (str): 模块名称
+            install_instructions (str): 如果未安装模块时，显示的安装指引
+            required (bool): 是否强制要求安装，如果是，则在缺失时退出
         """
         try:
             __import__(module_name)
@@ -129,10 +129,10 @@ class EnvironmentManager:
         """
         根据传入的模型路径来判断需要检查哪些依赖。
         例如:
-          - GGUF: 只需要 llama-cpp-python
-          - GPTQ: 需要 auto_gptq
-          - AWQ:  需要 autoawq
-          - 其他普通模型: 只要安装了 transformers/pytorch 即可
+            GGUF: 只需要 llama-cpp-python
+            GPTQ: 需要 auto_gptq
+            AWQ: 需要 autoawq
+            其他普通模型: 只要安装了 transformers/pytorch 即可
         """
         print("⚙️ 根据模型类型检查依赖...")
         self.check_pytorch_transformers()

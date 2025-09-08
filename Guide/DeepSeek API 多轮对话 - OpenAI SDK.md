@@ -247,7 +247,7 @@ import os
 class ChatSession:
     def __init__(self, client, system_message="You are a helpful assistant."):
         """
-        参数：
+        参数:
         - client (openai.OpenAI): OpenAI 客户端实例
         - system_message (str): 系统消息，用于设定对话背景
         """
@@ -266,9 +266,9 @@ class ChatSession:
     def get_response(self, user_input):
         """
         添加用户消息，调用 API 获取回复，并将回复加入历史记录
-        参数：
+        参数:
         - user_input (str): 用户输入的消息
-        返回：
+        返回:
         - content (str)：模型的回复内容
         """
         self.append_message('user', user_input)
@@ -488,7 +488,7 @@ import os
 class ReasonerSession:
     def __init__(self, client, system_message="You are a helpful assistant."):
         """
-        参数：
+        参数:
         - client (openai.OpenAI): OpenAI 客户端实例
         - system_message (str): 系统消息，用于设定对话背景
         """
@@ -507,9 +507,9 @@ class ReasonerSession:
     def get_response(self, user_input):
         """
         添加用户消息，调用 API 获取思维链和回复，并将回复加入历史记录
-        参数：
+        参数:
         - user_input (str): 用户输入的消息
-        返回：
+        返回:
         - (reasoning_content, content) (tuple)：模型的推理过程和回复
         """
         # 1. 记录用户输入

@@ -153,7 +153,7 @@ def debug_func_metadata(
             schema = arguments_model.model_json_schema(by_alias=True)
             print_json(schema, f"{arguments_model_name} JSON Schema")
         except Exception as e:
-       [I     print(f"❌ Schema 生成失败: {e}")
+            print(f"❌ Schema 生成失败: {e}")
 
         # 步骤4: 处理返回值（完全按照原版本逻辑）
         print(f"\n🎯 返回值处理:")

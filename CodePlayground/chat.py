@@ -36,10 +36,10 @@ class ChatSession:
         初始化对话会话。
 
         参数:
-        - messages: 已加载的对话历史，默认为空列表。
-        - no_stream (bool): 是否禁用流式输出。
-        - history_path (str): 对话历史文件的路径。
-        - output_path (str): 对话历史保存的文件路径。
+            messages: 已加载的对话历史，默认为空列表
+            no_stream (bool): 是否禁用流式输出
+            history_path (str): 对话历史文件的路径
+            output_path (str): 对话历史保存的文件路径
         """
         self.messages = messages or self.load_history(history_path)
         self.no_stream = no_stream
@@ -50,10 +50,10 @@ class ChatSession:
         加载对话历史记录。
 
         参数:
-        - history_path (str): 对话历史文件的路径。
-
+            history_path (str): 对话历史文件的路径
+        
         返回:
-        - list: 已加载的对话历史，默认为空列表。
+            list: 已加载的对话历史，默认为空列表
         """
         if history_path and os.path.exists(history_path):
             try:
@@ -74,8 +74,8 @@ class ChatSession:
         添加一条消息到会话中。
 
         参数:
-        - role (str): 消息角色，通常为 'user' 或 'assistant'。
-        - content (str): 消息内容。
+            role (str): 消息角色，通常为 'user' 或 'assistant'
+            content (str): 消息内容
         """
         self.messages.append({"role": role, "content": content})
 
@@ -96,8 +96,8 @@ class ChatSession:
         处理用户输入，包括捕获 EOF 输入和退出命令。
 
         返回:
-        - str: 用户输入的文本。
-        - bool: 是否应该终止会话。
+            str: 用户输入的文本
+            bool: 是否应该终止会话
         """
         try:
             user_input = input("user: ").strip()
@@ -116,7 +116,7 @@ class ChatSession:
         这是一个抽象方法，需要在子类中实现。
 
         参数:
-        - user_input (str): 用户输入的文本。
+            user_input (str): 用户输入的文本
         """
         raise NotImplementedError("子类必须实现 get_response 方法。")
 
@@ -154,11 +154,11 @@ class LlamaChatSession(ChatSession):
         初始化 Llama 对话会话。
 
         参数:
-        - llm: Llama 模型实例。
-        - max_length (int): 生成文本的最大长度。
-        - no_stream (bool): 是否禁用流式输出。
-        - history_path (str): 对话历史文件的路径。
-        - output_path (str): 对话历史保存的文件路径。
+            llm: Llama 模型实例
+            max_length (int): 生成文本的最大长度
+            no_stream (bool): 是否禁用流式输出
+            history_path (str): 对话历史文件的路径
+            output_path (str): 对话历史保存的文件路径
         """
         super().__init__(no_stream=no_stream, history_path=history_path, output_path=output_path)
         self.llm = llm
@@ -169,10 +169,10 @@ class LlamaChatSession(ChatSession):
         获取 Llama 模型对用户输入的响应（支持流式输出）。
 
         参数:
-        - user_input (str): 用户输入的文本。
-
+            user_input (str): 用户输入的文本
+        
         返回:
-        - response (str): 完整的回复文本。
+            response (str): 完整的回复文本
         """
         self._append_user_message(user_input)
 
@@ -200,11 +200,11 @@ class LlamaChatSession(ChatSession):
     def _handle_stream_output(self, output):
         """
         处理流式输出，将生成的内容逐步打印出来，并收集完整的回复。
-    
-        参数：
+
+        参数:
             output: 生成器对象，来自 create_chat_completion 的流式输出。
-    
-        返回：
+
+        返回:
             response: 完整的回复文本。
         """
         response = ""
@@ -226,13 +226,13 @@ class TransformersChatSession(ChatSession):
         初始化 Transformers 对话会话。
 
         参数:
-        - model: Transformers 模型实例。
-        - tokenizer: 模型的分词器。
-        - max_length (int): 生成文本的最大长度。
-        - no_stream (bool): 是否禁用流式输出。
-        - history_path (str): 对话历史文件的路径。
-        - output_path (str): 对话历史保存的文件路径。
-        - custom_template (str): 自定义对话模板。
+            model: Transformers 模型实例
+            tokenizer: 模型的分词器
+            max_length (int): 生成文本的最大长度
+            no_stream (bool): 是否禁用流式输出
+            history_path (str): 对话历史文件的路径
+            output_path (str): 对话历史保存的文件路径
+            custom_template (str): 自定义对话模板
         """
         from transformers import TextStreamer
         super().__init__(no_stream=no_stream, history_path=history_path, output_path=output_path)
@@ -255,10 +255,10 @@ class TransformersChatSession(ChatSession):
         获取 Transformers 模型对用户输入的响应（支持流式输出）。
 
         参数:
-        - user_input (str): 用户输入的文本。
-
+            user_input (str): 用户输入的文本
+        
         返回:
-        - response (str): 完整的回复文本。
+            response (str): 完整的回复文本
         """
         self._append_user_message(user_input)
 
@@ -293,15 +293,15 @@ def create_chat_session(model_name_or_path, max_length, no_stream, history_path,
     根据模型路径和类型创建适当的 ChatSession 实例。
 
     参数:
-    - model_name_or_path (str): 模型的名称或本地路径。
-    - max_length (int): 生成文本的最大长度。
-    - no_stream (bool): 是否禁用流式输出。
-    - history_path (str): 对话历史的输入文件路径（可选）。
-    - output_path (str): 对话历史的保存路径。
-    - remote (bool): 是否远程加载 GGUF 模型。
+        model_name_or_path (str): 模型的名称或本地路径
+        max_length (int): 生成文本的最大长度
+        no_stream (bool): 是否禁用流式输出
+        history_path (str): 对话历史的输入文件路径（可选）
+        output_path (str): 对话历史的保存路径
+        remote (bool): 是否远程加载 GGUF 模型
 
     返回:
-    - ChatSession: 适当的 ChatSession 实例（LlamaChatSession 或 TransformersChatSession）。
+        ChatSession: 适当的 ChatSession 实例（LlamaChatSession 或 TransformersChatSession）
     """
     print(f"正在加载模型: {model_name_or_path}")
     is_gguf = model_name_or_path.endswith('.gguf')
@@ -378,7 +378,7 @@ def configure_logging(verbose):
     配置日志输出和警告过滤。
 
     参数:
-    - verbose (bool): 是否启用详细日志。
+        verbose (bool): 是否启用详细日志
     """
     from transformers import logging as transformers_logging
     if verbose:

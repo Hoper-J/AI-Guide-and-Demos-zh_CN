@@ -54,13 +54,13 @@ class Text2ImageDataset(torch.utils.data.Dataset):
     你可以根据需求定制这个类，例如适配特定格式的数据集或更改数据增强方法，保持返回形式一致就可以直接用于训练。
 
     参数:
-    - images_folder: str, 图像文件夹路径
-    - captions_folder: str, 标注文件夹路径
-    - transform: function, 将原始图像转换为 torch.Tensor
-    - tokenizer: CLIPTokenizer, 将文本标注转为 token ids
-
+        images_folder (str): 图像文件夹路径
+        captions_folder (str): 标注文件夹路径
+        transform (Callable): 将原始图像转换为 torch.Tensor 的变换函数
+        tokenizer (CLIPTokenizer): 将文本标注转为 token ids
+    
     返回:
-    - (image_tensor, input_ids): 一个包含图像 Tensor 和对应文本 token ids 的元组。
+        (image_tensor, input_ids): 一个包含图像 Tensor 和对应文本 token ids 的元组
     """
     def __init__(self, images_folder, captions_folder, transform, tokenizer):
         # 获取所有图像文件路径
@@ -110,18 +110,18 @@ def prepare_lora_model(lora_config, pretrained_model_name_or_path, model_path, w
     加载完整的 Stable Diffusion 模型，包括 LoRA 层。
 
     参数:
-    - lora_config: LoraConfig, LoRA 的配置对象
-    - pretrained_model_name_or_path: str, Hugging Face 上的模型名称或路径
-    - model_path: str, 预训练模型的路径
-    - weight_dtype: torch.dtype, 模型权重的数据类型
-    - resume: bool, 是否从上一次训练中恢复
-
+        lora_config (LoraConfig): LoRA 的配置对象
+        pretrained_model_name_or_path (str): Hugging Face 上的模型名称或路径
+        model_path (str): 预训练模型的路径
+        weight_dtype (torch.dtype): 模型权重的数据类型
+        resume (bool): 是否从上一次训练中恢复
+    
     返回:
-    - tokenizer: CLIPTokenizer
-    - noise_scheduler: DDPMScheduler
-    - unet: UNet2DConditionModel
-    - vae: AutoencoderKL
-    - text_encoder: CLIPTextModel
+        tokenizer (CLIPTokenizer)
+        noise_scheduler (DDPMScheduler)
+        unet (UNet2DConditionModel)
+        vae (AutoencoderKL)
+        text_encoder (CLIPTextModel)
     """
     # 加载噪声调度器
     noise_scheduler = DDPMScheduler.from_pretrained(pretrained_model_name_or_path, subfolder="scheduler")
@@ -196,13 +196,13 @@ def prepare_optimizer(unet, text_encoder, unet_learning_rate=5e-4, text_encoder_
     为 UNet 和文本编码器的可训练参数分别设置优化器，并指定不同的学习率。
 
     参数:
-    - unet: UNet2DConditionModel, Hugging Face 的 UNet 模型
-    - text_encoder: CLIPTextModel, Hugging Face 的文本编码器
-    - unet_learning_rate: float, UNet 的学习率
-    - text_encoder_learning_rate: float, 文本编码器的学习率
+        unet (UNet2DConditionModel): Hugging Face 的 UNet 模型
+        text_encoder (CLIPTextModel): Hugging Face 的文本编码器
+        unet_learning_rate (float): UNet 的学习率
+        text_encoder_learning_rate (float): 文本编码器的学习率
 
     返回:
-    - 优化器 Optimizer
+        torch.optim.Optimizer: 优化器实例
     """
     # 筛选出 UNet 中需要训练的 LoRA 层参数
     unet_lora_layers = [p for p in unet.parameters() if p.requires_grad]
@@ -239,10 +239,10 @@ def load_validation_prompts(validation_prompt_path):
     加载验证提示文本。
     
     参数:
-    - validation_prompt_path: str, 验证提示文件的路径，每一行对应一个 prompt，参考示例文件
+        validation_prompt_path (str): 验证提示文件的路径，每一行对应一个 prompt，参考示例文件
     
     返回:
-    - validation_prompt: list, prompt 列表
+        list: prompt 列表
     """
     with open(validation_prompt_path, "r", encoding="utf-8") as f:
         validation_prompt = [line.strip() for line in f.readlines()]
@@ -253,15 +253,15 @@ def generate_images(pipeline, prompts, num_inference_steps=50, guidance_scale=7.
     使用 DiffusionPipeline 生成图像，保存到指定文件夹并返回生成的图像列表。
 
     参数:
-    - pipeline: DiffusionPipeline, 已加载并配置好的 Pipeline
-    - prompts: list, 文本提示列表
-    - num_inference_steps: int, 推理步骤数
-    - guidance_scale: float, 指导尺度
-    - save_folder: str, 保存生成图像的文件夹路径
-    - generator: torch.Generator, 控制生成随机数的种子
+        pipeline (DiffusionPipeline): 已加载并配置好的 Pipeline
+        prompts (list): 文本提示列表
+        num_inference_steps (int): 推理步骤数
+        guidance_scale (float): 指导尺度
+        save_folder (str): 保存生成图像的文件夹路径
+        generator (torch.Generator | None): 控制生成随机数的种子
 
     返回:
-    - generated_images: list, 生成的 PIL 图像对象列表
+        list: 生成的 PIL 图像对象列表
     """
     print("🎨 正在生成图像...")
     os.makedirs(save_folder, exist_ok=True)

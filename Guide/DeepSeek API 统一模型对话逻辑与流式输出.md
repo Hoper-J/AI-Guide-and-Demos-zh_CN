@@ -61,7 +61,7 @@ import os
 class ChatSession:
     def __init__(self, client, model="deepseek-chat", system_message="You are a helpful assistant."):
         """
-        参数：
+        参数:
         - client (openai.OpenAI): OpenAI 客户端实例
         - model (str): 模型名称（如 'deepseek-chat' 或 'deepseek-reasoner'），默认为 'deepseek-chat'
         - system_message (str): 系统消息，用于设定对话背景，默认为 'You are a helpful assistant.'
@@ -82,7 +82,7 @@ class ChatSession:
     def get_response(self, user_input):
         """
         添加用户消息，调用 API 获取回复，并返回推理过程和回复内容
-        参数：
+        参数:
         - user_input (str): 用户输入的消息
         返回：
         - (reasoning_content, content) (tuple): 推理过程（仅推理模型有）和回复内容
@@ -117,7 +117,7 @@ import os
 class ChatSession:
     def __init__(self, api_key=None, base_url="https://api.deepseek.com", model="deepseek-chat", system_message="You are a helpful assistant."):
         """
-        参数：
+        参数:
         - api_key (str): 平台的 API Key，默认从环境变量 `DEEPSEEK_API_KEY` 读取
         - base_url (str): API 请求地址，默认为 DeepSeek 官方平台
         - model (str): 模型名称（如 'deepseek-chat' 或 'deepseek-reasoner'），默认为 'deepseek-chat'
@@ -152,7 +152,7 @@ class ChatSession:
         添加用户消息，调用 API 获取回复，并返回推理过程和回复内容
         参数：
         - user_input (str): 用户输入的消息
-        返回：
+        返回:
         - (reasoning_content, content) (tuple): 推理过程（仅推理模型有）和回复内容
         """
         # 记录用户输入
