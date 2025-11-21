@@ -49,8 +49,6 @@
 命令行执行以下命令：
 
 ```bash
-# 项目依赖已在 pyproject.toml 中配置，运行 uv sync 即可安装
-# 文章中重复的 uv add 是旧版本 pip install 的遗留（默认仅配置了 PyTorch 等基础深度学习环境）
 uv add numpy==1.24.4
 uv add gguf
 uv add --upgrade transformers
@@ -125,8 +123,6 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
    首先，安装 `huggingface-hub`：
 
    ```bash
-   # 项目依赖已在 pyproject.toml 中配置，运行 uv sync 即可安装
-   # 文章中重复的 uv add 是旧版本 pip install 的遗留（默认仅配置了 PyTorch 等基础深度学习环境）
    uv add huggingface-hub
    ```
 
@@ -203,8 +199,6 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
 使用 `psutil` 和 `pynvml` 库来监测内存占用情况，先进行安装：
 
 ```bash
-# 项目依赖已在 pyproject.toml 中配置，运行 uv sync 即可安装
-# 文章中重复的 uv add 是旧版本 pip install 的遗留（默认仅配置了 PyTorch 等基础深度学习环境）
 uv add psutil
 uv add pynvml
 ```
@@ -412,8 +406,6 @@ CMAKE_ARGS="-DGGML_CUDA=on \
             -DCUDAToolkit_LIBRARY_DIR=${CUDA_HOME}/lib64 \
             -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc" \
 FORCE_CMAKE=1 \
-# 项目依赖已在 pyproject.toml 中配置，运行 uv sync 即可安装
-# 文章中重复的 uv add 是旧版本 pip install 的遗留（默认仅配置了 PyTorch 等基础深度学习环境）
 uv add --upgrade --force-reinstall llama-cpp-python --no-cache-dir --verbose
 ```
 
@@ -470,8 +462,6 @@ llm = Llama(model_path=model_path, additional_files=additional_files)
 安装 `psutil` 和 `pynvml` 库：
 
 ```bash
-# 项目依赖已在 pyproject.toml 中配置，运行 uv sync 即可安装
-# 文章中重复的 uv add 是旧版本 pip install 的遗留（默认仅配置了 PyTorch 等基础深度学习环境）
 uv add psutil
 uv add pynvml
 ```

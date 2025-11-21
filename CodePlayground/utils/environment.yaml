@@ -1,38 +1,36 @@
 pytorch:
   install_instructions: |
-    # 项目依赖已在 pyproject.toml 中配置，运行 uv sync 即可安装
-    # 文章中重复的 uv add 是旧版本 pip install 的遗留（默认仅配置了 PyTorch 等基础深度学习环境）
-    uv add torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+    uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 
 transformers:
   install_instructions: |
-    uv add transformers
+    uv pip install transformers
 
 autogptq:
   install_instructions: |
     1. 如果仅在 CPU 上运行，请使用：
-       uv add auto-gptq
+       uv pip install auto-gptq
     2. 如果希望启用 CUDA 支持，执行命令：
-       uv add auto-gptq --no-build-isolation
+       uv pip install auto-gptq --no-build-isolation
        或从源码安装：
        git clone https://github.com/PanQiWei/AutoGPTQ.git && cd AutoGPTQ
        uv pip install -vvv --no-build-isolation -e .
   cuda_warning: |
     警告：当前安装的 auto-gptq 版本可能不支持 CUDA（但不影响加载模型）。
     可以考虑重新安装以启用 CUDA 增加推理速度。
-    1. 卸载当前版本：uv remove auto-gptq
+    1. 卸载当前版本：uv pip uninstall auto-gptq
     2. 从源码安装：
        git clone https://github.com/PanQiWei/AutoGPTQ.git && cd AutoGPTQ
        uv pip install -vvv --no-build-isolation -e .
 
 autoawq:
   install_instructions: |
-    uv add autoawq autoawq-kernels
+    uv pip install autoawq autoawq-kernels
 
 llama_cpp:
   install_instructions: |
     1. 如果仅在 CPU 上运行，请使用：
-       uv add llama-cpp-python
+       uv pip install llama-cpp-python
     2. 如果希望启用 GPU 加速，请确保系统已安装 CUDA（可通过 `nvcc --version` 检查）。
        然后安装（设置 CUDA_HOME 参阅：https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/blob/master/Guide/19b.%20从加载到对话：使用%20Llama-cpp-python%20本地运行量化%20LLM%20大模型（GGUF）.md）
        CUDA_HOME="$(find /usr/local -name "cuda" -exec readlink -f {} \; \
