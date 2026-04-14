@@ -45,12 +45,15 @@
 >
 > 需要注意的是，因为目前的库版本更迭，或许会出现一些关于版本冲突的报错，计划在 8
 > 月全面更新代码进行修复（当然，复制报错去问 AI 基本都可以临时解决）。
+>
+> Colab 链接因为原账户没绑定恢复邮箱，被暂停了外部访问且无法恢复（引以为戒），后续我会抽空迁移至新账户上。
 
 - [深入 FastMCP 源码：认识 tool()、resource() 和 prompt() 装饰器](./Guide/深入%20FastMCP%20源码：认识%20tool()、resource()%20和%20prompt()%20装饰器.md)
 - [Claude Code 使用指南：安装与进阶技巧](./Guide/Claude%20Code%20使用指南：安装与进阶技巧.md)
   - [Claude Code 必备的用量监控工具：claude-monitor 实践指南](./Guide/Claude%20Code%20必备的用量监控工具：claude-monitor%20实践指南.md)
+- [【2025-09-02｜旧文留档】Cursor 与 Claude Code Max 5x 订阅体验记录](./Guide/$125%20订阅撬动%20$2000%20API%20额度：这是我最终选择%20Claude%20Code%20Max%205x%20的理由.md)
+- [【2026-04-14｜持续更新】Claude / GPT 订阅建议与反代避坑](./Guide/Claude%20和%20GPT%20订阅建议与反代避坑.md)
 
-- [Cursor 与 Claude Code Max 5x 订阅体验分享以及建议](./Guide/$125%20订阅撬动%20$2000%20API%20额度：这是我最终选择%20Claude%20Code%20Max%205x%20的理由.md)
 
 ### DeepSeek 使用手册
 
@@ -63,7 +66,7 @@
 | [DeepSeek API 的获取与对话示例](./Guide/DeepSeek%20API%20的获取与对话示例.md) | API  | 获取 DeepSeek API 的 N 种方法及其单轮对话样例：<br />- DeepSeek 官方<br />- 硅基流动<br />- 阿里云百炼<br />- 百度智能云<br />- 字节火山引擎 | [Code](./Demos/deepseek-api-guide-1.ipynb) | [Kaggle](https://www.kaggle.com/code/aidemos/deepseek-api-guide-1)<br />[Colab](https://colab.research.google.com/drive/1rdBEJT_oOxaScm3_10epoHX_TdbSm1Ty?usp=sharing) |
 | [DeepSeek 联网满血版使用指南](./Guide/DeepSeek%20联网满血版使用指南.md) | API  | 通过 API 绕开 DeepSeek 网页对话的卡顿，提供两种配置方案：<br />- Cherry Studio【推荐】<br />- Chatbox |                                            |                                                              |
 | [DeepSeek API 输出解析 - OpenAI SDK](./Guide/DeepSeek%20API%20输出解析%20-%20OpenAI%20SDK.md) | API  | 关于 OpenAI SDK 的通用知识，以 DeepSeek 聊天/推理模型为例进行演示：<br />- 认识 API 的返回字段<br />- 打印模型回复和每次对话的用量信息<br /> | [Code](./Demos/deepseek-api-guide-2.ipynb) | [Kaggle](https://www.kaggle.com/code/aidemos/deepseek-api-guide-2)<br />[Colab](https://colab.research.google.com/drive/1WT0jpeIzWewoN5cT12Uwi92d5_tNff2J?usp=sharing) |
-| └─[流式输出解析](./Guide/DeepSeek%20API%20流式输出解析%20-%20OpenAI%20SDK.md) | API  | API 解析 - 流式输出篇<br />- 认识 chunk 的结构<br />- 处理各平台聊天/推理模型的流式输出<br /> | [Code](./Demos/deepseek-api-guide-3.ipynb) | [Kaggle](https://www.kaggle.com/code/aidemos/deepseek-api-guide-3)<br />[Colab](https://colab.research.google.com/drive/1Hfm7qU75GSvU8cO6RL108ZcmwaugXemo?usp=sharing) |
+| └─[流式输出解析](./Guide/DeepSeek%20API%20流式输出解析%20-%20OpenAI%20SDK.md) | API  | API 解析 - 流式输出篇<br />- 认识 chunk 的结构<br />- 处理各平台聊天/推理模型的流式输出 | [Code](./Demos/deepseek-api-guide-3.ipynb) | [Kaggle](https://www.kaggle.com/code/aidemos/deepseek-api-guide-3)<br />[Colab](https://colab.research.google.com/drive/1Hfm7qU75GSvU8cO6RL108ZcmwaugXemo?usp=sharing) |
 | [DeepSeek API 多轮对话 - OpenAI SDK](./Guide/DeepSeek%20API%20多轮对话%20-%20OpenAI%20SDK.md) | API  | DeepSeek API 的多轮对话示例 - 非流式输出篇：<br />- 认识单轮对话和多轮对话时 `messages` 的差异<br />- 尝试封装对话类 | [Code](./Demos/deepseek-api-guide-4.ipynb) | [Kaggle](https://www.kaggle.com/code/aidemos/deepseek-api-guide-4)<br />[Colab](https://colab.research.google.com/drive/11REpPevN4bSL8yeJzQs7LAiV2cm9lUmh?usp=sharing) |
 | └─[统一模型对话逻辑与流式输出](./Guide/DeepSeek%20API%20统一模型对话逻辑与流式输出.md) | API  | - 统一聊天模型和推理模型对话类<br />- 引入流式输出处理<br /><br />【代码文件】<br />- 使用 `APIConfigManager` 进行各平台配置，不再分散逻辑 | [Code](./Demos/deepseek-api-guide-5.ipynb) | [Kaggle](https://www.kaggle.com/code/aidemos/deepseek-api-guide-5)<br />[Colab](https://colab.research.google.com/drive/14u47q-lGfH7l1ehkBuTU0kgIsNarap9J?usp=sharing) |
 

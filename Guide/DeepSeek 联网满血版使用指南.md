@@ -149,7 +149,7 @@
     - [M1/M2](https://chatboxai.app/?c=download-mac-aarch)
   - [Linux](https://chatboxai.app/?c=download-linux)
 - **手机**
-  - [苹果 / IOS](https://apps.apple.com/app/chatbox-ai/id6471368056)
+  - [苹果 / iOS](https://apps.apple.com/app/chatbox-ai/id6471368056)
   - [安卓/ Android](https://chatboxai.app/install?download=android_apk)
 
 [^3]: [https://github.com/Bin-Huang/chatbox](https://github.com/Bin-Huang/chatbox).
@@ -235,4 +235,3 @@
 > 可以遵循官方的部署建议[^2]，将 `deepseek-reasoner` 的 `temperature` 默认设置为 0.6，以应对未来可能被允许的参数修改。
 
 **下一章**：[DeepSeek API 输出解析 - OpenAI SDK](./DeepSeek%20API%20输出解析%20-%20OpenAI%20SDK.md)
-
