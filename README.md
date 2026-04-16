@@ -52,7 +52,7 @@
 - [Claude Code 使用指南：安装与进阶技巧](./Guide/Claude%20Code%20使用指南：安装与进阶技巧.md)
   - [Claude Code 必备的用量监控工具：claude-monitor 实践指南](./Guide/Claude%20Code%20必备的用量监控工具：claude-monitor%20实践指南.md)
 - [【2025-09-02｜旧文留档】Cursor 与 Claude Code Max 5x 订阅体验记录](./Guide/$125%20订阅撬动%20$2000%20API%20额度：这是我最终选择%20Claude%20Code%20Max%205x%20的理由.md)
-- [【2026-04-14｜持续更新】Claude / GPT 订阅建议与反代避坑](./Guide/Claude%20和%20GPT%20订阅建议与反代避坑.md)
+- [【2026-04-16｜持续更新】Claude / GPT 订阅建议与反代避坑](./Guide/Claude%20和%20GPT%20订阅建议与反代避坑.md)
 
 
 ### DeepSeek 使用手册
