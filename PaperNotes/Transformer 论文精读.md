@@ -1854,7 +1854,7 @@ class LayerNorm(nn.Module):
 >    # 初始化的 shape 是二维的
 >    self.weight = nn.Parameter(torch.randn(out_features, in_features))  # 权重矩阵
 >    self.bias = nn.Parameter(torch.zeros(out_features))  # 偏置向量
->                                                                                                                                                                                           
+>                                                                                                                                                                                              
 >    # 计算
 >    def forward(self, x):
 >    	return torch.matmul(x, self.weight.T) + self.bias
@@ -2483,11 +2483,11 @@ print(create_look_ahead_mask(5))
 **输出**：
 
 ```
-tensor([[False,  True,  True,  True,  True],
-        [False, False,  True,  True,  True],
-        [False, False, False,  True,  True],
-        [False, False, False, False,  True],
-        [False, False, False, False, False]])
+tensor([[ True, False, False, False, False],
+        [ True,  True, False, False, False],
+        [ True,  True,  True, False, False],
+        [ True,  True,  True,  True, False],
+        [ True,  True,  True,  True,  True]])
 ```
 
 这表示在第 `i` 个位置，模型只能看到位置 `0` 到 `i`，而屏蔽位置 `i+1` 及之后的信息。
@@ -2664,7 +2664,7 @@ class Encoder(nn.Module):
         self.layers = nn.ModuleList([
             EncoderLayer(d_model, h, d_ff, dropout) for _ in range(N)
         ])
-        self.norm = LayerNorm(d_model)  # 最后层归一化
+        # 如果改用 Pre-Norm，需要在 __init__ 添加 self.norm = LayerNorm(d_model)，并将 forward 最后改为 return self.norm(x)
 
     def forward(self, x, mask):
         """
@@ -2679,7 +2679,7 @@ class Encoder(nn.Module):
         """
         for layer in self.layers:
             x = layer(x, mask)
-        return self.norm(x)  # 最后层归一化
+        return x
 
 ```
 
@@ -2702,7 +2702,7 @@ class Decoder(nn.Module):
         self.layers = nn.ModuleList([
             DecoderLayer(d_model, h, d_ff, dropout) for _ in range(N)
         ])
-        self.norm = LayerNorm(d_model)  # 最后层归一化
+        # 如果改用 Pre-Norm，需要在 __init__ 添加 self.norm = LayerNorm(d_model)，并将 forward 最后改为 return self.norm(x)
 
     def forward(self, x, memory, src_mask, tgt_mask):
         """
@@ -2719,7 +2719,7 @@ class Decoder(nn.Module):
         """
         for layer in self.layers:
             x = layer(x, memory, src_mask, tgt_mask)
-        return self.norm(x)  # 最后层归一化
+        return x
 
 ```
 
@@ -2865,7 +2865,6 @@ Transformer(
         (feed_forward): PositionwiseFeedForward(
           (w_1): Linear(in_features=512, out_features=2048, bias=True)
           (w_2): Linear(in_features=2048, out_features=512, bias=True)
-          (dropout): Dropout(p=0.1, inplace=False)
         )
         (sublayers): ModuleList(
           (0-1): 2 x SublayerConnection(
@@ -2875,7 +2874,6 @@ Transformer(
         )
       )
     )
-    (norm): LayerNorm()
   )
   (decoder): Decoder(
     (layers): ModuleList(
@@ -2895,7 +2893,6 @@ Transformer(
         (feed_forward): PositionwiseFeedForward(
           (w_1): Linear(in_features=512, out_features=2048, bias=True)
           (w_2): Linear(in_features=2048, out_features=512, bias=True)
-          (dropout): Dropout(p=0.1, inplace=False)
         )
         (sublayers): ModuleList(
           (0-2): 3 x SublayerConnection(
@@ -2905,7 +2902,6 @@ Transformer(
         )
       )
     )
-    (norm): LayerNorm()
   )
   (fc_out): Linear(in_features=512, out_features=5000, bias=True)
 )
@@ -3130,6 +3126,12 @@ print(model)
 
 ## 附录
 
+> **关于 `nn.Transformer` 末尾的 `(norm): LayerNorm(...)`**
+>
+> `nn.Transformer` 的 Encoder 和 Decoder 末尾各多一层 `norm`（post-norm 的情况下）。PyTorch 社区对此有一些讨论（见 issues： [#24930](https://github.com/pytorch/pytorch/issues/24930)、[#50086](https://github.com/pytorch/pytorch/issues/50086)、[#74092](https://github.com/pytorch/pytorch/issues/74092) 及 PR [#74237](https://github.com/pytorch/pytorch/pull/74237)），最终作者因为考虑到向后兼容没有接受。
+>
+> 本文因为无需向后兼容 :)，不再重复这层 `norm` 让读者困惑（[issue#20](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/issues/20)）。
+
 `nn.Transformer()`：
 
 ```sql
@@ -3175,4 +3177,3 @@ transformer(
   )
 )
 ```
-
