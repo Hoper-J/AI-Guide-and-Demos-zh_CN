@@ -47,11 +47,11 @@ Claude Code 需要升到最新版，请帮我：
 
 先看一轮得分对比：
 
-![Opus 4.7 与各家模型的 benchmark 对比](./assets/opus-4.7-benchmark-comparison.webp)
+![Opus 4.7 与各家模型的 benchmark 对比](../assets/opus-4.7-benchmark-comparison.webp)
 
 除了 `Agentic search (BrowseComp)` 从 `83.7%` 掉到 `79.3%`、网络安全（CyberGym）从 `73.8%` 微降到 `73.1%` 这两项以外，各项分数均优于 Opus 4.6。尽管官方框选的是 Opus 4.7，给人的感觉却是在秀 `Mythos Preview`，不过从口风来看， Mythos 或许存在广泛发布的可能：
 
-![Mythos Preview 发布策略官方说明](./assets/mythos-preview-release-strategy.png)
+![Mythos Preview 发布策略官方说明](../assets/mythos-preview-release-strategy.png)
 
 价格上 Opus 4.7 和 Opus 4.6 一致：每百万输入 tokens `$5`，每百万输出 tokens `$25`。不过实际上会比之前花的快一点，因为 Opus 4.7 用了新的分词器（tokenizer），优化了模型处理文本的方式。所以同样一段输入映射成 tokens 后，可能会变成原来的 `1.0x - 1.35x`，具体取决于内容类型。
 
@@ -84,17 +84,17 @@ Claude Code 需要升到最新版，请帮我：
 
 官方为 Opus 4.7 新加了一个 `xhigh`（extra high）effort，介于 `high` 和 `max` 之间，同时把所有计划的默认思考档都抬到了 `xhigh`。不过个人还是更喜欢用 `/effort max`：
 
-![/effort max 终端输出](./assets/effort-max-terminal-output.png)
+![/effort max 终端输出](../assets/effort-max-terminal-output.png)
 
 > [!tip]
 >
 > `/effort` 不带参数现在会开启一个交互式滑块（v2.1.111），← → 选择档位、回车确认：
 >
-> ![/effort 交互式滑块](./assets/effort-interactive-slider.png)
+> ![/effort 交互式滑块](../assets/effort-interactive-slider.png)
 
 Opus 4.7 effort 的官方指南[^1]：
 
-![Opus 4.7 各 effort 档位官方指南](./assets/opus-4.7-effort-level-guide.png)
+![Opus 4.7 各 effort 档位官方指南](../assets/opus-4.7-effort-level-guide.png)
 
 >[!note]
 >
@@ -102,7 +102,7 @@ Opus 4.7 effort 的官方指南[^1]：
 
 下图为 Claude 内部智能体编程评估中，不同 effort 等级下的得分和 tokens 的关系（模型根据单用户提示词自主工作）：
 
-![不同 effort 等级下的得分与 token 用量](./assets/effort-vs-score-token-usage.webp)
+![不同 effort 等级下的得分与 token 用量](../assets/effort-vs-score-token-usage.webp)
 
 [^1]: [Effort](https://platform.claude.com/docs/en/build-with-claude/effort)
 
@@ -114,17 +114,17 @@ Opus 4.7 effort 的官方指南[^1]：
 >
 > 目前开放的 `/ultrareview` 每个订阅的计划限免 3 次，后续需要按量付费，请勿随意在目录中实验该命令：
 >
-> ![ultrareview 免费额度耗尽提示](./assets/ultrareview-quota-exhausted.png)
+> ![ultrareview 免费额度耗尽提示](../assets/ultrareview-quota-exhausted.png)
 
 在 Claude Code v2.1.111 的命令列表里我们可以看到新的 `/ultrareview`：
 
-![/ultrareview 命令入口](./assets/ultrareview-command-entry.png)
+![/ultrareview 命令入口](../assets/ultrareview-command-entry.png)
 
 用时取决于代码量，官方预计在 `5-10` 分钟左右，消耗 `5-20` 美元。可以直接 review 当前变更（相对于 main），也可以用 `/ultrareview <PR number>` 去指定 GitHub PR。
 
 回车后，Claude Code 会直接说明这次 review 的范围（根据 git），以及它要做什么：
 
-![ultrareview 启动前确认](./assets/ultrareview-preflight-dialog.png)
+![ultrareview 启动前确认](../assets/ultrareview-preflight-dialog.png)
 
 图示说明：
 
@@ -134,26 +134,26 @@ Opus 4.7 effort 的官方指南[^1]：
 
   - 本地仓库显示的变更等价于执行命令：`git diff --shortstat`
 
-    ![git diff --shortstat 输出](./assets/git-diff-shortstat-output.png)
+    ![git diff --shortstat 输出](../assets/git-diff-shortstat-output.png)
 
 - 会把仓库上传到 web 版 Claude Code 去执行
   - 如果对 web 版感兴趣可以访问：[Use Claude Code on the web](https://code.claude.com/docs/en/claude-code-on-the-web)
 
 `Yes` 继续之后，终端会返回 web 的会话链接：
 
-![开始 ultrareview](./assets/ultrareview-cloud-session-link.png)
+![开始 ultrareview](../assets/ultrareview-cloud-session-link.png)
 
 此时在终端无法看到实际审阅的具体信息，这个命令会启动一个云任务。网页界面大致如下（项目来自一个废旧测试项目）：
 
-![web 界面](./assets/ultrareview-web-session-ui.png)
+![web 界面](../assets/ultrareview-web-session-ui.png)
 
 在等待的这段时间里认识一下和 `cloud session` 的交互：
 
-![cloud session 1](./assets/ultrareview-terminal-pill.png)
+![cloud session 1](../assets/ultrareview-terminal-pill.png)
 
 按一下 ↓ 再回车，可以看到更细的信息：`Setup -> Find -> Verify -> Dedupe`（高亮则代表目前阶段），以及当前发现、验证、驳回的问题数：
 
-![cloud session 2](./assets/ultrareview-phase-progress.png)
+![cloud session 2](../assets/ultrareview-phase-progress.png)
 
 
 > [!note]
@@ -162,19 +162,19 @@ Opus 4.7 effort 的官方指南[^1]：
 >
 > `/ultrareview` 不是在任何目录都能直接跑的，需要位于一个存在 main 分支的 Git 仓库中，否则会报错：
 >
-> ![无法找到 main](./assets/ultrareview-merge-base-error.png)
+> ![无法找到 main](../assets/ultrareview-merge-base-error.png)
 >
 > 测试了一下，如果本地没有 main 分支，还需要重命名：
 >
-> ![重命名分支让 ultrareview 找到 main](./assets/ultrareview-rename-branch-fix.png)
+> ![重命名分支让 ultrareview 找到 main](../assets/ultrareview-rename-branch-fix.png)
 >
 > 执行命令前也可以直接把想要 review 的代码 add 到暂存区，不用特意创建分支：
 >
-> ![把要 review 的代码 add 到暂存区](./assets/ultrareview-git-add-workflow.png)
+> ![把要 review 的代码 add 到暂存区](../assets/ultrareview-git-add-workflow.png)
 >
 > 另外，ultrareview 只能看到 tracked 内容（已提交 + 已暂存 + 未暂存的 tracked 改动）。untracked 文件（??）不会上传到 web 端，下图是之前一次 `/ultrareview` 执行后的反馈：
 >
-> ![被代码引用的文件未 tracked](./assets/ultrareview-untracked-files-missed.png)
+> ![被代码引用的文件未 tracked](../assets/ultrareview-untracked-files-missed.png)
 >
 > **使用该命令时不要遗漏新增的文件**。
 
@@ -310,19 +310,19 @@ ultrareview 的计费门控是 [`checkOverageGate()`](https://github.com/tanbira
 
 /ultraplan 后附带的 prompt 就是它除代码外唯一可见的上下文，比如这个由 `/ultraplan 刚刚你做了什么？...` 激活的 web ultraplan：
 
-![ultraplan 自报“没有上下文”](./assets/ultraplan-no-context-response.png)
+![ultraplan 自报“没有上下文”](../assets/ultraplan-no-context-response.png)
 
 所以如果真的要使用 ultraplan，建议先 shift+tab 进入 plan mode，然后再选择进入 ultraplan 微调：
 
-![plan mode 弹窗中的 Ultraplan 选项](./assets/plan-mode-ultraplan-option.png)
+![plan mode 弹窗中的 Ultraplan 选项](../assets/plan-mode-ultraplan-option.png)
 
 这样能够让 ultraplan 拥有初始上下文（来自之前的 plan mode 产出。注：项目本身未开源）：
 
-![ultraplan 接收到初始 plan 作为是上下文](./assets/ultraplan-with-seed-plan.png)
+![ultraplan 接收到初始 plan 作为是上下文](../assets/ultraplan-with-seed-plan.png)
 
 此时的 ultraplan 才可能符合你的预期：
 
-![plan 进入微调](./assets/ultraplan-successful-result.png)
+![plan 进入微调](../assets/ultraplan-successful-result.png)
 
 还需要注意的是，ultraplan 跑完会要求**在 web 上点确认**（ultrareview 不用，review 结果直接回到本地终端）。
 
@@ -336,7 +336,7 @@ ultrareview 的计费门控是 [`checkOverageGate()`](https://github.com/tanbira
 
 Max 计划的用户**终于**实际开放了 auto mode，为了实际可用，你可能需要更新到 v2.1.112 —— "Fixed claude-opus-4-7 is temporarily unavailable for auto mode"。直接在 claude code 中使用 `shift+tab` 切换 3 次模式就会触发选项：
 
-![启用 auto mode 的确认对话框](./assets/auto-mode-enable-dialog.png)
+![启用 auto mode 的确认对话框](../assets/auto-mode-enable-dialog.png)
 
 根据自身情况进行选择，个人选择 2 而非默认启用。
 
