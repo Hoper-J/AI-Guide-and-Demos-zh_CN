@@ -51,6 +51,7 @@
 - [深入 FastMCP 源码：认识 tool()、resource() 和 prompt() 装饰器](./Guide/深入%20FastMCP%20源码：认识%20tool()、resource()%20和%20prompt()%20装饰器.md)
 - [Claude Code 使用指南：安装与进阶技巧](./Guide/Claude%20Code%20使用指南：安装与进阶技巧.md)
   - [Claude Code 必备的用量监控工具：claude-monitor 实践指南](./Guide/Claude%20Code%20必备的用量监控工具：claude-monitor%20实践指南.md)
+  - [【2026-04-19】聊聊 Claude Code v2.1.111：Opus 4.7、Auto 模式开放、xhigh 与 /ultrareview](./Guide/聊聊%20Claude%20Code%20v2.1.111：Opus%204.7，Auto%20模式开放，新的思考等级%20xhigh，以及“限免3次”的%20ultrareview.md)
 - [【2025-09-02｜旧文留档】Cursor 与 Claude Code Max 5x 订阅体验记录](./Guide/$125%20订阅撬动%20$2000%20API%20额度：这是我最终选择%20Claude%20Code%20Max%205x%20的理由.md)
 - [【2026-04-16｜持续更新】Claude / GPT 订阅建议与反代避坑](./Guide/Claude%20和%20GPT%20订阅建议与反代避坑.md)
 
