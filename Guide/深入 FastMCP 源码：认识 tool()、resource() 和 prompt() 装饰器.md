@@ -36,7 +36,7 @@
 ## 安装库
 
 ```bash
-uv add mcp
+pip install mcp
 ```
 
 ## server.py

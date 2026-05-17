@@ -299,7 +299,7 @@ tensor([[ 0.3367,  0.1288,  0.2345],
    torch.manual_seed(42)
    
    # 假设我们有一个预训练的嵌入矩阵，这里只是随机初始化
-   pretrained_embeddings = torch.tensor(torch.randn(5, 3))
+   pretrained_embeddings = torch.randn(5, 3)
    
    # 使用 from_pretrained 方法创建嵌入层，不冻结权重层（默认冻结）
    embedding = nn.Embedding.from_pretrained(pretrained_embeddings, freeze=False)
@@ -358,12 +358,16 @@ tensor([[ 0.3367,  0.1288,  0.2345],
 假设已经安装好了 PyTorch。
 
 ```bash
-uv add transformers scikit-learn matplotlib seaborn
+pip install transformers scikit-learn matplotlib seaborn
 ```
 
 ### 导入
 
 ```python
+import os
+# 设置模型下载镜像
+os.environ['HF_ENDPOINT'] = 'https://hf-mirror.com'
+
 import torch
 from transformers import AutoTokenizer, AutoModel
 import matplotlib.pyplot as plt
@@ -468,6 +472,10 @@ plt.show()
 ### 可视化完整代码
 
 ```python
+import os
+# 设置模型下载镜像
+os.environ['HF_ENDPOINT'] = 'https://hf-mirror.com'
+
 import torch
 from transformers import AutoTokenizer, AutoModel
 import matplotlib.pyplot as plt

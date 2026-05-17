@@ -38,14 +38,14 @@
    b. **Python 库**
    
    ```python
-   uv add openai-whisper openai pyyaml librosa srt certifi
-   uv add numpy==1.26.4  # >= 2.0.0 会无法正常执行 summarizer.py
+   pip install openai-whisper openai pyyaml librosa srt certifi
+   pip install numpy==1.26.4  # >= 2.0.0 会无法正常执行 summarizer.py
    ```
    
    ### SD LoRA 依赖
    
    ```bash
-   uv add transformers diffusers peft tqdm numpy pyyaml pillow
+   pip install transformers diffusers peft tqdm numpy pyyaml pillow
    ```
    
    ### AI Chat 依赖
@@ -55,15 +55,15 @@
    a. **GPTQ 模型文件**
    
    ```bash
-   uv add optimum
+   pip install optimum
    git clone https://github.com/PanQiWei/AutoGPTQ.git && %cd AutoGPTQ
-   uv pip install -vvv --no-build-isolation -e .
+   pip install -vvv --no-build-isolation -e .
    ```
    
    b. **AWQ 模型文件**
    
    ```bash
-   uv add autoawq autoawq-kernels
+   pip install autoawq autoawq-kernels
    ```
    
    c. **GGUF 模型文件**
@@ -81,7 +81,7 @@
             -DCUDAToolkit_LIBRARY_DIR=${CUDA_HOME}/lib64 \
                -DCMAKE_CUDA_COMPILER=${CUDA_HOME}/bin/nvcc" \
    FORCE_CMAKE=1 \
-   uv pip install --upgrade --force-reinstall llama-cpp-python --no-cache-dir --verbose
+   pip install --upgrade --force-reinstall llama-cpp-python --no-cache-dir --verbose
    ```
    
 

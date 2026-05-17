@@ -430,8 +430,8 @@ for i, (inputs, targets) in enumerate(dataloader):
 
 `accelerate` 可以自动管理设备与梯度累积逻辑，先进行安装：
 
-```python
-uv add accelerate
+```bash
+pip install accelerate
 ```
 
 **修改如下**[^1]：

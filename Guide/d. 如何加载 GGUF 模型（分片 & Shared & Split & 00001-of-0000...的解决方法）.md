@@ -49,9 +49,9 @@
 命令行执行以下命令：
 
 ```bash
-uv add numpy==1.24.4
-uv add gguf
-uv add --upgrade transformers
+pip install numpy==1.24.4
+pip install gguf
+pip install --upgrade transformers
 ```
 
 ### 加载单个 GGUF 文件
@@ -59,6 +59,10 @@ uv add --upgrade transformers
 以模型 [qwen2.5-7b-instruct-q3_k_m.gguf](https://huggingface.co/Qwen/Qwen2.5-7B-Instruct-GGUF/blob/main/qwen2.5-7b-instruct-q3_k_m.gguf) 为例，如果我们选择 Q3_K_M，其对应的文件名为`qwen2.5-7b-instruct-q3_k_m.gguf`，加载命令如下：
 
 ```python
+import os
+# 设置模型下载镜像
+os.environ['HF_ENDPOINT'] = 'https://hf-mirror.com'
+
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
 model_id = "Qwen/Qwen2.5-7B-Instruct-GGUF"
@@ -123,7 +127,7 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
    首先，安装 `huggingface-hub`：
 
    ```bash
-   uv add huggingface-hub
+   pip install huggingface-hub
    ```
 
    然后，下载分片文件：
@@ -199,8 +203,8 @@ You should probably TRAIN this model on a down-stream task to be able to use it 
 使用 `psutil` 和 `pynvml` 库来监测内存占用情况，先进行安装：
 
 ```bash
-uv add psutil
-uv add pynvml
+pip install psutil
+pip install pynvml
 ```
 
 然后，在代码中添加内存监控（不用关心这里的代码细节，看结果）：
@@ -406,7 +410,7 @@ CMAKE_ARGS="-DGGML_CUDA=on \
             -DCUDAToolkit_LIBRARY_DIR=${CUDA_HOME}/lib64 \
             -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc" \
 FORCE_CMAKE=1 \
-uv add --upgrade --force-reinstall llama-cpp-python --no-cache-dir --verbose
+pip install --upgrade --force-reinstall llama-cpp-python --no-cache-dir --verbose
 ```
 
 ### 加载单个 GGUF 文件
@@ -462,8 +466,8 @@ llm = Llama(model_path=model_path, additional_files=additional_files)
 安装 `psutil` 和 `pynvml` 库：
 
 ```bash
-uv add psutil
-uv add pynvml
+pip install psutil
+pip install pynvml
 ```
 
 现在，来看看正确的内存占用应该是什么样的，执行：

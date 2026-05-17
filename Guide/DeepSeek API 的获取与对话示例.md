@@ -19,7 +19,7 @@
 ## 环境依赖
 
 ```bash
-uv add openai
+pip install openai
 ```
 
 ## 获取 API

@@ -50,11 +50,11 @@
 
 ## 环境配置
 
-```python
-uv add pillow            # 图像处理
-uv add matplotlib        # 绘图
-uv add numpy             # 数组和矩阵操作
-# uv add torch torchvision # 默认已正确安装
+```bash
+pip install pillow            # 图像处理
+pip install matplotlib        # 绘图
+pip install numpy             # 数组和矩阵操作
+# pip install torch torchvision # 默认已正确安装
 ```
 
 ## 下载用于演示的图片
