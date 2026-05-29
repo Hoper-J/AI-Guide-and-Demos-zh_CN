@@ -61,12 +61,13 @@ Claude Code 需要升到最新版，请帮我：
   - 在 93 项 coding benchmark 上，Opus 4.7 的解决率相对于 Opus 4.6 提升了 `13%`。
 
 - **更强的指令遵循能力**
-  - Claude 长上下文的指令遵循能力体感上一直是最好的，官方提及早期编写的提示词可能会有意想不到的效果（或许该清理 claude.md 中过时的一些规范了）。
+  - Claude 长上下文的指令遵循能力体感上一直是最好的，官方提及早期编写的提示词可能会有意想不到的效果（或许该清理 claude.md 中过时的一些规范了）
 
 - **能够识别更高分辨率的图像**
   - Opus 4.7 可以接受长边 2,576 像素（约 375 万像素）的图像，是之前模型的三倍多。另外，在 computer-use 的相关工作上，visual-acuity benchmark 得分从 Opus 4.6 的 `54.5%` 跳到 Opus 4.7 的 `98.5%`。
 
 - **更具有审美和创意**
+
 - **推理更具有自主性和创造性**
   - 在 Cursor 给出的 CursorBench 测试中，Opus 4.7 达到了 `70%`，之前的 Opus 4.6 为 `58%`。
 
@@ -74,7 +75,24 @@ Claude Code 需要升到最新版，请帮我：
   - General Finance 模块得分从 Opus 4.6 的 `0.767` 提到 Opus 4.7 的 `0.813`。
 
 - **基于文件系统的记忆能力提升**
+
 - ~~**成功尝试削弱了模型的网络安全能力**~~
+
+- **补充：长上下文定位能力回退**[^2]
+
+  - 在 OpenAI 25年发布的 MRCR[^3] v2（v1 俗称“大海捞针”）上，Opus 4.7 相比 Opus 4.6 存在大幅度的回退：256k 从 `91.9%` 掉到 `59.2%`（−32.7 pp），1M 从 `78.3%` 掉到 `32.2%`（−46.1 pp），这一指标甚至弱于 GPT 5.4：
+
+    | ![image-20260529110921487](./assets/image-20260529110921487.png) | ![image-20260529111000396](./assets/image-20260529111000396.png) |
+    | ------------------------------------------------------------ | ------------------------------------------------------------ |
+
+  - DeepSearchQA[^4][^5] 的 F1 也从 Opus 4.6 的 `91.3%` 降到 Opus 4.7 的 `89.1%`，低于 Sonnet 4.6 的 `90.5%`：
+
+    ![image-20260529111511934](./assets/image-20260529111511934.png)
+
+[^2]: [Claude Opus 4.7 System Card](https://cdn.sanity.io/files/4zrzovbb/website/037f06850df7fbe871e206dad004c3db5fd50340.pdf)
+[^3]: [2409.12640. Michelangelo: Long context evaluations beyond haystacks via latentstructure queries](https://arxiv.org/abs/2409.12640)
+[^4]: [2601.20975. DeepSearchQA: Bridging the Comprehensiveness Gap for Deep ResearchAgents.](https://arxiv.org/abs/2601.20975)
+[^5]: [Gemini and GPT 在 DeepSearchQA 上的 F1 分数](https://www.kaggle.com/benchmarks/google/dsqa/leaderboard)
 
 ## Claude Code 更新
 
