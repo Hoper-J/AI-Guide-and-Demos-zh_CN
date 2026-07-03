@@ -27,7 +27,7 @@ from openai import OpenAI
 import os
 
 client = OpenAI(
-    api_key="sk-1aad218fdac64263bb4196cf2282f2c2",
+    api_key="your-api-key",
     base_url="https://api.deepseek.com/v1",
 )
 
@@ -206,7 +206,7 @@ print(content)
 > | 百度智能云   | "https://qianfan.baidubce.com/v2"                   | "deepseek-v3"             | "deepseek-r1"             |
 > | 字节火山引擎 | https://ark.cn-beijing.volces.com/api/v3/           | "deepseek-v3-241226"      | "deepseek-r1-250120"      |
 > 
-> [^1]: [DeepSeek API 的获取与对话示例](./Deepseek%20API%20的获取与对话示例.md).
+> [^1]: [DeepSeek API 的获取与对话示例](./DeepSeek%20API%20的获取与对话示例.md).
 
 修改后运行代码：
 
@@ -215,7 +215,7 @@ from openai import OpenAI
 import os
 
 client = OpenAI(
-    api_key="sk-1aad218fdac64263bb4196cf2282f2c2",
+    api_key="your-api-key",
     base_url="https://api.deepseek.com/v1",
 )
 

@@ -18,6 +18,7 @@ import os
 import sys
 import subprocess
 import datetime
+import time
 import argparse
 import ssl
 import urllib.error
@@ -29,7 +30,17 @@ import srt
 import whisper
 import yaml
 
-from openai import OpenAI
+from openai import (
+    OpenAI,
+    APIConnectionError,
+    APITimeoutError,
+    AuthenticationError,
+    BadRequestError,
+    InternalServerError,
+    NotFoundError,
+    PermissionDeniedError,
+    RateLimitError,
+)
 from utils.config_manager import load_config, save_config, get_api_key
 
 
@@ -191,7 +202,7 @@ def read_subtitle(file_path, timestamped=False):
         raise e
     return None
     
-def summarize_text(text, client, timestamped=False, model="qwen-vl-max-0809", llm_temperature=0.2, max_tokens=1000):
+def summarize_text(text, client, timestamped=False, model="qwen-plus", llm_temperature=0.2, max_tokens=1000):
     """
     注意，我们没有对字幕文件做更多的处理，没有滑动窗口，没有文本清理，没有语义分割。
     只是使用 Prompt 指导模型生成摘要。即（美名其曰）：In-context Learning.
@@ -200,7 +211,7 @@ def summarize_text(text, client, timestamped=False, model="qwen-vl-max-0809", ll
         text (str): 要生成摘要的字幕或文本内容
         client (OpenAI): OpenAI 客户端实例
         timestamped (bool): 是否基于时间戳生成摘要，默认为 False
-        model (str): 使用的 OpenAI 模型名称，默认为 'qwen-vl-max-0809'
+        model (str): 使用的 OpenAI 模型名称，默认为 'qwen-plus'
         llm_temperature (float): 生成摘要时的温度，默认为 0.2
         max_tokens (int): 生成摘要时的最大 token 数，默认为 1000
 
@@ -208,22 +219,29 @@ def summarize_text(text, client, timestamped=False, model="qwen-vl-max-0809", ll
         str: 生成的摘要文本
         None: 如果生成摘要失败，返回 None
     """
-    try:
-        if timestamped:
-            # 对含时间戳的文本生成摘要
-            prompt = f"""
+    if timestamped:
+        # 对含时间戳的文本生成摘要
+        prompt = f"""
                 我需要你根据以下字幕生成一个视频摘要。摘要格式应包括视频的总体总结和每个时间段的简短总结。请遵循以下格式（"[","]"包裹的是需要被对应替换的内容）：
-                
+
                 [整个视频的简短总结]
                 1. [00:00:00]-[时间段1结束的时间戳]: 对应的摘要
                 2. [时间段2开始的时间戳]-[时间段2结束的时间戳]: 对应的摘要
                 3. ...
-                
+
                 请确保每个时间段的摘要是简明扼要的，且整个视频的总结应简洁并涵盖关键内容。
-                
+
                 以下是视频字幕内容：
                 {text}
             """
+    else:
+        # 对不含时间戳的文本生成摘要
+        prompt = f"请为以下文本生成摘要：\n{text}"
+
+    # 限流/超时/连接/服务端错误自动重试，密钥/模型/参数错误立即退出
+    max_retries = 3
+    for attempt in range(1, max_retries + 1):
+        try:
             response = client.chat.completions.create(
                 messages=[
                     {"role": "user", "content": prompt}
@@ -235,28 +253,19 @@ def summarize_text(text, client, timestamped=False, model="qwen-vl-max-0809", ll
             summary = response.choices[0].message.content.strip()
             print("摘要生成成功。")
             return summary
-        else:
-            # 对不含时间戳的文本生成摘要
-            prompt = f"请为以下文本生成摘要：\n{text}"
-            response = client.chat.completions.create(
-                messages=[
-                    {"role": "user", "content": prompt}
-                ],
-                model=model,
-                temperature=llm_temperature,
-                max_tokens=max_tokens
-            )
-            summary = response.choices[0].message.content.strip()
-            print("摘要生成成功。")
-            return summary
-    except urllib.error.URLError as e:
-        print(f"网络错误: {e}. 可能是网络连接或代理问题，请检查网络设置。")
-    except ssl.SSLError as e:
-        print(f"SSL 错误: {e}. 可能是网络连接问题或证书问题，请检查网络设置和 SSL 证书。")
-    except AttributeError as e:
-        print(f"属性错误: {e}. 请检查响应对象的结构。")
-    except Exception as e:
-        raise e
+        except (RateLimitError, APITimeoutError, APIConnectionError, InternalServerError) as e:
+            if attempt == max_retries:
+                print(f"重试 {max_retries} 次后请求仍未成功：{e}")
+                return None
+            wait_seconds = 2 ** attempt
+            print(f"请求受限或网络波动（{type(e).__name__}），{wait_seconds} 秒后进行第 {attempt + 1} 次尝试...")
+            time.sleep(wait_seconds)
+        except AuthenticationError:
+            sys.exit("API 密钥无效或已过期，请检查后重试。")
+        except (NotFoundError, PermissionDeniedError):
+            sys.exit(f"模型 '{model}' 不存在或没有访问权限，请确认模型名称。")
+        except BadRequestError as e:
+            sys.exit(f"请求参数有误：{e}")
     return None
 
 def process_file(file_path, client, output_dir=None, timestamped=False, model_name="medium", language="zh", whisper_temperature=0.2, llm_temperature=0.2, max_tokens=1000):
@@ -372,10 +381,11 @@ def main():
     # 获取 API 密钥并验证：从命令行或配置文件中获取
     api_key = args.api_key if args.api_key else get_api_key(config)
     api_base_url = config.get('api_base_url', "https://dashscope.aliyuncs.com/compatible-mode/v1")
-    # 构建 OpenAI 客户端
+    # 构建 OpenAI 客户端，timeout 防止请求无限挂起
     client = OpenAI(
         api_key=api_key,
-        base_url=api_base_url
+        base_url=api_base_url,
+        timeout=60
     )
 
     # 打印配置
