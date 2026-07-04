@@ -59,10 +59,6 @@ pip install openai
 
 ![注册/登录](./assets/20250127180653.png)
 
-新用户注册后将赠送 10 块钱余额，有效期为一个月：
-
-![赠送](./assets/20250127180649.png)
-
 点击左侧的 `API keys`（或者访问 [https://platform.deepseek.com/api_keys](https://platform.deepseek.com/api_keys)），然后点击 `创建 API key:`
 
 ![创建 API Key](./assets/20250127180645.png)

@@ -444,7 +444,7 @@ docker load -i quickstart_ai_image.tar
 
 当运行命令：
 
-```python
+```bash
 docker ps
 ```
 

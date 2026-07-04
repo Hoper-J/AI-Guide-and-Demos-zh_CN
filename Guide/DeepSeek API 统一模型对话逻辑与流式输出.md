@@ -237,7 +237,7 @@ def _process_stream(self, completion):
         delta = chunk.choices[0].delta
         # 处理推理过程（仅推理模型有）
         if getattr(delta, 'reasoning_content', None):
-            print(reasoning_content, end='')
+            print(delta.reasoning_content, end='')
         # 处理回复内容
         elif delta.content:
             content += delta.content  # 需要记录 content 维护对话历史

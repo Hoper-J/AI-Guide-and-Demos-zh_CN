@@ -1375,7 +1375,7 @@ def scaled_dot_product_attention(Q, K, V, mask=None):
 
 ```python
 def scaled_dot_product_attention(Q, K, V, mask=None):
-	"""
+    """
     缩放点积注意力计算。
     参数:
         Q: 查询矩阵 (batch_size, num_heads, seq_len_q, head_dim)
@@ -2379,7 +2379,7 @@ class TargetEmbedding(nn.Module):
 
 假设目标序列是 “I love NLP”，在右移之后得到输入序列：
 
-```python
+```text
 <sos> I love NLP
 ```
 

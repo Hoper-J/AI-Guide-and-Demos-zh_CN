@@ -243,7 +243,7 @@ plot(resized_imgs)
 print(orig_img.size)
 ```
 
-```python
+```text
 >> (418, 424)
 ```
 

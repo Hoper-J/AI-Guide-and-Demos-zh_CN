@@ -37,7 +37,7 @@
    
    b. **Python 库**
    
-   ```python
+   ```bash
    pip install openai-whisper openai pyyaml librosa srt certifi
    pip install numpy==1.26.4  # >= 2.0.0 会无法正常执行 summarizer.py
    ```

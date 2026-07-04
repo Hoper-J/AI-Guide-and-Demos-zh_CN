@@ -91,7 +91,7 @@ if __name__ == "__main__":
 
 将其保存为 server 后，可以使用以下命令直接进行调试：
 
-```python
+```bash
 mcp dev server.py
 # 如果克隆了仓库，可以指定 Demos 文件夹下的路径，比如：mcp dev Demos/mcp/server.py
 ```
@@ -208,7 +208,7 @@ say_hello("Xiaoming")
 
 **输出**：
 
-```python
+```text
 调用函数 say_hello 之前
 Hello, Xiaoming!
 调用函数 say_hello 之后

@@ -205,7 +205,7 @@ pprint(completion.model_dump())
   >
   > ```python
   > def print_chat_usage(completion, input_cost=2.0, output_cost=8.0, cache_hit_cost=0.5):
-  >      """
+  >     """
   >      参数:
   >     - input_cost: 输入价格（元/百万 Tokens）
   >     - output_cost: 输出价格（元/百万 Tokens）
@@ -219,13 +219,16 @@ pprint(completion.model_dump())
   >     stats = completion.usage
   > 
   >     # 尝试获取字段（兼容其他平台）
-  >     hit = getattr(stats, 'prompt_cache_hit_tokens', 0)
+  >     hit = getattr(stats, 'prompt_cache_hit_tokens', None)  # 无缓存机制的平台没有该字段
+  >     has_cache = hit is not None  # 注意：命中 0 个时字段仍存在，值为 0
+  >     if not has_cache:
+  >         hit = 0  # 后续统一按数字处理
   >     miss = getattr(stats, 'prompt_cache_miss_tokens', 
   >                   stats.prompt_tokens - hit if hasattr(stats, 'prompt_tokens') else 0)
   > 
   >     print(f"===== TOKEN 消耗明细 =====")
-  >     # 仅在存在缓存机制时显示细节
-  >     if hit + miss > 0:
+  >     # 仅在平台提供缓存字段时显示细节
+  >     if has_cache:
   >         print(f"输入: {stats.prompt_tokens} tokens [缓存命中: {hit} | 未命中: {miss}]")
   >     else:
   >         print(f"输入: {stats.prompt_tokens} tokens")
@@ -417,7 +420,7 @@ pprint(completion.model_dump())
   
       # 推理模型的token分解
       if details := stats.completion_tokens_details:
-          reasoning = details['reasoning_tokens']
+          reasoning = details.reasoning_tokens
           final = stats.completion_tokens - reasoning
           print(f"├─ 推理过程: {reasoning} tokens")
           print(f"└─ 最终回答: {final} tokens")
@@ -476,13 +479,16 @@ pprint(completion.model_dump())
   >     stats = completion.usage
   >     
   >     # 尝试获取字段（兼容其他平台）
-  >     hit = getattr(stats, 'prompt_cache_hit_tokens', 0)
+  >     hit = getattr(stats, 'prompt_cache_hit_tokens', None)  # 无缓存机制的平台没有该字段
+  >     has_cache = hit is not None  # 注意：命中 0 个时字段仍存在，值为 0
+  >     if not has_cache:
+  >         hit = 0  # 后续统一按数字处理
   >     miss = getattr(stats, 'prompt_cache_miss_tokens', 
   >                   stats.prompt_tokens - hit if hasattr(stats, 'prompt_tokens') else 0)
   >     
   >     print(f"===== TOKEN 消耗明细 =====")
-  >     # 仅在存在缓存机制时显示细节
-  >     if hit + miss > 0:
+  >     # 仅在平台提供缓存字段时显示细节
+  >     if has_cache:
   >         print(f"输入: {stats.prompt_tokens} tokens [缓存命中: {hit} | 未命中: {miss}]")
   >     else:
   >         print(f"输入: {stats.prompt_tokens} tokens")
