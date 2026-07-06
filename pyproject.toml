@@ -79,3 +79,6 @@ url = "https://pypi.org/simple/"
 
 [tool.uv]
 override-dependencies = ["torch>=2.6,<2.8", "torchvision>=0.21,<0.23", "torchaudio>=2.6,<2.8", "numpy>=2.1.3"]
+# gptqmodel 的 setup.py 在构建期需要探测 torch，隔离构建环境里没有它会失败；
+# 免隔离后复用当前环境的 torch（全新环境需先让 torch 落地：uv sync 报错后重试一次即可）
+no-build-isolation-package = ["gptqmodel"]

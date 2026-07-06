@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 2
 requires-python = "==3.12.*"
 resolution-markers = [
     "sys_platform == 'win32'",
@@ -80,6 +80,7 @@ dependencies = [
     { name = "optimum" },
     { name = "pandas" },
     { name = "peft" },
+    { name = "pillow" },
     { name = "pip" },
     { name = "random-word" },
     { name = "sacremoses" },
@@ -147,6 +148,7 @@ requires-dist = [
     { name = "optimum", specifier = ">=1.27.0,<2.0" },
     { name = "pandas", specifier = ">=2.3.1" },
     { name = "peft", specifier = ">=0.17.0,<0.18" },
+    { name = "pillow", specifier = ">=10.2,<12.0" },
     { name = "pip", specifier = ">=25.0" },
     { name = "random-word", specifier = ">=1.0.13" },
     { name = "sacremoses", specifier = ">=0.1.1" },
