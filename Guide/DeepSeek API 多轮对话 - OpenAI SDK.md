@@ -1,6 +1,6 @@
 # DeepSeek API 多轮对话 - OpenAI SDK
 
-> 以聊天模型（`DeepSeek-Chat`）为例进行单轮-多轮的演示（非流式输出），然后给出推理模型（`DeepSeek-Reasoner`）的多轮对话示例。
+> 以非思考模式为例进行单轮-多轮的演示（非流式输出），然后给出思考模式的多轮对话示例。
 >
 > **代码文件下载**：[Code](../Demos/deepseek-api-guide-4.ipynb)
 >
@@ -9,12 +9,12 @@
 ## 目录
 
 - [认识多轮对话](#认识多轮对话)
-   - [DeepSeek-Chat](#deepseek-chat)
+   - [非思考模式](#非思考模式)
       - [单轮对话](#单轮对话)
       - [两轮对话](#两轮对话)
       - [多轮对话](#多轮对话)
       - [封装对话逻辑](#封装对话逻辑)
-   - [DeepSeek-Reasoner](#deepseek-reasoner)
+   - [思考模式](#思考模式)
       - [单轮对话](#单轮对话-1)
       - [两轮对话](#两轮对话-1)
       - [多轮对话](#多轮对话-1)
@@ -35,7 +35,7 @@
 
 `role` 字段标识了消息的发送者身份，帮助模型区分不同角色。
 
-### DeepSeek-Chat
+### 非思考模式
 
 #### 单轮对话
 
@@ -55,7 +55,8 @@ client = OpenAI(
 
 # 单轮对话示例
 completion = client.chat.completions.create(
-    model="deepseek-chat",
+    model="deepseek-v4-flash",
+    extra_body={"thinking": {"type": "disabled"}},  # 关闭思考
     messages=[
         {'role': 'system', 'content': 'You are a helpful assistant.'}, 
         {'role': 'user', 'content': '你是谁？'}
@@ -90,7 +91,8 @@ messages = [{'role': 'system', 'content': 'You are a helpful assistant.'}]
 # 第一轮对话
 messages.append({'role': 'user', 'content': '9.11 和 9.8 哪个更大？'})
 completion = client.chat.completions.create(
-    model="deepseek-chat",
+    model="deepseek-v4-flash",
+    extra_body={"thinking": {"type": "disabled"}},  # 关闭思考
     messages=messages
 )
 content = completion.choices[0].message.content
@@ -102,7 +104,8 @@ messages.append({'role': 'assistant', 'content': content})
 # 第二轮对话
 messages.append({'role': 'user', 'content': '刚刚针对哪两个数值进行了比较？'})
 completion = client.chat.completions.create(
-    model="deepseek-chat",
+    model="deepseek-v4-flash",
+    extra_body={"thinking": {"type": "disabled"}},  # 关闭思考
     messages=messages
 )
 content = completion.choices[0].message.content
@@ -111,7 +114,22 @@ print("AI:", content)
 
 **输出**：
 
-![输出](./assets/image-20250214193138061.png)
+```
+AI: 这个问题其实是个常见的“陷阱题”，很容易被人误解。
+
+**如果单纯比较数值大小：**  
+9.11 和 9.8，9.11 更大。因为 9.11 = 9 + 0.11，而 9.8 = 9 + 0.8，但注意 0.8 = 0.80，而 0.11 < 0.80，所以实际上 **9.8 > 9.11**。
+
+所以正确答案是：**9.8 更大**。
+
+但很多人会误以为 9.11 更大，因为觉得“11 > 8”，其实这是忽略了小数点后的位数不同。比较小数时，要从左到右逐位比较：  
+- 个位：9 = 9  
+- 十分位：1 < 8  
+所以 9.8 更大。
+AI: 我刚才针对的是 **9.11 和 9.8** 这两个数值进行了比较。
+
+所以回答是：**9.8 更大**，因为 9.8 的十分位是 8，而 9.11 的十分位是 1，所以 9.8 > 9.11。
+```
 
 在这个例子中，我们对 `messages` 进行了三次 `append` 操作，其变化如下：
 
@@ -200,7 +218,8 @@ while True:
     
     # 调用 API 获取模型回复
     completion = client.chat.completions.create(
-        model="deepseek-chat",
+        model="deepseek-v4-flash",
+        extra_body={"thinking": {"type": "disabled"}},  # 关闭思考
         messages=messages
     )
     content = completion.choices[0].message.content
@@ -218,13 +237,13 @@ while True:
 >
 > 1. **Token 计费问题**
 >
->    用户的输入是计费的，以 DeepSeek 为例：聊天模型 2 元/百万 tokens，推理模型 4 元/百万 tokens。如果简单地无限制保留历史记录，随着对话轮次增加，token 消耗会迅速攀升。
+>    用户的输入是计费的，以 DeepSeek V4 为例：输入 1 元/百万 tokens。如果简单地无限制保留历史记录，随着对话轮次增加，token 消耗会迅速攀升。
 >
 > 2. **模型的最大上下文长度有限**
 >
->    每个模型都有最大上下文长度的限制，`deepseek-chat` 和 `deepseek-reasoner` 最大支持 64K 上下文。
+>    每个模型都有最大上下文长度的限制，早期的一些模型可能仅为 64K。
 >
-> 一个简单的方案是只保留最近 N 轮对话，伪代码：
+> 一个简单的方案是只保留最近 N 轮对话（落笔的时候有时代局限性，现在的常规方案是用模型做压缩，或者说摘要，只是各家的编排组织方式不同），伪代码：
 >
 > ```python
 > N = 3
@@ -273,7 +292,8 @@ class ChatSession:
         """
         self.append_message('user', user_input)
         completion = self.client.chat.completions.create(
-            model="deepseek-chat",
+            model="deepseek-v4-flash",
+            extra_body={"thinking": {"type": "disabled"}},  # 关闭思考
             messages=self.messages
         )
         content = completion.choices[0].message.content
@@ -301,27 +321,25 @@ while True:
     print("AI:", reply)
 ```
 
-### DeepSeek-Reasoner
+### 思考模式
 
-修改代码中的 `model` 参数即可切换模型（以 DeepSeek 官方平台为例）：
+V4 起思考与非思考共用同一模型，删除关闭思考的 `extra_body` 参数即可切换到思考模式（以 DeepSeek 官方平台为例）：
 
 ```diff
-- completion = client.chat.completions.create(
--     model="deepseek-chat", # 3
-
-+ completion = client.chat.completions.create(
-+     model="deepseek-reasoner", # 3
+  completion = client.chat.completions.create(
+      model="deepseek-v4-flash", # 3
+-     extra_body={"thinking": {"type": "disabled"}},  # 关闭思考
 ```
 
-> 其他平台参考下表[^1]，对应 `reasoner_model_id` 列：
+> 其他平台参考下表[^1]，对应 `model_id` 列：
 >
-> |              | base_url                                            | chat_model_id             | reasoner_model_id         |
-> | ------------ | --------------------------------------------------- | ------------------------- | ------------------------- |
-> | DeepSeek     | "https://api.deepseek.com"                          | "deepseek-chat"           | "deepseek-reasoner"       |
-> | 硅基流动     | "https://api.siliconflow.cn/v1"                     | "deepseek-ai/DeepSeek-V3" | "deepseek-ai/DeepSeek-R1" |
-> | 阿里云百炼   | "https://dashscope.aliyuncs.com/compatible-mode/v1" | "deepseek-v3"             | "deepseek-r1"             |
-> | 百度智能云   | "https://qianfan.baidubce.com/v2"                   | "deepseek-v3"             | "deepseek-r1"             |
-> | 字节火山引擎 | https://ark.cn-beijing.volces.com/api/v3/           | "deepseek-v3-241226"      | "deepseek-r1-250120"      |
+> |              | base_url                                            | model_id                  |
+> | ------------ | --------------------------------------------------- | ------------------------- |
+> | DeepSeek     | "https://api.deepseek.com"                          | "deepseek-v4-flash"           |
+> | 硅基流动     | "https://api.siliconflow.cn/v1"                     | "deepseek-ai/DeepSeek-V4-Flash" |
+> | 阿里云百炼   | "https://dashscope.aliyuncs.com/compatible-mode/v1" | "deepseek-v4-flash"             |
+> | 百度智能云   | "https://qianfan.baidubce.com/v2"                   | "deepseek-v4-flash"             |
+> | 字节火山引擎 | https://ark.cn-beijing.volces.com/api/v3/           | "deepseek-v4-flash-260425"      |
 >
 > [^1]: [DeepSeek API 的获取与对话示例](./DeepSeek%20API%20的获取与对话示例.md).
 
@@ -329,7 +347,7 @@ while True:
 
 ```python
 # 获取推理思考过程（Reasoner特有字段）
-reasoning_content = completion.choices[0].message.reasoning_content
+reasoning_content = getattr(completion.choices[0].message, 'reasoning_content', None)
 # 获取模型回复内容（与之前相同）
 content = completion.choices[0].message.content
 ```
@@ -352,7 +370,7 @@ client = OpenAI(
 
 # 单轮对话示例
 completion = client.chat.completions.create(
-    model="deepseek-reasoner",
+    model="deepseek-v4-flash",
     messages=[
         {'role': 'system', 'content': 'You are a helpful assistant.'}, 
         {'role': 'user', 'content': '你是谁？'}
@@ -360,7 +378,7 @@ completion = client.chat.completions.create(
 )
 
 # 获取推理思考过程和模型回复
-reasoning_content = completion.choices[0].message.reasoning_content
+reasoning_content = getattr(completion.choices[0].message, 'reasoning_content', None)
 content = completion.choices[0].message.content
 
 print(f"===== 模型推理过程 =====\n{reasoning_content}")
@@ -397,11 +415,11 @@ messages = [{'role': 'system', 'content': 'You are a helpful assistant.'}]
 # 第一轮对话
 messages.append({'role': 'user', 'content': '9.11 和 9.8 哪个更大？'})
 completion = client.chat.completions.create(
-    model="deepseek-reasoner",
+    model="deepseek-v4-flash",
     messages=messages
 )
 # 获取推理思考过程和模型回复
-reasoning_content = completion.choices[0].message.reasoning_content
+reasoning_content = getattr(completion.choices[0].message, 'reasoning_content', None)
 content = completion.choices[0].message.content
 
 print(f"===== 第一轮推理过程 =====\n{reasoning_content}\n")
@@ -413,11 +431,11 @@ messages.append({'role': 'assistant', 'content': content})
 # 第二轮对话
 messages.append({'role': 'user', 'content': '刚刚针对哪两个数值进行了比较？'})
 completion = client.chat.completions.create(
-    model="deepseek-reasoner",
+    model="deepseek-v4-flash",
     messages=messages
 )
 # 获取推理思考过程和模型回复
-reasoning_content = completion.choices[0].message.reasoning_content
+reasoning_content = getattr(completion.choices[0].message, 'reasoning_content', None)
 content = completion.choices[0].message.content
 
 print(f"===== 第二轮推理过程 =====\n{reasoning_content}\n")
@@ -432,7 +450,7 @@ print(f"===== 模型回复 =====\nAI: {content}\n")
 
 #### 多轮对话
 
-类似地，我们也可以对 `deepseek-reasoner` 做多轮循环，只需在每轮里：
+类似地，我们也可以对思考模式做多轮循环，只需在每轮里：
 
 1. 先 `append` 用户输入。
 2. 调用 API 并获取 `reasoning_content` 与 `content`。
@@ -465,10 +483,10 @@ while True:
 
     # 2. 调用 API
     completion = client.chat.completions.create(
-        model="deepseek-reasoner",
+        model="deepseek-v4-flash",
         messages=messages
     )
-    reasoning_content = completion.choices[0].message.reasoning_content
+    reasoning_content = getattr(completion.choices[0].message, 'reasoning_content', None)
     content = completion.choices[0].message.content
 
     # 3. 输出推理思考过程与最终回复
@@ -517,12 +535,12 @@ class ReasonerSession:
 
         # 2. 调用 API
         completion = self.client.chat.completions.create(
-            model="deepseek-reasoner",
+            model="deepseek-v4-flash",
             messages=self.messages
         )
 
         # 3. 获取推理思考过程和最终回复
-        reasoning_content = completion.choices[0].message.reasoning_content
+        reasoning_content = getattr(completion.choices[0].message, 'reasoning_content', None)
         content = completion.choices[0].message.content
 
         # 4. 只将模型的最终回复加入到历史消息

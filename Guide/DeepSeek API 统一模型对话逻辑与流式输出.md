@@ -15,9 +15,9 @@
     - [使用示例](#使用示例-1)
 - [📝 作业](#-作业)
 
-在[上一篇文章](./DeepSeek%20API%20多轮对话%20-%20OpenAI%20SDK.md)中，我们分别使用了 `ChatSession` 和 `ReasonerSession` 两个类来处理聊天模型（`DeepSeek-Chat`）和推理模型（`DeepSeek-Reasoner`）的对话逻辑。回顾它们的 API 返回结果[^1]：
+在[上一篇文章](./DeepSeek%20API%20多轮对话%20-%20OpenAI%20SDK.md)中，我们分别使用了 `ChatSession` 和 `ReasonerSession` 两个类来处理思考与非思考两种模式的对话逻辑（V3/R1 时代它们对应 `DeepSeek-Chat` 和 `DeepSeek-Reasoner` 两个独立模型）。回顾它们的 API 返回结果[^1]：
 
-- **DeepSeek-Chat**
+- **非思考模式（DeepSeek-Chat）**
 
   ```yaml
   {'choices': [{'finish_reason': 'stop',
@@ -31,7 +31,7 @@
    ...}
   ```
 
-- **DeepSeek-Reasoner**
+- **思考模式（DeepSeek-Reasoner）**
 
   ```yaml
   {'choices': [{'finish_reason': 'stop',
@@ -46,11 +46,11 @@
    ...}
   ```
 
-[^1]: [DeepSeek API 输出解析 - OpenAI SDK](./DeepSeek%20API%20输出解析%20-%20OpenAI%20SDK.md#deepseek-reasoner).
+[^1]: [DeepSeek API 输出解析 - OpenAI SDK](./DeepSeek%20API%20输出解析%20-%20OpenAI%20SDK.md#思考模式).
 
-可以观察到：推理模型（`DeepSeek-Reasoner`）的 `message` 部分比聊天模型（`DeepSeek-Chat`）**仅**多了一个 `reasoning_content` 字段，用于记录模型的推理思考过程。
+可以观察到：思考模式的 `message` 部分比非思考模式**仅**多了一个 `reasoning_content` 字段，用于记录模型的推理思考过程。
 
-**那么，能不能统一使用 `ChatSession` 类来兼容两种模型的对话逻辑呢？**
+**那么，能不能统一使用 `ChatSession` 类来兼容两种模式的对话逻辑呢？**
 
 当然可以，只需要额外取一下 `reasoning_content` 字段：
 
@@ -59,15 +59,17 @@ from openai import OpenAI
 import os
 
 class ChatSession:
-    def __init__(self, client, model="deepseek-chat", system_message="You are a helpful assistant."):
+    def __init__(self, client, model="deepseek-v4-flash", system_message="You are a helpful assistant.", thinking=None):
         """
         参数:
         - client (openai.OpenAI): OpenAI 客户端实例
-        - model (str): 模型名称（如 'deepseek-chat' 或 'deepseek-reasoner'），默认为 'deepseek-chat'
+        - model (str): 模型名称，默认为 'deepseek-v4-flash'（更强的 'deepseek-v4-pro' 用法相同）
         - system_message (str): 系统消息，用于设定对话背景，默认为 'You are a helpful assistant.'
+        - thinking (bool|None): 思考模式开关，None 使用平台默认，True/False 显式开/关
         """
         self.client = client
         self.model = model
+        self.thinking = thinking  # None=平台默认；True/False=显式开/关思考（V4 生效）
         self.messages = [{'role': 'system', 'content': system_message}]
 
     def append_message(self, role, content):
@@ -85,7 +87,7 @@ class ChatSession:
         参数:
         - user_input (str): 用户输入的消息
         返回：
-        - (reasoning_content, content) (tuple): 推理过程（仅推理模型有）和回复内容
+        - (reasoning_content, content) (tuple): 推理过程（仅思考模式有）和回复内容
         """
         # 记录用户输入
         self.append_message('user', user_input)
@@ -93,6 +95,7 @@ class ChatSession:
         # 调用 API
         completion = self.client.chat.completions.create(
             model=self.model,
+            **({"extra_body": {"thinking": {"type": "enabled" if self.thinking else "disabled"}}} if self.thinking is not None else {}),
             messages=self.messages
         )
         
@@ -115,13 +118,14 @@ from openai import OpenAI
 import os
 
 class ChatSession:
-    def __init__(self, api_key=None, base_url="https://api.deepseek.com", model="deepseek-chat", system_message="You are a helpful assistant."):
+    def __init__(self, api_key=None, base_url="https://api.deepseek.com", model="deepseek-v4-flash", system_message="You are a helpful assistant.", thinking=None):
         """
         参数:
         - api_key (str): 平台的 API Key，默认从环境变量 `DEEPSEEK_API_KEY` 读取
         - base_url (str): API 请求地址，默认为 DeepSeek 官方平台
-        - model (str): 模型名称（如 'deepseek-chat' 或 'deepseek-reasoner'），默认为 'deepseek-chat'
+        - model (str): 模型名称，默认为 'deepseek-v4-flash'（更强的 'deepseek-v4-pro' 用法相同）
         - system_message (str): 系统消息，用于设定对话背景，默认为 'You are a helpful assistant.'
+        - thinking (bool|None): 思考模式开关，None 使用平台默认，True/False 显式开/关
         """
         # 处理 API Key 优先级：显式传入 > 环境变量
         self.api_key = api_key or os.getenv("DEEPSEEK_API_KEY")
@@ -136,6 +140,7 @@ class ChatSession:
         )
         
         self.model = model
+        self.thinking = thinking  # None=平台默认；True/False=显式开/关思考（V4 生效）
         self.messages = [{'role': 'system', 'content': system_message}]
 
     def append_message(self, role, content):
@@ -153,7 +158,7 @@ class ChatSession:
         参数：
         - user_input (str): 用户输入的消息
         返回:
-        - (reasoning_content, content) (tuple): 推理过程（仅推理模型有）和回复内容
+        - (reasoning_content, content) (tuple): 推理过程（仅思考模式有）和回复内容
         """
         # 记录用户输入
         self.append_message('user', user_input)
@@ -161,6 +166,7 @@ class ChatSession:
         # 调用 API
         completion = self.client.chat.completions.create(
             model=self.model,
+            **({"extra_body": {"thinking": {"type": "enabled" if self.thinking else "disabled"}}} if self.thinking is not None else {}),
             messages=self.messages
         )
         
@@ -182,7 +188,8 @@ class ChatSession:
 config = {
     "api_key": "your-api-key",
     "base_url": "https://api.deepseek.com",
-    "model": "deepseek-chat",  # 可以修改为推理模型，比如 "deepseek-reasoner"
+    "model": "deepseek-v4-flash",
+    "thinking": False,  # 关闭思考；True 开启，None 使用平台默认
     "system_message": "You are a helpful assistant."
 }
 
@@ -197,7 +204,8 @@ session = ChatSession(**config)
 > ChatSession(
 >        api_key="your-api-key",
 >        base_url="https://api.deepseek.com",
->        model="deepseek-chat",
+>        model="deepseek-v4-flash",
+>        thinking=False,  # 关闭思考（None 则用平台默认）
 >        system_message="You are a helpful assistant."
 > )
 > ```
@@ -209,7 +217,7 @@ session = ChatSession(**config)
 user_input = "Hello"
 reasoning, reply = session.get_response(user_input)
 
-# 聊天模型（deepseek-chat）的 reasoning 为 None
+# 非思考模式的 reasoning 为 None
 if reasoning:
     print(f"===== 推理过程 =====\n{reasoning}\n")
 print(f"===== 模型回复 =====\nAI: {reply}\n")
@@ -235,7 +243,7 @@ def _process_stream(self, completion):
 
     for chunk in completion:
         delta = chunk.choices[0].delta
-        # 处理推理过程（仅推理模型有）
+        # 处理推理过程（仅思考模式有）
         if getattr(delta, 'reasoning_content', None):
             print(delta.reasoning_content, end='')
         # 处理回复内容
@@ -260,7 +268,7 @@ def _process_stream(self, completion):
 
     for chunk in completion:
         delta = chunk.choices[0].delta
-        # 处理推理过程（仅推理模型有）
+        # 处理推理过程（仅思考模式有）
         if getattr(delta, 'reasoning_content', None):
             yield delta.reasoning_content, None
         # 处理回复内容
@@ -283,13 +291,14 @@ def _process_stream(self, completion):
 
 ```python
 class ChatSession:
-    def __init__(self, api_key=None, base_url="https://api.deepseek.com", model="deepseek-chat", system_message="You are a helpful assistant."):
+    def __init__(self, api_key=None, base_url="https://api.deepseek.com", model="deepseek-v4-flash", system_message="You are a helpful assistant.", thinking=None):
         """
         参数：
         - api_key (str): 平台的 API Key，默认从环境变量 `DEEPSEEK_API_KEY` 读取
         - base_url (str): API 请求地址，默认为 DeepSeek 官方平台
-        - model (str): 模型名称（如 'deepseek-chat' 或 'deepseek-reasoner'），默认为 'deepseek-chat'
+        - model (str): 模型名称，默认为 'deepseek-v4-flash'（更强的 'deepseek-v4-pro' 用法相同）
         - system_message (str): 系统消息，用于设定对话背景，默认为 'You are a helpful assistant.'
+        - thinking (bool|None): 思考模式开关，None 使用平台默认，True/False 显式开/关
         """
         # 处理 API Key 优先级：显式传入 > 环境变量
         self.api_key = api_key or os.getenv("DEEPSEEK_API_KEY")
@@ -304,6 +313,7 @@ class ChatSession:
         )
         
         self.model = model
+        self.thinking = thinking  # None=平台默认；True/False=显式开/关思考（V4 生效）
         self.messages = [{'role': 'system', 'content': system_message}]
 
     def append_message(self, role, content):
@@ -327,7 +337,7 @@ class ChatSession:
         返回：
         if stream=False:
             tuple: (reasoning_content, content)
-            - reasoning_content (str|None): 推理过程，仅推理模型返回，聊天模型为 None
+            - reasoning_content (str|None): 推理过程，仅思考模式返回，非思考模式为 None
             - content (str): 模型的回复内容
 
         if stream=True:
@@ -342,6 +352,7 @@ class ChatSession:
         # 调用 API
         completion = self.client.chat.completions.create(
             model=self.model,
+            **({"extra_body": {"thinking": {"type": "enabled" if self.thinking else "disabled"}}} if self.thinking is not None else {}),
             messages=self.messages,
             stream=stream
         )
@@ -375,7 +386,7 @@ class ChatSession:
         
         for chunk in completion:
             delta = chunk.choices[0].delta
-            # 处理推理过程（仅推理模型有）
+            # 处理推理过程（仅思考模式有）
             if getattr(delta, 'reasoning_content', None):
                 yield delta.reasoning_content, None
             # 处理回复内容
@@ -401,7 +412,8 @@ class ChatSession:
   config = {
       "api_key": "your-api-key",
       "base_url": "https://api.deepseek.com",
-      "model": "deepseek-chat",  # 可以修改为推理模型，比如 "deepseek-reasoner"
+      "model": "deepseek-v4-flash",
+      "thinking": False,  # 关闭思考；True 开启，None 使用平台默认
       "system_message": "You are a helpful assistant."
   }
   session = ChatSession(**config)
@@ -422,7 +434,8 @@ class ChatSession:
   config = {
       "api_key": "your-api-key",
       "base_url": "https://api.deepseek.com",
-      "model": "deepseek-chat",  # 可以修改为推理模型，比如 "deepseek-reasoner"
+      "model": "deepseek-v4-flash",
+      "thinking": True,  # 开启思考以观察推理过程
       "system_message": "You are a helpful assistant."
   }
   session = ChatSession(**config)

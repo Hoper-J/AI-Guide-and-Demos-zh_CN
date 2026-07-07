@@ -13,7 +13,6 @@
    - [ 阿里云百炼 ](#-阿里云百炼-)
    - [ 百度智能云 ](#-百度智能云-)
    - [ 字节火山引擎 ](#-字节火山引擎-)
-- [在线体验地址](#在线体验地址)
 - [📝 作业](#-作业)
 
 ## 环境依赖
@@ -24,36 +23,28 @@ pip install openai
 
 ## 获取 API
 
-> ~~因为被攻击的原因，官方 API 平台可能会暂时无法注册，本文提供可替代的解决方案。~~
->
-> 撰写文章时发现 DeepSeek API 创建已恢复正常，不过箭在弦上，其余平台的解决方案也同时提供。
-
 **不同平台参数对照表**：
 
-|              | api_key_name          | base_url                                            | chat_model_id             | reasoner_model_id         |
-| ------------ | --------------------- | --------------------------------------------------- | ------------------------- | ------------------------- |
-| DeepSeek     | "DEEPSEEK_API_KEY"    | "https://api.deepseek.com"                          | "deepseek-chat"           | "deepseek-reasoner"       |
-| 硅基流动     | "SILICONFLOW_API_KEY" | "https://api.siliconflow.cn/v1"                     | "deepseek-ai/DeepSeek-V3" | "deepseek-ai/DeepSeek-R1" |
-| 阿里云百炼   | "DASHSCOPE_API_KEY"   | "https://dashscope.aliyuncs.com/compatible-mode/v1" | "deepseek-v3"             | "deepseek-r1"             |
-| 百度智能云   | "BAIDU_API_KEY"       | "https://qianfan.baidubce.com/v2"                   | "deepseek-v3"             | "deepseek-r1"             |
-| 字节火山引擎 | "ARK_API_KEY"         | "https://ark.cn-beijing.volces.com/api/v3"          | "deepseek-v3-241226"      | "deepseek-r1-250120"      |
+|              | api_key_name          | base_url                                            | model_id                        |
+| ------------ | --------------------- | --------------------------------------------------- | ------------------------------- |
+| DeepSeek     | "DEEPSEEK_API_KEY"    | "https://api.deepseek.com"                          | "deepseek-v4-flash"             |
+| 硅基流动     | "SILICONFLOW_API_KEY" | "https://api.siliconflow.cn/v1"                     | "deepseek-ai/DeepSeek-V4-Flash" |
+| 阿里云百炼   | "DASHSCOPE_API_KEY"   | "https://dashscope.aliyuncs.com/compatible-mode/v1" | "deepseek-v4-flash"             |
+| 百度智能云   | "BAIDU_API_KEY"       | "https://qianfan.baidubce.com/v2"                   | "deepseek-v4-flash"             |
+| 字节火山引擎 | "ARK_API_KEY"         | "https://ark.cn-beijing.volces.com/api/v3"          | "deepseek-v4-flash-260425"      |
 
 参数说明：
 
 - `api_key_name`：环境变量名称。
 - `base_url`：API 请求地址。
-- `chat_model_id`：对话模型标识。
-- `reasoner_model_id`：推理模型标识。
+- `model_id`：模型标识。
+
+> 模型并非一开始就会“思考”的，早期的 DeepSeek 分为两个模型：V3 对话，R1 推理，想用推理能力就得换模型。
 
 从下方选择一个平台继续，**点击 `►` 或文字展开**。
 
 <details>
     <summary> <h3> DeepSeek 官方 </h3> </summary>
-
-
-> ~~目前已恢复正常，所有新平台的注册都会赠送一定数量的 tokens，择一即可。~~
->
-> 目前 DeepSeek 平台的新用户注册暂时不再赠送余额。
 
 访问 [https://platform.deepseek.com/sign_in](https://platform.deepseek.com/sign_in) 进行注册并登录：
 
@@ -87,23 +78,24 @@ client = OpenAI(
 
 # 单轮对话示例
 response = client.chat.completions.create(
-    model="deepseek-chat", # 3
+    model="deepseek-v4-flash", # 3
     messages=[
         {'role': 'system', 'content': 'You are a helpful assistant.'},
         {'role': 'user', 'content': '你是谁？'}
-    ]
+    ],
+    extra_body={"thinking": {"type": "disabled"}},  # 关闭思考
 )
 
 # 打印模型回复内容
 print(response.choices[0].message.content)
 ```
 
-#### 模型切换
+#### 模式切换
 
 ```python
-# 切换推理模型
+# 切换到思考模式：删除 extra_body 参数即可（V4 默认开启思考）
 response = client.chat.completions.create(
-    model="deepseek-reasoner",  # 修改此处标识
+    model="deepseek-v4-flash",
     # ...其他参数保持不变...
 )
 ```
@@ -153,23 +145,25 @@ client = OpenAI(
 
 # 单轮对话示例
 response = client.chat.completions.create(
-    model="deepseek-ai/DeepSeek-V3", # 3
+    model="deepseek-ai/DeepSeek-V4-Flash", # 3
     messages=[
         {'role': 'system', 'content': 'You are a helpful assistant.'},
         {'role': 'user', 'content': '你是谁？'}
-    ]
+    ],
+    extra_body={"thinking": {"type": "disabled"}},  # 关闭思考
 )
 
 # 打印模型回复内容
 print(response.choices[0].message.content)
 ```
 
-#### 模型切换
+#### 模式切换
 
 ```python
-# 切换推理模型
+# 切换到思考模式
 response = client.chat.completions.create(
-    model="deepseek-ai/DeepSeek-R1",  # 修改此处标识
+    model="deepseek-ai/DeepSeek-V4-Flash",
+    extra_body={"thinking": {"type": "enabled"}},  # 硅基流动上偶尔不默认思考，所以这里显式开启
     # ...其他参数保持不变...
 )
 ```
@@ -191,7 +185,7 @@ response = client.chat.completions.create(
 
 ![注册](./assets/image-20250205181432735.png)
 
-在注册后将获取 1000 万的免费额度，有效期为半年，可以用于 DeepSeek-V3 和 DeepSeek-R1。
+在注册后将获取 1000 万的免费额度，有效期为半年，可以用于 DeepSeek 系列。
 
 ![DeepSeek-V3](./assets/image-20250205172736707.png)
 
@@ -235,23 +229,24 @@ client = OpenAI(
 
 # 单轮对话示例
 response = client.chat.completions.create(
-    model="deepseek-v3", # 3
+    model="deepseek-v4-flash", # 3
     messages=[
         {'role': 'system', 'content': 'You are a helpful assistant.'},
         {'role': 'user', 'content': '你是谁？'}
-    ]
+    ],
+    extra_body={"thinking": {"type": "disabled"}},  # 关闭思考
 )
 
 # 打印模型回复内容
 print(response.choices[0].message.content)
 ```
 
-#### 模型切换
+#### 模式切换
 
 ```python
-# 切换推理模型
+# 切换到思考模式：删除 extra_body 参数即可（V4 默认开启思考）
 response = client.chat.completions.create(
-    model="deepseek-r1",  # 修改此处标识
+    model="deepseek-v4-flash",
     # ...其他参数保持不变...
 )
 ```
@@ -301,23 +296,24 @@ client = OpenAI(
 
 # 单轮对话示例
 response = client.chat.completions.create(
-    model="deepseek-v3", # 3
+    model="deepseek-v4-flash", # 3
     messages=[
         {'role': 'system', 'content': 'You are a helpful assistant.'},
         {'role': 'user', 'content': '你是谁？'}
-    ]
+    ],
+    extra_body={"thinking": {"type": "disabled"}},  # 关闭思考
 )
 
 # 打印模型回复内容
 print(response.choices[0].message.content)
 ```
 
-#### 模型切换
+#### 模式切换
 
 ```python
-# 切换推理模型
+# 切换到思考模式：删除 extra_body 参数即可（V4 默认开启思考）
 response = client.chat.completions.create(
-    model="deepseek-r1",  # 修改此处标识
+    model="deepseek-v4-flash",
     # ...其他参数保持不变...
 )
 ```
@@ -331,6 +327,8 @@ response = client.chat.completions.create(
 > 下方火山引擎的注册链接附带邀请码，因邀请所产生**所有** tokens 将被用于学习共享（[Discussions](https://github.com/Hoper-J/AI-Guide-and-Demos-zh_CN/discussions/6)）。
 >
 > **感谢注册，因为你才有了该分享的诞生**。
+>
+> **注**：下图使用 DeepSeek-V3/R1 进行步骤演示。
 
 访问[火山引擎](https://www.volcengine.com/experience/ark?utm_term=202502dsinvite&ac=DSASUQY5&rc=ON2SBXC1)进行注册并登录：
 
@@ -364,8 +362,7 @@ response = client.chat.completions.create(
 
 ![自动创建模型接入点](./assets/image-20250307113923851.png)
 
-- 聊天模型：`deepseek-v3-241226`
-- 推理模型：`deepseek-r1-250120`
+- 模型：`deepseek-v4-flash-260425`（思考/非思考双模式，切换见下方代码）
 
 现在可以跳过下面的「自定义推理接入点」部分。
 
@@ -417,41 +414,29 @@ client = OpenAI(
 
 # 单轮对话示例
 response = client.chat.completions.create(
-    model="deepseek-v3-241226", # 3
+    model="deepseek-v4-flash-260425", # 3
     messages=[
         {'role': 'system', 'content': 'You are a helpful assistant.'},
         {'role': 'user', 'content': '你是谁？'}
-    ]
+    ],
+    extra_body={"thinking": {"type": "disabled"}},  # 关闭思考
 )
 
 # 打印模型回复内容
 print(response.choices[0].message.content)
 ```
 
-#### 模型切换
+#### 模式切换
 
 ```python
-# 切换推理模型
+# 切换到思考模式：删除 extra_body 参数即可（V4 默认开启思考）
 response = client.chat.completions.create(
-    model="deepseek-r1-250120",  # 修改此处标识
+    model="deepseek-v4-flash-260425",
     # ...其他参数保持不变...
 )
 ```
 
 </details>
-
----
-
-## 在线体验地址
-
-除了官方平台外，还可以通过其他平台与 DeepSeek 进行对话（避开官方平台的卡顿）：
-
-| 平台          | 在线链接                                                     |
-| ------------- | ------------------------------------------------------------ |
-| DeepSeek 官方 | [官方](https://chat.deepseek.com)                            |
-| 硅基流动      | [DeepSeek-V3](https://cloud.siliconflow.cn/playground/chat/17885302723)<br />[DeepSeek-R1](https://cloud.siliconflow.cn/playground/chat/17885302724) |
-| 百度智能云    | [DeepSeek-V3](https://console.bce.baidu.com/qianfan/ais/console/onlineTest/LLM/DeepSeek-V3)<br />[DeepSeek-R1](https://console.bce.baidu.com/qianfan/ais/console/onlineTest/LLM/DeepSeek-R1) |
-| 火山引擎      | [模型广场选择体验](https://console.volcengine.com/ark/region:ark+cn-beijing/model?vendor=Bytedance&view=LIST_VIEW) |
 
 ## 📝 作业
 

@@ -2,8 +2,6 @@
 
 > 大模型服务平台通常采取流式输出方案，允许用户实时查看模型生成的内容，而不是等模型生成完所有文本后一次性查看。本文将以 DeepSeek API 为例，对流式输出返回的数据块（chunk）进行解析，并介绍如何实时“拼接”和展示回复内容。
 >
-> DeepSeek 官方的 API 偶尔会异常，参考 [API 服务状态](https://status.deepseek.com)，出现异常时可以切换到其他平台进行学习。
->
 > **代码文件下载**：[Code](../Demos/deepseek-api-guide-3.ipynb)
 >
 > **在线链接**：[Kaggle](https://www.kaggle.com/code/aidemos/deepseek-api-guide-3) | [Colab](https://colab.research.google.com/drive/1Hfm7qU75GSvU8cO6RL108ZcmwaugXemo?usp=sharing)
@@ -13,8 +11,8 @@
 ## 目录
 
 - [认识流式输出](#认识流式输出)
-  - [DeepSeek-Chat](#deepseek-chat)
-  - [DeepSeek-Reasoner](#deepseek-reasoner)
+  - [非思考模式](#非思考模式)
+  - [思考模式](#思考模式)
 - [📝 作业](#-作业)
 - [附录](#附录)
 
@@ -33,7 +31,8 @@ client = OpenAI(
 
 # 单轮对话示例
 completion = client.chat.completions.create(
-    model="deepseek-chat",
+    model="deepseek-v4-flash",
+    extra_body={"thinking": {"type": "disabled"}},  # 关闭思考
     messages=[
         {'role': 'system', 'content': 'You are a helpful assistant.'},
         {'role': 'user', 'content': '你是谁？'}
@@ -57,9 +56,9 @@ for chunk in completion:
 >
 > 在[代码文件](../Demos/deepseek-api-guide-3.ipynb)中，每个示例都会启动一次新的对话。
 
-下面以 DeepSeek API 的聊天模型和推理模型为例进行解读，涉及的知识对于使用了 OpenAI SDK 的平台是通用的：
+下面以 DeepSeek API 的非思考和思考模式为例进行解读，涉及的知识对于使用了 OpenAI SDK 的平台是通用的：
 
-### DeepSeek-Chat
+### 非思考模式
 
 **输出**：
 
@@ -73,15 +72,15 @@ for chunk in completion:
               'finish_reason': None,
               'index': 0,
               'logprobs': None}],
- 'created': 1739189255,
- 'id': '97a2a86e-e55d-4543-8f58-c6e2399f99db',
- 'model': 'deepseek-chat',
+ 'created': 1783305526,
+ 'id': '4e9f748e-eb38-47a2-b94b-1703275ad950',
+ 'model': 'deepseek-v4-flash',
  'object': 'chat.completion.chunk',
  'service_tier': None,
- 'system_fingerprint': 'fp_3a5770e1b4',
+ 'system_fingerprint': 'fp_8b330d02d0_prod0820_fp8_kvcache_20260402',
  'usage': None}
 # ===== 第二个数据块 =====
-{'choices': [{'delta': {'content': '您好',
+{'choices': [{'delta': {'content': '你好',
                         'function_call': None,
                         'refusal': None,
                         'role': None,
@@ -89,12 +88,12 @@ for chunk in completion:
               'finish_reason': None,
               'index': 0,
               'logprobs': None}],
- 'created': 1739189255,
- 'id': '97a2a86e-e55d-4543-8f58-c6e2399f99db',
- 'model': 'deepseek-chat',
+ 'created': 1783305526,
+ 'id': '4e9f748e-eb38-47a2-b94b-1703275ad950',
+ 'model': 'deepseek-v4-flash',
  'object': 'chat.completion.chunk',
  'service_tier': None,
- 'system_fingerprint': 'fp_3a5770e1b4',
+ 'system_fingerprint': 'fp_8b330d02d0_prod0820_fp8_kvcache_20260402',
  'usage': None}
 
 # ===== ...（中间数据块）=====
@@ -108,18 +107,19 @@ for chunk in completion:
               'finish_reason': 'stop',
               'index': 0,
               'logprobs': None}],
- 'created': 1739189255,
- 'id': '97a2a86e-e55d-4543-8f58-c6e2399f99db',
- 'model': 'deepseek-chat',
+ 'created': 1783305526,
+ 'id': '4e9f748e-eb38-47a2-b94b-1703275ad950',
+ 'model': 'deepseek-v4-flash',
  'object': 'chat.completion.chunk',
  'service_tier': None,
- 'system_fingerprint': 'fp_3a5770e1b4',
- 'usage': {'completion_tokens': 37,
+ 'system_fingerprint': 'fp_8b330d02d0_prod0820_fp8_kvcache_20260402',
+ 'usage': {'completion_tokens': 69,
+           'completion_tokens_details': None,
            'prompt_cache_hit_tokens': 0,
-           'prompt_cache_miss_tokens': 11,
-           'prompt_tokens': 11,
-           'prompt_tokens_details': {'cached_tokens': 0},
-           'total_tokens': 48}}
+           'prompt_cache_miss_tokens': 12,
+           'prompt_tokens': 12,
+           'prompt_tokens_details': {'audio_tokens': None, 'cached_tokens': 0},
+           'total_tokens': 81}}
 ```
 
 观察数据块的 `delta`, `usage` 和 `finish_reason` 字段：
@@ -137,7 +137,7 @@ for chunk in completion:
      `delta.content` 表示本次数据块中新增加的消息内容。
 
     - 第一个数据块中，`content` 为空，但标记了角色信息。
-    - 随后的数据块中，`content` 分别返回 `"您好"` 和 `"！"`，这些数据块的 `content` 拼接起来就构成了完整的回复 “您好！...”。
+    - 随后的数据块中，`content` 分别返回 `"你好"` 和 `"！"`，这些数据块的 `content` 拼接起来就构成了完整的回复 “你好！...”。
   
   > 在没有启动流式输出时（`stream=False`），`delta` 对应的字段是 `message`，此时完整回复位于 `message.content`。
   
@@ -157,7 +157,7 @@ for chunk in completion:
 | 特征              | 首块        | 中间块                  | 尾块                    |
 | ----------------- | ----------- | ----------------------- | ----------------------- |
 | **delta.role**    | `assistant` | `None`                  | `None`                  |
-| **delta.content** | `""`        | 增量文本（如 `"您好"`） | `""`                    |
+| **delta.content** | `""`        | 增量文本（如 `"你好"`） | `""`                    |
 | **finish_reason** | `None`      | `None`                  | `"stop"` / 其它结束标记 |
 | **usage**         | `None`      | `None`                  | Token 统计              |
 
@@ -184,27 +184,25 @@ for chunk in completion:
 print(content)
 ```
 
-### DeepSeek-Reasoner
+### 思考模式
 
-修改代码中的 `model` 参数即可切换模型（以 DeepSeek 官方平台为例）：
+V4 起思考与非思考共用同一模型，删除关闭思考的 `extra_body` 参数即可切换到思考模式（以 DeepSeek 官方平台为例）：
 
 ```diff
-- completion = client.chat.completions.create(
--     model="deepseek-chat",
-
-+ completion = client.chat.completions.create(
-+     model="deepseek-reasoner",
+  completion = client.chat.completions.create(
+      model="deepseek-v4-flash",
+-     extra_body={"thinking": {"type": "disabled"}},  # 关闭思考
 ```
 
-> 其他平台参考下表[^1]，对应 `reasoner_model_id` 列：
+> 其他平台参考下表[^1]，对应 `model_id` 列：
 >
-> |              | base_url                                            | chat_model_id             | reasoner_model_id         |
-> | ------------ | --------------------------------------------------- | ------------------------- | ------------------------- |
-> | DeepSeek     | "https://api.deepseek.com"                          | "deepseek-chat"           | "deepseek-reasoner"       |
-> | 硅基流动     | "https://api.siliconflow.cn/v1"                     | "deepseek-ai/DeepSeek-V3" | "deepseek-ai/DeepSeek-R1" |
-> | 阿里云百炼   | "https://dashscope.aliyuncs.com/compatible-mode/v1" | "deepseek-v3"             | "deepseek-r1"             |
-> | 百度智能云   | "https://qianfan.baidubce.com/v2"                   | "deepseek-v3"             | "deepseek-r1"             |
-> | 字节火山引擎 | https://ark.cn-beijing.volces.com/api/v3/           | "deepseek-v3-241226"      | "deepseek-r1-250120"      |
+> |              | base_url                                            | model_id                  |
+> | ------------ | --------------------------------------------------- | ------------------------- |
+> | DeepSeek     | "https://api.deepseek.com"                          | "deepseek-v4-flash"           |
+> | 硅基流动     | "https://api.siliconflow.cn/v1"                     | "deepseek-ai/DeepSeek-V4-Flash" |
+> | 阿里云百炼   | "https://dashscope.aliyuncs.com/compatible-mode/v1" | "deepseek-v4-flash"             |
+> | 百度智能云   | "https://qianfan.baidubce.com/v2"                   | "deepseek-v4-flash"             |
+> | 字节火山引擎 | https://ark.cn-beijing.volces.com/api/v3/           | "deepseek-v4-flash-260425"      |
 > 
 > [^1]: [DeepSeek API 的获取与对话示例](./DeepSeek%20API%20的获取与对话示例.md).
 
@@ -221,7 +219,7 @@ client = OpenAI(
 
 # 单轮对话示例
 completion = client.chat.completions.create(
-    model="deepseek-reasoner",
+    model="deepseek-v4-flash",
     messages=[
         {'role': 'system', 'content': 'You are a helpful assistant.'},
         {'role': 'user', 'content': '你是谁？'}
@@ -248,32 +246,32 @@ for chunk in completion:
               'finish_reason': None,
               'index': 0,
               'logprobs': None}],
- 'created': 1739243087,
- 'id': 'd7e87628-4f15-41bf-9b03-e688c1a0e8d6',
- 'model': 'deepseek-reasoner',
+ 'created': 1783305533,
+ 'id': 'e79351c2-b51b-4cdb-b0f8-f598b7da0f3c',
+ 'model': 'deepseek-v4-flash',
  'object': 'chat.completion.chunk',
  'service_tier': None,
- 'system_fingerprint': 'fp_7e73fd9a08',
+ 'system_fingerprint': 'fp_8b330d02d0_prod0820_fp8_kvcache_20260402',
  'usage': None}
 # ===== 第二个数据块 =====
 {'choices': [{'delta': {'content': None,
                         'function_call': None,
-                        'reasoning_content': '好的',
+                        'reasoning_content': '嗯',
                         'refusal': None,
                         'role': None,
                         'tool_calls': None},
               'finish_reason': None,
               'index': 0,
               'logprobs': None}],
- 'created': 1739243087,
- 'id': 'd7e87628-4f15-41bf-9b03-e688c1a0e8d6',
- 'model': 'deepseek-reasoner',
+ 'created': 1783305533,
+ 'id': 'e79351c2-b51b-4cdb-b0f8-f598b7da0f3c',
+ 'model': 'deepseek-v4-flash',
  'object': 'chat.completion.chunk',
  'service_tier': None,
- 'system_fingerprint': 'fp_7e73fd9a08',
+ 'system_fingerprint': 'fp_8b330d02d0_prod0820_fp8_kvcache_20260402',
  'usage': None}
- 
-...（中间数据块 - 思考部分）
+
+# ===== ...（中间数据块）=====
 
 # ===== “最后”一个数据块 - 思考部分 =====
 {'choices': [{'delta': {'content': None,
@@ -285,15 +283,18 @@ for chunk in completion:
               'finish_reason': None,
               'index': 0,
               'logprobs': None}],
- 'created': 1739243087,
- 'id': 'd7e87628-4f15-41bf-9b03-e688c1a0e8d6',
- 'model': 'deepseek-reasoner',
+ 'created': 1783305533,
+ 'id': 'e79351c2-b51b-4cdb-b0f8-f598b7da0f3c',
+ 'model': 'deepseek-v4-flash',
  'object': 'chat.completion.chunk',
  'service_tier': None,
- 'system_fingerprint': 'fp_7e73fd9a08',
+ 'system_fingerprint': 'fp_8b330d02d0_prod0820_fp8_kvcache_20260402',
  'usage': None}
+
+# ===== ...（中间数据块）=====
+
 # ===== “第一个”数据块 - 内容部分 =====
- {'choices': [{'delta': {'content': '您好',
+{'choices': [{'delta': {'content': '你好',
                         'function_call': None,
                         'reasoning_content': None,
                         'refusal': None,
@@ -302,15 +303,15 @@ for chunk in completion:
               'finish_reason': None,
               'index': 0,
               'logprobs': None}],
- 'created': 1739243087,
- 'id': 'd7e87628-4f15-41bf-9b03-e688c1a0e8d6',
- 'model': 'deepseek-reasoner',
+ 'created': 1783305533,
+ 'id': 'e79351c2-b51b-4cdb-b0f8-f598b7da0f3c',
+ 'model': 'deepseek-v4-flash',
  'object': 'chat.completion.chunk',
  'service_tier': None,
- 'system_fingerprint': 'fp_7e73fd9a08',
+ 'system_fingerprint': 'fp_8b330d02d0_prod0820_fp8_kvcache_20260402',
  'usage': None}
- 
-...（中间数据块 - 内容部分）
+
+# ===== ...（中间数据块）=====
 
 # ===== 最后一个数据块 =====
 {'choices': [{'delta': {'content': '',
@@ -322,22 +323,25 @@ for chunk in completion:
               'finish_reason': 'stop',
               'index': 0,
               'logprobs': None}],
- 'created': 1739243087,
- 'id': 'd7e87628-4f15-41bf-9b03-e688c1a0e8d6',
- 'model': 'deepseek-reasoner',
+ 'created': 1783305533,
+ 'id': 'e79351c2-b51b-4cdb-b0f8-f598b7da0f3c',
+ 'model': 'deepseek-v4-flash',
  'object': 'chat.completion.chunk',
  'service_tier': None,
- 'system_fingerprint': 'fp_7e73fd9a08',
- 'usage': {'completion_tokens': 196,
-           'completion_tokens_details': {'reasoning_tokens': 135},
+ 'system_fingerprint': 'fp_8b330d02d0_prod0820_fp8_kvcache_20260402',
+ 'usage': {'completion_tokens': 220,
+           'completion_tokens_details': {'accepted_prediction_tokens': None,
+                                         'audio_tokens': None,
+                                         'reasoning_tokens': 105,
+                                         'rejected_prediction_tokens': None},
            'prompt_cache_hit_tokens': 0,
-           'prompt_cache_miss_tokens': 13,
-           'prompt_tokens': 13,
-           'prompt_tokens_details': {'cached_tokens': 0},
-           'total_tokens': 209}}
+           'prompt_cache_miss_tokens': 12,
+           'prompt_tokens': 12,
+           'prompt_tokens_details': {'audio_tokens': None, 'cached_tokens': 0},
+           'total_tokens': 232}}
 ```
 
-从聊天模型切换到推理模型后，数据块中除 `delta.content` 外，还会出现 `delta.reasoning_content` 字段，用于记录模型在生成回复前的“思考”过程文本。整个阶段回复的生成可以分为两个部分：
+从非思考模式切换到思考模式后，数据块中除 `delta.content` 外，还会出现 `delta.reasoning_content` 字段，用于记录模型在生成回复前的思考过程。整个阶段回复的生成可以分为两个部分：
 
 1. **思考/推理部分**
    当数据块中 `delta.reasoning_content` 不为 `None`（此时 `delta.content` 为 `None`）时，说明该数据块记录的是模型的思考/推理过程。
@@ -383,7 +387,7 @@ for chunk in completion:
 >
 > 因为第一个 chunk 中的 reasoning_content 可能为`""`。
 >
-> **注意**，在调用**字节火山引擎**的 DeepSeek-R1 API 时，返回的数据块在完成思考过程后会移除 `reasoning_content` 字段。直接访问 `chunk.choices[0].delta.reasoning_content` 会导致错误：
+> **注意**，百度智能云、硅基流动与字节火山引擎的 V4 系列 API 在完成思考过程后，返回的数据块会移除 `reasoning_content` 字段。直接访问 `chunk.choices[0].delta.reasoning_content` 会导致错误：
 >
 > ```
 > AttributeError: 'ChoiceDelta' object has no attribute 'reasoning_content'

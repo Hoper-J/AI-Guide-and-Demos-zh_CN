@@ -5,6 +5,8 @@
 > 需要特别说明的是，本文不涉及本地显卡部署方案，因为本地部署完整版 DeepSeek 对于个人使用者来说是一个伪需求，671B 的模型即便是 1-Bit 量化加载也需要约 84GB 的显存（模型参数量×量化位数/8），按显卡租赁的费用来算，每小时大概需要 8 块钱，而 1-Bit 量化模型基本不可用，满血版 DeepSeek（BF16）仅加载就需要 1342GB 显存，这意味着更高的租赁费用，对于个人来说投入和回报完全不成正比，所以使用 API 将是性价比最高的方案（各平台注册时都会赠送大量的 tokens：阿里 1000 万，百度 2000 万，硅基流动 2000 万）。
 >
 > **注意**：当前说法不适用于需要数据隔离的场景（比如金融/医疗），仅针对日常需求。
+>
+> （文章写自 2025 年初 DeepSeek “自部署”文章贩卖焦虑横行的那段时期，当时网页版的 DeepSeek 非常卡顿，故有此文进行解决方案的分享。目前因为各家模型分流等原因，已不会出现过去思考半天失败的现象）
 
 ## ▌目录
 
@@ -53,7 +55,7 @@
 
 ### DeepSeek
 
-如果已经获取了 DeepSeek 的 API（[获取步骤](./DeepSeek%20API%20的获取与对话示例.md#-deepseek-官方)），则从`设置` - `模型服务`界面中选择 `深度求索`，直接填充 API 密钥：
+如果已经获取了 DeepSeek 的 API（[获取步骤](./DeepSeek%20API%20的获取与对话示例.md#-deepseek-官方-)），则从`设置` - `模型服务`界面中选择 `深度求索`，直接填充 API 密钥：
 
 ![填写API_Key](./assets/image-20250210131830180.png)
 
@@ -108,9 +110,9 @@
 
 > [!caution]
 >
-> 对于推理模型 `deepseek-reasoner`，传入参数 `temperature`、`top_p`、`presence_penalty`、`frequency_penalty`、`logprobs`、`top_logprobs` 均不会生效[^1]，故无需纠结温度设置。
+> 对于 V3/R1 时代的推理模型 `deepseek-reasoner`，传入参数 `temperature`、`top_p`、`presence_penalty`、`frequency_penalty`、`logprobs`、`top_logprobs` 均不会生效[^1]，故无需纠结温度设置。
 >
-> 也可以遵循官方的部署建议[^2]，将 `deepseek-reasoner` 的 `temperature` 默认设置为 0.6，以应对未来可能被允许的参数修改。
+> 也可以遵循官方的部署建议[^2]，将思考模式的 `temperature` 默认设置为 0.6，以应对未来可能被允许的参数修改。
 
 [^1]: [DeepSeek 官方文档](https://api-docs.deepseek.com/zh-cn/quick_start/parameter_settings).
 
@@ -160,7 +162,7 @@
 
 ### DeepSeek
 
-如果已经获取了 DeepSeek 的 API（[获取步骤](./DeepSeek%20API%20的获取与对话示例.md#-deepseek-官方)），则从打开的界面中选择 `DeepSeeK API`，直接填充 API 密钥，然后点击 `保存`：
+如果已经获取了 DeepSeek 的 API（[获取步骤](./DeepSeek%20API%20的获取与对话示例.md#-deepseek-官方-)），则从打开的界面中选择 `DeepSeeK API`，直接填充 API 密钥，然后点击 `保存`：
 
 ![设置 DeepSeek API](./assets/image-20250206114220266.png)
 
@@ -230,8 +232,8 @@
 
 > [!CAUTION]
 >
-> 对于推理模型 `deepseek-reasoner`，传入参数 `temperature`、`top_p`、`presence_penalty`、`frequency_penalty`、`logprobs`、`top_logprobs` 均不会生效[^1]，故无需纠结。
+> 对于 V3/R1 时代的推理模型 `deepseek-reasoner`，传入参数 `temperature`、`top_p`、`presence_penalty`、`frequency_penalty`、`logprobs`、`top_logprobs` 均不会生效[^1]，故无需纠结。
 >
-> 可以遵循官方的部署建议[^2]，将 `deepseek-reasoner` 的 `temperature` 默认设置为 0.6，以应对未来可能被允许的参数修改。
+> 可以遵循官方的部署建议[^2]，将思考模式的 `temperature` 默认设置为 0.6，以应对未来可能被允许的参数修改。
 
 **下一章**：[DeepSeek API 输出解析 - OpenAI SDK](./DeepSeek%20API%20输出解析%20-%20OpenAI%20SDK.md)
