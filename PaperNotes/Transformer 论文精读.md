@@ -1775,11 +1775,13 @@ class ResidualConnection(nn.Module):
 | **BatchNorm** | 对列（特征维度）归一化         | 每个特征在所有样本中的归一化 |
 | **LayerNorm** | 对行（样本内的特征维度）归一化 | 每个样本的所有特征一起归一化 |
 
-> BatchNorm 和 LayerNorm 在视频中也有讲解：[Transformer论文逐段精读【论文精读】25:40 - 32:04 部分](https://www.bilibili.com/video/BV1pu411o7BE/?share_source=copy_web&vd_source=e46571d631061853c8f9eead71bdb390&t=1540)，不过需要注意的是在 26:25 处应该除以的是标准差而非方差。
+> BatchNorm 和 LayerNorm 在视频中也有讲解：[Transformer论文逐段精读【论文精读】25:40 - 32:04 部分](https://www.bilibili.com/video/BV1pu411o7BE/?share_source=copy_web&vd_source=e46571d631061853c8f9eead71bdb390&t=1540)，不过需要注意的是在 26:25 处应该除以的是标准差而非方差，且视频中将三维情况下的 LayerNorm 画成了切面，这一点与 Transformer 的实现可能存在出入。
 >
 > ![BN vs LN](./assets/image-20241028172742399.png)
 >
-> 对于三维张量，比如图示的 (batch_size, seq_len, feature_size)，可以从立方体的左侧(batch_size, feature_size) 去看成二维张量进行切片。
+> 图中下方为二维情况，对应上表：BatchNorm 对列（特征）归一化，LayerNorm 对行（样本）归一化。
+>
+> 对于三维张量，比如图示的 (batch_size, seq_len, feature_size)，BatchNorm 固定特征索引 $j$，对 `[:, :, j]`（所有样本在所有位置上的第 $j$ 个特征）计算均值和方差；LayerNorm 则固定 batch 索引 $i$ 和 seq 索引 $j$，仅对 `[i, j, :]`（单个 token 的所有特征）计算均值和方差，而非对 seq 和 feature 形成的平面做归一化，对应「代码实现」部分的 `dim=-1`。
 
 #### LayerNorm 的计算过程
 
@@ -1854,7 +1856,7 @@ class LayerNorm(nn.Module):
 >    # 初始化的 shape 是二维的
 >    self.weight = nn.Parameter(torch.randn(out_features, in_features))  # 权重矩阵
 >    self.bias = nn.Parameter(torch.zeros(out_features))  # 偏置向量
->                                                                                                                                                                                              
+>                                                                                                                                                                                                 
 >    # 计算
 >    def forward(self, x):
 >    	return torch.matmul(x, self.weight.T) + self.bias
