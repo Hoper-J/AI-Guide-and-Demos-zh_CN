@@ -965,7 +965,7 @@ class CrossAttention(nn.Module):
 
         返回:
             out: 注意力加权后的输出 (batch_size, seq_len_q, embed_size)
-            attention_weights: 注意力权重矩阵 (batch_size, seq_len_kv, seq_len_kv)
+            attention_weights: 注意力权重矩阵 (batch_size, seq_len_q, seq_len_kv)
         """
         # 在交叉注意力机制中，q 和 k, v 不同
         # q 来自解码器，k 和 v 来自编码器（观察模型架构图）
