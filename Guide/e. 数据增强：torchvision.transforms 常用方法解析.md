@@ -318,7 +318,7 @@ plot(jitted_imgs)
 
 > torchvision.transforms.GaussianBlur(*kernel_size*, *sigma=(0.1, 2.0)*)
 >
-> - **kernel_size** (*int* *or* *sequence*) - 表示高斯核的大小，int -> (kernal_size, kernal_size)，sequence -> (kernal_size[0], kernal_size[1])
+> - **kernel_size** (*int* *or* *sequence*) - 表示高斯核的大小，int -> (kernel_size, kernel_size)，sequence -> (kernel_size[0], kernel_size[1])
 > - **sigma** (*float* *or* *tuple of python:float* *(**min**,* ***max**)*) - 高斯核的标准差。如果是 float，表示标准差是固定的。如果是一个列表，表示标准差会从给定的 [min, max] 中均匀选择。
 
 ```python

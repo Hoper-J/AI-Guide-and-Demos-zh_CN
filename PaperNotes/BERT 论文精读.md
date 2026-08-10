@@ -71,7 +71,7 @@ Jacob Devlin et al. | [arXiv 1810.04805](https://arxiv.org/pdf/1810.04805) | [Co
 - [附录](#附录)
    - [参数量](#参数量)
       - [1. bert-base-uncased, 110M parameters](#1-bert-base-uncased-110m-parameters)
-      - [2. bert-large-uncased, 340M parameters](#2-bert-large-uncased-340m-parameters)
+      - [2. bert-large-uncased, 335.1M parameters](#2-bert-large-uncased-3351m-parameters)
 
 ## 前言
 
@@ -265,7 +265,7 @@ BERT 使用了两个预训练任务：
   >
   > 这个过程的优点是，Transformer 编码器不知道它将被要求预测哪些单词，或者哪些单词已经被随机单词替换了，因此它被迫保持每个输入标记的分布上下文表示。
   
-  **注意**：这里指的是已经决定要被遮掩的词元，即这三种情况是在被选择遮掩的 15% 中随机分布。其他的特殊词元不进行处理（`[CLS]` 和 `SEP`)。
+  **注意**：这里指的是已经决定要被遮掩的词元，即这三种情况是在被选择遮掩的 15% 中随机分布。其他的特殊词元不进行处理（`[CLS]` 和 `[SEP]`）。
 
 
 > 当前比例的选择依据表 8 的消融实验：
@@ -536,7 +536,7 @@ $$
 >       # 假设 sequence_output 是模型的输出，形状为 (batch_size, seq_length, hidden_size)
 >       # 定义一个线性层，将 hidden_size 映射到 2（分别用于预测 start 和 end 位置），当然，可以定义两个线性层分别进行预测，因为线性层每个位置的处理是相互独立的
 >       qa_outputs = nn.Linear(hidden_size, 2)
->                                                                                           
+>                                                                                                       
 >       logits = qa_outputs(sequence_output)  # 形状为 (batch_size, seq_length, 2)
 >       start_logits, end_logits = logits.split(1, dim=-1)  # 每个的形状为 (batch_size, seq_length, 1)
 >       start_logits = start_logits.squeeze(-1)  # 形状为 (batch_size, seq_length)
@@ -645,11 +645,11 @@ $$
 > **写在前面**，前文数学符号与代码变量名的对应关系：
 >
 > - $H$: `hidden_size`
-> - $N$: `batch_size`
+> - $N$: `seq_length`
 > - $\mathbf{h}$: `outputs.last_hidden_state`
 > - $s, e$: `start_logits`, `end_logits`（可以当做得分）
 > - $P_{\text{start}}, P_{\text{end}}$: `start_probs`, `end_probs`
-> - $\text{Answer}, \text{Input}$: `answer`, `input_ids`
+> - $\text{Answer}, \text{Input}$: `answer_ids`, `input_ids`
 
 ```python
 import torch
@@ -697,7 +697,7 @@ for i in range(start_indices.size(0)):
         start_indices[i], end_indices[i] = end_indices[i], start_indices[i]
 
 # 从输入序列中提取答案（以 batch_size=1 为例），在 Python 中，列表切片是左闭右开区间，因此需要加 1
-answer = input_ids[0, start_indices[0]:end_indices[0]+1]  # 提取答案的 token_ids
+answer_ids = input_ids[0, start_indices[0]:end_indices[0]+1]  # 提取答案的 token_ids
 # 将 token IDs 转换为文本
 answer = tokenizer.decode(answer_ids, skip_special_tokens=True)
 print("答案：", answer)
@@ -772,6 +772,8 @@ class BertPooler(nn.Module):
 ### 参数量
 
 > 表格来源：[How is the number of BERT model parameters calculated? ](https://github.com/google-research/bert/issues/656#issuecomment-554718760)
+>
+> 注意：来源中 bert-large-uncased 的单层小计漏加了 `intermediate.dense.bias`（4,096），24 层累计少 98,304，下表已修正（12,592,128 → 12,596,224，335,043,584 → 335,141,888）。
 
 #### 1. bert-base-uncased, 110M parameters
 
@@ -802,7 +804,7 @@ class BertPooler(nn.Module):
 |                   | pooler.dense.bias                                 | [768]        | 768        |                             |
 |                   |                                                   |              |            | **109,482,240**             |
 
-#### 2. bert-large-uncased, 340M parameters
+#### 2. bert-large-uncased, 335.1M parameters
 
 | Bert-large-uncased | Key                                               | Shape         | Count      | Count All                     |
 | ------------------ | ------------------------------------------------- | ------------- | ---------- | ----------------------------- |
@@ -811,7 +813,7 @@ class BertPooler(nn.Module):
 |                    | embeddings.token_type_embeddings.weight           | [2, 1024]     | 2,048      |                               |
 |                    | embeddings.LayerNorm.weight                       | [1024]        | 1,024      |                               |
 |                    | embeddings.LayerNorm.bias                         | [1024]        | 1,024      |                               |
-| Transformer * 24   | encoder.layer.0.attention.self.query.weight       | [1024, 1024]  | 1,048,576  | 12,592,128 * 24 = 302,211,072 |
+| Transformer * 24   | encoder.layer.0.attention.self.query.weight       | [1024, 1024]  | 1,048,576  | 12,596,224 * 24 = 302,309,376 |
 |                    | encoder.layer.0.attention.self.query.bias         | [1024]        | 1,024      |                               |
 |                    | encoder.layer.0.attention.self.key.weight         | [1024, 1024]  | 1,048,576  |                               |
 |                    | encoder.layer.0.attention.self.key.bias           | [1024]        | 1,024      |                               |
@@ -829,4 +831,4 @@ class BertPooler(nn.Module):
 |                    | encoder.layer.0.output.LayerNorm.bias             | [1024]        | 1,024      |                               |
 | Pooler             | pooler.dense.weight                               | [1024, 1024]  | 1,048,576  | 1,049,600                     |
 |                    | pooler.dense.bias                                 | [1024]        | 1,024      |                               |
-|                    |                                                   |               |            | **335,043,584**               |
+|                    |                                                   |               |            | **335,141,888**               |

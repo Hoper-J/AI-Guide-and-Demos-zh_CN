@@ -250,8 +250,8 @@ tensor([[ 0.3367,  0.1288,  0.2345],
    print("梯度：")
    print(embedding.weight.grad)
    
-   # 打印权重矩阵
-   print("权重矩阵：")
+   # 打印原权重矩阵
+   print("原权重矩阵：")
    print(embedding.weight.data)
    
    # 更新权重
@@ -438,11 +438,13 @@ embeddings = get_input_embeddings(tokenizer, model, words)
 
 ```python
 # 设置 t-SNE 参数
-tsne = TSNE(n_components=2, perplexity=2, n_iter=1000, random_state=42)
+tsne = TSNE(n_components=2, perplexity=2, max_iter=1000, random_state=42)
 
 # 执行降维
 embeddings_2d = tsne.fit_transform(embeddings)
 ```
+
+> 注意：`max_iter` 参数需要 scikit-learn >= 1.5，旧版本中名为 `n_iter`（1.7 起已移除）。
 
 ### 画图
 
@@ -515,7 +517,7 @@ def get_output_embeddings(tokenizer, model, words):
 embeddings = get_input_embeddings(tokenizer, model, words)
 
 # 降维处理
-tsne = TSNE(n_components=2, perplexity=2, n_iter=1000, random_state=42)
+tsne = TSNE(n_components=2, perplexity=2, max_iter=1000, random_state=42)
 embeddings_2d = tsne.fit_transform(embeddings)
 
 # 可视化

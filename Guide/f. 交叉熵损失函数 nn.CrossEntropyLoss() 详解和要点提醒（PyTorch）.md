@@ -37,6 +37,7 @@ Logits 是指神经网络的最后一个线性层（全连接层）的未经过�
 
 ```python
 import torch
+import torch.nn as nn
 import torch.nn.functional as F
 
 # 样例: 分类神经网络，便于对照理解

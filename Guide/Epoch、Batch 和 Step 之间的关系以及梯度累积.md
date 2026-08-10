@@ -337,7 +337,7 @@ $$
 
 - **SGD**：batch_size = 1，即每次只使用 1 个样本计算梯度。  
 - **BGD**：batch_size = N，即每次使用**整个数据集**计算梯度。  
-- **MBGD**：batch_size = B（1 < B < N），即每次使用 mini-batch 计算梯度。。
+- **MBGD**：batch_size = B（1 < B < N），即每次使用 mini-batch 计算梯度。
 
 **举例说明**：
 
@@ -379,6 +379,7 @@ $$
 ```python
 import torch
 from torch import nn, optim
+from torch.utils.data import DataLoader, TensorDataset
 
 # 数据集参数
 N = 10000  # 数据集总样本数

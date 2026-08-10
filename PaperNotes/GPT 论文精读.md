@@ -409,7 +409,7 @@ $$
 
 1. **输入嵌入**
 
-   将输入序列 $U = {u_{-k}, \ldots, u_{-1}}$ 映射到嵌入空间：
+   将输入序列 $U = \{u_{-k}, \ldots, u_{-1}\}$ 映射到嵌入空间：
    
    $$h_0 = U W_e + W_p$$
 
@@ -647,7 +647,9 @@ GPT-2 的参数规模（15 亿参数）远超其前身 GPT-1（1.1 亿参数） 
 >
 > ![image-20241227212626715](./assets/image-20241227212626715.png)
 >
-> 其中，最小的模型（117M）对标 GPT-1，第二个模型（345M）对标 $\text{BERT}_\text{LARGE}$，最大的模型（1152M）称为 GPT-2，它的另一个名字是 GPT2-XL。
+> 其中，最小的模型（117M）对标 GPT-1，第二个模型（345M）对标 $\text{BERT}_\text{LARGE}$，最大的模型（1542M）称为 GPT-2，它的另一个名字是 GPT2-XL。
+>
+> 需要注意的是，OpenAI 后来在[仓库](https://github.com/openai/gpt-2)中声明论文和早期博客中的这组参数量是算错的（“Note that our original parameter counts were wrong due to an error (in our previous blog posts and paper).”），修正后为 124M / 355M / 774M / 1558M。
 
 #### 零样本学习（Zero-shot Learning）
 
@@ -1201,7 +1203,7 @@ $`- \mathbb{E}_P[\log(\text{pass\_rate}(C))] = \alpha \ast C^{-k}`$
 模型最终应该选择 N，因为最后一个游戏的期望值为负：
 
 - 94% 的概率损失 50 美元 ，6% 的概率赚到 5 美元。
-- 期望值 = $0.94 \times (-50) + 0.06 \times 5 = -44.2$ 美元。
+- 期望值 = $0.94 \times (-50) + 0.06 \times 5 = -46.7$ 美元。
 
 这类任务对大模型提出了更高的要求，小规模模型往往倾向于根据「事后结果」来判断，即不管怎么样，就算是 0.0001% 的概率，只要最终赌赢了就是对的（Y），这种「事后诸葛亮」唯结果论的判断并不理性。
 

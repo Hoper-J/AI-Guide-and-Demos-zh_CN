@@ -1,7 +1,7 @@
 # Transformer
 
 **Attention Is All You Need**
-Ashish Vaswan et al. | [arXiv 1706.03762](https://arxiv.org/pdf/1706.03762) | [Code - 官方 Tensorflow](https://github.com/tensorflow/tensor2tensor) | NeurIPS 2017 | Google Brain
+Ashish Vaswani et al. | [arXiv 1706.03762](https://arxiv.org/pdf/1706.03762) | [Code - 官方 Tensorflow](https://github.com/tensorflow/tensor2tensor) | NeurIPS 2017 | Google Brain
 
 > **学习 & 参考资料**
 >
@@ -332,7 +332,7 @@ Transformer 模型基于**编码器**（左）- **解码器**（右）架构（�
 
 - **$n$**：输入序列的长度（seq_len)，即模型需要处理的序列中包含的元素个数（如文本序列中的词汇数量）。
 - **$d$**：表示的维度 (embed_size, d_model)，每个输入元素被映射到的特征空间的维度。
-- **$k$**：卷积核（kernal）的大小，在卷积神经网络（CNN）中决定感受野的大小。
+- **$k$**：卷积核（kernel）的大小，在卷积神经网络（CNN）中决定感受野的大小。
 - **$r$**：受限注意力机制中“窗口大小”，即每个元素只能与它周围 $r$ 个邻近元素进行计算，不能算全部的。
 
 #### Q1: 自注意力中每层的计算复杂度怎么计算？
@@ -408,7 +408,7 @@ $$
       > - [编码器输入 L166](https://github.com/tensorflow/models/blob/78c533129bd522afcec73acbb3861df70c084b59/official/legacy/transformer/transformer.py#L166)
       > - [解码器输入 L203](https://github.com/tensorflow/models/blob/78c533129bd522afcec73acbb3861df70c084b59/official/legacy/transformer/transformer.py#L203)
     
-  - **英语-法语**：使用规模更大的 WMT 2014 英法数据（WMT 2014 English-French）集，包含 3600 万句子，约 32,000 个，这里提到了 word-piece。
+  - **英语-法语**：使用规模更大的 WMT 2014 英法数据集（WMT 2014 English-French），包含 3600 万句子，词表约 32,000 个词元，这里提到的是 word-piece。
 
 - **批次（batch）大小**： 
 
@@ -517,7 +517,7 @@ $$
 公式：
 
 $$
-\text{BLEU} = BP \cdot \exp\left( \sum_{n=1}^{N} w_n log\ p_n\right)^{\frac{1}{N}}
+\text{BLEU} = BP \cdot \exp\left( \sum_{n=1}^{N} w_n \log p_n\right)
 $$
 
 首先要明确两个概念
@@ -586,11 +586,11 @@ $$
 
 当候选译文的长度 c 等于参考译文的长度 r 的时候，BP = 1，当候选翻译的文本长度较短的时候，用 $e^{1-\frac{r}{c}}$ 作为 BP 值。
 
-回到原来的公式: $\text{BLEU} = BP \cdot \exp\left( \sum_{n=1}^{N} w_n log\ p_n\right)^{\frac{1}{N}}$, 汇总一下符号定义：
+回到原来的公式: $\text{BLEU} = BP \cdot \exp\left( \sum_{n=1}^{N} w_n \log p_n\right)$, 汇总一下符号定义：
 
 - $BP$ 文本长度的惩罚因子
 - $N$ n-gram 中 n 的最大值
-- $w_n$ 权重
+- $w_n$ 权重，论文取均匀权重 $w_n = 1/N$
 - $p_n$ n-gram 的精度 (precision)
 
 ### 表 3
@@ -1064,7 +1064,6 @@ class MultiHeadAttention(nn.Module):
 
         返回:
             out: 注意力加权后的输出
-            attention_weights: 注意力权重矩阵
         """
         batch_size = q.shape[0]
         multi_head_outputs = []
@@ -1192,7 +1191,6 @@ class MultiHeadAttention(nn.Module):
 
         返回:
             out: 注意力加权后的输出
-            attention_weights: 注意力权重矩阵
         """
         batch_size = q.shape[0]
         multi_head_outputs = []
@@ -1539,7 +1537,6 @@ class MultiHeadAttention(nn.Module):
 
         返回:
             out: 注意力加权后的输出
-            attention_weights: 注意力权重矩阵
         """
         batch_size = q.size(0)
         
@@ -1617,7 +1614,7 @@ $$
 - $b_1 \in \mathbb{R}^{d_{\text{ff}}}$ 和 $b_2 \in \mathbb{R}^{d_{\text{model}}}$ 是对应的偏置向量。
 - $\text{max}(0, \cdot)$ 是 **ReLU 激活函数**，用于引入非线性。
 
-Position-wise 实际是线性层本身的一个特性，在线性层中，每个输入向量（对应于序列中的一个位置，比如一个词向量）都会通过相同的权重矩阵进行线性变换，这意味着每个位置的处理是相互独立的，逐元素这一点可以看成 kernal_size=1 的卷积核扫过一遍序列。
+Position-wise 实际是线性层本身的一个特性，在线性层中，每个输入向量（对应于序列中的一个位置，比如一个词向量）都会通过相同的权重矩阵进行线性变换，这意味着每个位置的处理是相互独立的，逐元素这一点可以看成 kernel_size=1 的卷积核扫过一遍序列。
 
 > 更进一步地了解概念 Position-wise 推荐观看：[Transformer论文逐段精读【论文精读】 56:53 - 58:50 部分](https://www.bilibili.com/video/BV1pu411o7BE/?share_source=copy_web&vd_source=e46571d631061853c8f9eead71bdb390&t=3413)。
 
@@ -1832,8 +1829,8 @@ class LayerNorm(nn.Module):
 
     def forward(self, x):
         mean = x.mean(dim=-1, keepdim=True)
-        std = x.std(dim=-1, keepdim=True)
-        return self.gamma * (x - mean) / (std + self.epsilon) + self.beta
+        var = x.var(dim=-1, keepdim=True, unbiased=False)
+        return self.gamma * (x - mean) / torch.sqrt(var + self.epsilon) + self.beta
 ```
 
 > [!note]
@@ -1842,7 +1839,7 @@ class LayerNorm(nn.Module):
 >
 > 见过线性层源码但不熟悉乘法运算符的同学可能会有一个错误的困惑：
 >
-> **最后不就是线性层的实现吗，为什么不直接用 `nn.Linear((x - mean) / (std + self.epsilon))` 实现呢？**
+> **最后不就是线性层的实现吗，为什么不直接用 `nn.Linear((x - mean) / torch.sqrt(var + self.epsilon))` 实现呢？**
 >
 > 乍一看，LayerNorm 的计算过程确实与 `nn.Linear` 有些相似：LayerNorm 对归一化后的输出进行了缩放（乘以 $\gamma$）和偏移（加上 $\beta$），但这两者的核心作用和参数运算方式存在**本质的不同**，接下来逐一澄清：
 >

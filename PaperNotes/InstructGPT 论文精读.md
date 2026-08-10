@@ -176,7 +176,7 @@ InstructGPT 从 GPT-3 的预训练模型（1.3B、6B、175B）开始，通过三
 
 > [!note]
 >
-> 步骤 2 和 3 可循环执行：用当前最优策略收集新对比数据，训练更新的 RM 和策略"
+> 步骤 2 和 3 可循环执行：用当前最优策略收集新对比数据，训练更新的 RM 和策略。
 
 
 [^2]: [来自于李宏毅老师「ChatGPT 是怎么炼成的」课件](https://docs.google.com/presentation/d/1vDT11ec_nY6P0o--NHq9col5XEE4tHBw/edit#slide=id.p14)
@@ -212,7 +212,7 @@ InstructGPT 从 GPT-3 的预训练模型（1.3B、6B、175B）开始，通过三
   >
   > $\binom{K}{2}$ 也可以写成 $C_K^2$ 或者 $C(K, 2)$, 表示从 $K$ 个元素中选出 2 个元素的组合数：
   > 
-  > $$C_k^2 = \binom{K}{2} = \frac{K!}{2!(K-2)!} = \frac{K(K-1)}{2}$$
+  > $$C_K^2 = \binom{K}{2} = \frac{K!}{2!(K-2)!} = \frac{K(K-1)}{2}$$
   > 
   > 恢复一下久远的中学记忆：
   >
