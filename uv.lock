@@ -167,7 +167,7 @@ requires-dist = [
     { name = "torchvision", specifier = ">=0.21,<0.23" },
     { name = "tqdm", specifier = ">=4.67.1" },
     { name = "transformers", specifier = ">=4.55.0,<4.57" },
-    { name = "trl", specifier = ">=0.21.0" },
+    { name = "trl", specifier = ">=0.21.0,<1.7" },
     { name = "unstructured", extras = ["md"], specifier = ">=0.22.0" },
     { name = "uvicorn", specifier = ">=0.35.0" },
 ]
