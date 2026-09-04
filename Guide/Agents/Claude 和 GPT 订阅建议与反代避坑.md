@@ -145,7 +145,7 @@ GPT Pro 100\$ 目前不再拥有 10x Plus 的用量，不支持高强度并发�
 >
 > 请勿使用 [Antigravity-Manager](https://github.com/lbjlaq/Antigravity-Manager) 对你的 Google 账户进行反代，分别测试的两个号在第二天都被停用了 Gemini CLI 使用资格。
 
-目前比较热门的反代项目有：[Sub2API](https://github.com/Wei-Shaw/sub2api)（由原 [Claude Relay Service](https://github.com/Wei-Shaw/claude-relay-service) 的作者维护，旧项目 CRS 不再建议使用。如果 API 有日/周/月限额的需求，推荐部署）、[New API](https://github.com/QuantumNous/new-api)、[One API](https://github.com/songquanpeng/one-api) 等，大部分中转站点背后都基于它们提供服务。
+目前比较热门的反代项目有：[Sub2API](https://github.com/Wei-Shaw/sub2api)（由原 [Claude Relay Service](https://github.com/Wei-Shaw/claude-relay-service) 的作者维护，旧项目 CRS 不再建议使用。如果 API 有日/周/月限额的需求，推荐部署。单账号自用的完整部署流程见[《Sub2API 自建中转：把 AI 订阅变成自己的 API Key》](./Sub2API%20自建中转：把%20AI%20订阅变成自己的%20API%20Key.md)）、[New API](https://github.com/QuantumNous/new-api)、[One API](https://github.com/songquanpeng/one-api) 等，大部分中转站点背后都基于它们提供服务。
 
 不管是哪一个项目，如果你是第一次部署并准备用来分发，建议订阅 GPT，它的风控相对松很多。这一点可以从中转站点的模型定价感知[^2]：
 
