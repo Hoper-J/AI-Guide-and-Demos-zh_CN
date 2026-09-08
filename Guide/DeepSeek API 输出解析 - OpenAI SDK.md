@@ -2,7 +2,7 @@
 
 > **代码文件下载**：[Code](../Demos/deepseek-api-guide-2.ipynb)
 >
-> **在线链接**：[Kaggle](https://www.kaggle.com/code/aidemos/deepseek-api-guide-2) | [Colab](https://colab.research.google.com/drive/1WT0jpeIzWewoN5cT12Uwi92d5_tNff2J?usp=sharing)
+> **在线链接**：[Kaggle](https://www.kaggle.com/code/aidemos/deepseek-api-guide-2) | [Colab](https://colab.research.google.com/drive/12mS7nUNnvrhzdvSbG8sMV7t4mF06_mAX?usp=sharing)
 >
 > **前置文章**：[DeepSeek API 的获取与对话示例](./DeepSeek%20API%20的获取与对话示例.md)
 

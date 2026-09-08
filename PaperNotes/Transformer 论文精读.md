@@ -48,7 +48,7 @@ Ashish Vaswani et al. | [arXiv 1706.03762](https://arxiv.org/pdf/1706.03762) | [
 >
 > [代码文件下载](../PaperNotes/Demos/动手实现%20Transformer.ipynb)
 >
-> 在线链接：[Kaggle](https://www.kaggle.com/code/aidemos/transformer) | [Colab](https://colab.research.google.com/drive/1BtYPNjEHw3dudw5KKFe9dBEsUsgkm1Vt?usp=sharing)
+> 在线链接：[Kaggle](https://www.kaggle.com/code/aidemos/transformer) | [Colab](https://colab.research.google.com/drive/1YQYfulz0gw6aNMf3qYjke218ntcnC5Nv?usp=sharing)
 
 ## 目录
 

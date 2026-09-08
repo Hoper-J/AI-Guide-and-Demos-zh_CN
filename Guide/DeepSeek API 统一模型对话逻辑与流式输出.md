@@ -2,7 +2,7 @@
 
 > **代码文件下载**：[Code](../Demos/deepseek-api-guide-5.ipynb)
 >
-> **在线链接**：[Kaggle](https://www.kaggle.com/code/aidemos/deepseek-api-guide-5) | [Colab](https://colab.research.google.com/drive/14u47q-lGfH7l1ehkBuTU0kgIsNarap9J?usp=sharing)
+> **在线链接**：[Kaggle](https://www.kaggle.com/code/aidemos/deepseek-api-guide-5) | [Colab](https://colab.research.google.com/drive/1N-twn0YVMhvEQ_6hmDWI1giP6ipkzeQs?usp=sharing)
 
 ## 目录
 
