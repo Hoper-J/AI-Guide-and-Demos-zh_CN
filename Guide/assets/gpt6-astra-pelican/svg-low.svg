@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="640" viewBox="0 0 960 640" role="img" aria-labelledby="title desc">
+  <title id="title">骑自行车的鹈鹕</title>
+  <desc id="desc">一只戴着蓝色围巾的白色鹈鹕骑着珊瑚红自行车沿海岸前行，车轮和脚蹬不断转动，围巾随风摆动。</desc>
+  <defs>
+    <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#dcf3f1"/><stop offset="1" stop-color="#faf5df"/></linearGradient>
+    <linearGradient id="bill" x2="0" y2="1"><stop stop-color="#ffd36d"/><stop offset="1" stop-color="#f3a957"/></linearGradient>
+    <pattern id="road" width="260" height="20" patternUnits="userSpaceOnUse"><path d="M20 10h72" stroke="#c8b992" stroke-width="4" stroke-linecap="round"/></pattern>
+    <g id="wheel">
+      <circle r="83" fill="#fffcf1" fill-opacity=".5" stroke="#273f49" stroke-width="11"/>
+      <circle r="74" fill="none" stroke="#fff9e8" stroke-width="3"/>
+      <g stroke="#7c999d" stroke-width="2.5">
+        <path d="M-73 0H73M0-73V73M-51.6-51.6L51.6 51.6M-51.6 51.6L51.6-51.6"/>
+        <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="1.25s" repeatCount="indefinite"/>
+      </g>
+      <circle r="9" fill="#273f49"/><circle r="3" fill="#f8e9c5"/>
+    </g>
+    <style>
+      .ink{stroke:#273f49;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+      .frame{fill:none;stroke:#e97861;stroke-width:10;stroke-linecap:round;stroke-linejoin:round}
+    </style>
+  </defs>
+  <rect width="960" height="640" rx="30" fill="url(#sky)"/>
+  <circle cx="773" cy="128" r="51" fill="#f7cd76"/>
+  <g fill="#fffdf4" opacity=".9">
+    <path d="M0 0c0-16 15-25 28-21 7-28 47-30 58-5 23-5 37 9 37 26Z" transform="translate(110 131)">
+      <animateTransform attributeName="transform" type="translate" values="110 131;65 131;110 131" dur="18s" repeatCount="indefinite"/>
+    </path>
+    <path d="M0 0c0-11 11-20 23-17 8-23 38-23 45-3 19-3 29 6 29 20Z" transform="translate(569 88)">
+      <animateTransform attributeName="transform" type="translate" values="569 88;535 88;569 88" dur="15s" repeatCount="indefinite"/>
+    </path>
+  </g>
+  <path d="M0 367Q150 333 313 365T640 357T960 351V463H0Z" fill="#a7d7ce"/>
+  <path d="M0 406Q191 381 372 409T720 400T960 401V477H0Z" fill="#78bbb5" opacity=".55"/>
+  <path d="M0 464Q242 439 473 462T960 454V640H0Z" fill="#eee3c4"/>
+  <g fill="none" stroke="#d6efdf" stroke-width="3" stroke-linecap="round" opacity=".9"><path d="M69 397h76m571-15h68m41 44h69M180 433h54"/></g>
+  <rect x="-260" y="566" width="1480" height="20" fill="url(#road)">
+    <animateTransform attributeName="transform" type="translate" from="0 0" to="-260 0" dur="1.8s" repeatCount="indefinite"/>
+  </rect>
+  <ellipse cx="479" cy="551" rx="262" ry="17" fill="#a99670" opacity=".16"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" values="0 0;0 -3;0 0" dur=".625s" repeatCount="indefinite"/>
+    <use href="#wheel" x="313" y="459"/>
+    <use href="#wheel" x="649" y="459"/>
+    <!-- The far leg stays behind the frame; both feet follow opposing crank positions. -->
+    <path d="M444 330L420 383L432 432" fill="none" stroke="#dba050" stroke-width="13" stroke-linecap="round" stroke-linejoin="round">
+      <animate attributeName="d" values="M444 330L420 383L432 432;M444 330L441 399L464 400;M444 330L478 386L496 432;M444 330L458 415L464 464;M444 330L420 383L432 432" dur="1.25s" repeatCount="indefinite"/>
+    </path>
+    <path class="frame" d="M313 459L393 340L464 432L313 459M393 340L606 340L464 432M606 340L649 459M464 432L385 324"/>
+    <path d="M365 325h56" class="ink" stroke-width="13"/>
+    <path d="M606 340L590 297Q587 286 603 285L630 284" fill="none" class="ink" stroke-width="8"/>
+    <path d="M620 284h22" stroke="#c58d62" stroke-width="12" stroke-linecap="round"/>
+    <path d="M599 295Q667 315 650 403" fill="none" stroke="#52747a" stroke-width="2"/>
+    <circle cx="464" cy="432" r="22" fill="#ffe5b6" stroke="#273f49" stroke-width="4"/>
+    <g transform="translate(464 432)">
+      <g><path d="M-32 0H32" stroke="#273f49" stroke-width="6" stroke-linecap="round"/><animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="1.25s" repeatCount="indefinite"/></g>
+    </g>
+    <!-- Pelican silhouette, neck and long bill. -->
+    <path d="M365 301L320 272L328 308L304 302Q332 337 373 337Z" fill="#eef2e9" class="ink"/>
+    <path d="M351 275Q380 239 438 256Q466 262 474 235L480 197Q473 172 490 151Q511 125 544 136Q572 144 570 172Q569 194 546 207Q534 216 537 246Q538 284 513 310Q486 341 422 341Q355 341 351 300Z" fill="#fffdf1" class="ink"/>
+    <path d="M493 201Q484 252 462 275Q485 272 502 249Q512 229 511 215" fill="#e3ebe1"/>
+    <path d="M548 184Q613 177 704 189Q678 222 616 237Q575 235 548 198Z" fill="url(#bill)" class="ink"/>
+    <path d="M551 177Q634 171 714 186Q721 189 707 197L550 192Z" fill="#ffd477" class="ink"/>
+    <path d="M561 199Q579 223 615 227" fill="none" stroke="#e7a04f" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="541" cy="165" r="6" fill="#273f49"/><circle cx="543" cy="163" r="1.8" fill="white"/>
+    <path d="M523 148q10-7 18-3" fill="none" stroke="#273f49" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M493 138l-7-12m15 9 1-15" fill="none" class="ink" stroke-width="4"/>
+    <!-- Wind-blown scarf. -->
+    <path d="M493 223Q448 220 413 203L396 218L413 230Q450 228 487 240Z" fill="#398d9e" stroke="#273f49" stroke-width="3" stroke-linejoin="round">
+      <animate attributeName="d" values="M493 223Q448 220 413 203L396 218L413 230Q450 228 487 240Z;M493 223Q448 206 413 220L393 211L403 236Q450 235 487 240Z;M493 223Q448 220 413 203L396 218L413 230Q450 228 487 240Z" dur=".8s" repeatCount="indefinite"/>
+    </path>
+    <path d="M484 216Q507 229 535 216L537 233Q511 248 481 232Z" fill="#4da3ae" stroke="#273f49" stroke-width="3"/>
+    <path d="M386 276Q418 258 464 282L527 297L605 278Q617 276 619 285Q620 292 606 296L536 320Q525 324 510 320L445 304Q417 325 388 305" fill="#edf0e5" class="ink"/>
+    <path d="M394 288Q418 296 444 291M398 299q18 7 34 2" fill="none" stroke="#bccfc6" stroke-width="3" stroke-linecap="round"/>
+    <!-- Near leg and webbed foot trace the same circular path as the pedal. -->
+    <path d="M457 331L485 377L496 432" fill="none" stroke="#edae57" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
+      <animate attributeName="d" values="M457 331L485 377L496 432;M457 331L458 407L464 464;M457 331L420 389L432 432;M457 331L439 370L464 400;M457 331L485 377L496 432" dur="1.25s" repeatCount="indefinite"/>
+    </path>
+    <g>
+      <animateMotion path="M496 432 A32 32 0 0 1 464 464 A32 32 0 0 1 432 432 A32 32 0 0 1 464 400 A32 32 0 0 1 496 432" dur="1.25s" repeatCount="indefinite" calcMode="paced"/>
+      <path d="M-10 5H22" stroke="#273f49" stroke-width="6" stroke-linecap="round"/>
+      <path d="M-5-10L14-7L26 1Q28 5 20 5H-7Q-12 4-9-2Z" fill="#f5b65d" stroke="#273f49" stroke-width="3" stroke-linejoin="round"/>
+    </g>
+    <circle cx="464" cy="432" r="6" fill="#273f49"/>
+  </g>
+  <g fill="#467b7b" opacity=".7"><path d="M98 516q-8-18-17-20 3 16 17 20m0 0q3-22 15-24-1 18-15 24M829 509q-8-18-17-20 3 16 17 20m0 0q3-22 15-24-1 18-15 24"/></g>
+</svg>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>鹈鹕的海岸骑行</title>
+<link rel="icon" href="data:,">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5f0e5;color:#244840;font-family:ui-rounded,"PingFang SC","Microsoft YaHei",sans-serif}main{max-width:1120px;margin:auto;padding:44px 32px 26px}header{display:flex;justify-content:space-between;align-items:center;gap:24px}.eyebrow{font-size:11px;letter-spacing:3px;font-weight:700;color:#668073}h1{font-size:clamp(26px,4vw,42px);font-weight:600;letter-spacing:2px;margin:12px 0}header p{font-size:14px;color:#64786c;margin:0}.stamp{border:1px solid #a7b4a2;border-radius:50%;width:82px;height:82px;display:grid;place-content:center;text-align:center;transform:rotate(12deg);font-size:11px;letter-spacing:2px;line-height:1.9;flex-shrink:0}.scene{position:relative;margin:28px 0 24px;border-radius:24px;overflow:hidden;background:#dcece3}.scene>svg{display:block;width:100%;height:auto}.tag{position:absolute;top:24px;left:26px;font-size:11px;letter-spacing:2px;color:#54746c}.controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap}button{font:inherit;font-size:14px;border:1px solid #bdc9b8;border-radius:999px;padding:12px 21px;background:transparent;color:#244840;cursor:pointer;min-height:46px;transition:background .2s,transform .2s}button:hover{background:#e5e9dc;transform:translateY(-1px)}button:active{transform:translateY(1px)}button:focus-visible,input:focus-visible{outline:3px solid #d87d50;outline-offset:4px}#pause{background:#244840;color:#fff;border-color:#244840;min-width:104px}.speed{margin-left:auto;display:grid;grid-template-columns:1fr auto;gap:9px 18px;min-width:220px;font-size:12px}.speed output{font-variant-numeric:tabular-nums}input{grid-column:1/-1;width:100%;accent-color:#38695a;cursor:pointer;margin:0;min-height:18px}footer{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:11px;color:#738173;margin-top:25px;letter-spacing:1px}#pelican{cursor:pointer}#sky,#sun,#sea{transition:fill 1s}.night #sky{fill:#273e51}.night #sea{fill:#527b82}.night #sun{fill:#f8eec8}.night .cloud{opacity:.28}.night .tag{color:#e1e8d9}#sound-text{opacity:0;font-size:27px;fill:#315e54;font-weight:600}.night #sound-text{fill:#fff1c9}@media(max-width:600px){main{padding:25px 16px}.stamp{display:none}header p{font-size:12px}.scene{margin-top:22px;border-radius:16px}.scene>svg{width:150%;max-width:none;margin-left:-25%}.tag{top:17px;left:17px;font-size:9px}.speed{margin:10px 0 0;width:100%}button{padding:11px 17px}footer{line-height:1.7}}
+</style>
+</head>
+<body>
+<main>
+<header><div><div class="eyebrow">THE SLOW COAST CLUB · 001</div><h1>今天，骑去看海。</h1><p>一只鹈鹕，一辆单车，一段不着急的旅程。</p></div><div class="stamp">PELICAN<br>COAST RIDE<br>↝ ↝ ↝</div></header>
+<section class="scene" aria-label="鹈鹕海岸骑行动画">
+<span class="tag">海风正好 / JUST KEEP PEDALING</span>
+<svg id="art" viewBox="0 0 1000 570" role="img" aria-labelledby="svg-title svg-desc">
+<title id="svg-title">骑自行车的鹈鹕</title><desc id="svg-desc">戴绿色小帽、系橘红围巾的白色鹈鹕，在海岸边踩着绿色自行车。车轮和脚踏同步转动，云朵与路面向后移动。下方按钮可以暂停、拍翅、响铃和切换昼夜。</desc>
+<defs>
+<pattern id="sand" width="100" height="60" patternUnits="userSpaceOnUse"><circle cx="12" cy="12" r="1" fill="#b7b69b"/><path d="M50 33h5M80 52h3" stroke="#c4c3a6" stroke-width="2"/></pattern>
+<g id="cloud-shape" fill="#f5f5e7"><path d="M0 23 Q1 5 23 7 Q35-15 57 4 Q82-3 89 18 Q111 18 112 30 H0Z"/></g>
+<g id="spokes" stroke="#718b80" stroke-width="1.6"><path d="M-68 0H68M0-68V68M-48-48L48 48M-48 48L48-48M-63-26L63 26M-26-63L26 63M-63 26L63-26M-26 63L26-63"/></g>
+<g id="plant" fill="none" stroke="#6e8d6d" stroke-width="3" stroke-linecap="round"><path d="M0 0Q-2-22-12-33M0 0Q6-30 18-39M0 0Q-16-14-24-15"/></g>
+</defs>
+<rect id="sky" width="1000" height="570" fill="#dcece3"/>
+<circle id="sun" cx="796" cy="121" r="43" fill="#f3ce79"/>
+<g class="cloud"><use id="cloud1" href="#cloud-shape" x="170" y="99"/><use id="cloud2" href="#cloud-shape" x="605" y="168" transform="scale(.8)"/></g>
+<path d="M0 310Q170 238 317 290T625 297Q776 256 1000 293V385H0Z" fill="#acc8b5"/>
+<path id="sea" d="M0 322Q130 310 276 323T570 322T1000 318V410H0Z" fill="#8fbcb7"/>
+<g fill="none" stroke="#d7e8db" stroke-width="2.5" stroke-linecap="round" opacity=".8"><path d="M24 345h86m45 14h58m559-19h67m46 20h79M278 338h41m345 35h74M62 384h78m679-2h42"/></g>
+<path d="M0 397Q244 368 502 399T1000 388V570H0Z" fill="#e0dbc0"/>
+<rect y="419" width="1000" height="151" fill="url(#sand)"/>
+<path d="M0 450Q400 446 1000 450" stroke="#ccc9af" stroke-width="3" fill="none"/>
+<g id="road" stroke="#f6f1dc" stroke-width="4" stroke-linecap="round"><path d="M-200 493h85M0 493h85M200 493h85M400 493h85M600 493h85M800 493h85M1000 493h85M1200 493h85"/></g>
+<g id="plants"><use href="#plant" x="110" y="437"/><use href="#plant" x="900" y="426"/><use href="#plant" x="1200" y="437"/></g>
+<ellipse cx="503" cy="466" rx="201" ry="12" fill="#6f8064" opacity=".14"/>
+<g id="rider">
+<!-- Bicycle wheels and spokes -->
+<g transform="translate(360 385)"><circle r="76" fill="#e9e2c7" stroke="#2f4944" stroke-width="10"/><circle r="68" fill="none" stroke="#f7f0d9" stroke-width="3"/><use id="rear" href="#spokes"/><circle r="7" fill="#33594f"/></g>
+<g transform="translate(643 385)"><circle r="76" fill="#e9e2c7" stroke="#2f4944" stroke-width="10"/><circle r="68" fill="none" stroke="#f7f0d9" stroke-width="3"/><use id="front" href="#spokes"/><circle r="7" fill="#33594f"/></g>
+<path d="M280 363A84 84 0 0 1 437 353M566 354A84 84 0 0 1 724 363" fill="none" stroke="#cf815c" stroke-width="6" stroke-linecap="round"/>
+<path id="far-leg" fill="none" stroke="#bd763e" stroke-width="12" stroke-linejoin="round" stroke-linecap="round"/>
+<g fill="none" stroke="#347363" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"><path d="M360 385L431 279L487 385ZM431 279H598L487 385M643 385L588 252M431 279L422 254"/><path d="M588 252L583 234Q588 223 612 225" stroke="#45665b" stroke-width="7"/></g>
+<path d="M405 254H444" stroke="#2d4840" stroke-width="13" stroke-linecap="round"/>
+<path d="M360 373L487 369Q506 370 506 385Q506 402 487 402L360 395Z" fill="#6c9780" stroke="#365e50" stroke-width="2"/>
+<circle cx="487" cy="385" r="21" fill="#dce0bd" stroke="#365e50" stroke-width="3"/>
+<g id="crank" stroke="#35564b" stroke-width="5" stroke-linecap="round"><path d="M461 385H513"/></g>
+<path id="near-leg" fill="none" stroke="#e5a34f" stroke-width="13" stroke-linejoin="round" stroke-linecap="round"/>
+<g id="far-foot"><path d="M-10-2H13L19 4H-10Z" fill="#ba743e"/><path d="M-12 8H15" stroke="#2c5146" stroke-width="5" stroke-linecap="round"/></g>
+<g id="near-foot"><path d="M-10-3H12L24 4Q25 8 20 8H-12Z" fill="#eeaf56"/><path d="M-12 12H20" stroke="#2c5146" stroke-width="5" stroke-linecap="round"/></g>
+<!-- Pelican silhouette: tail, body, S-shaped neck and generous bill pouch -->
+<g id="pelican">
+<path d="M389 241L345 223L360 255L335 249Q360 281 401 279Z" fill="#f9f6e8" stroke="#516c61" stroke-width="3" stroke-linejoin="round"/>
+<path d="M386 224Q418 196 462 218Q488 230 500 209Q510 191 495 171Q476 142 491 113Q500 94 524 100Q551 106 548 131Q545 150 541 166Q536 185 551 210Q568 251 532 274Q492 306 426 286Q384 275 386 224Z" fill="#fffced" stroke="#516c61" stroke-width="3"/>
+<path d="M519 150Q510 179 531 211Q546 239 517 259" fill="none" stroke="#e3e6d6" stroke-width="14" stroke-linecap="round"/>
+<path d="M540 124L681 145Q640 199 565 171Q543 161 540 124Z" fill="#efb95e" stroke="#986e3c" stroke-width="2.5"/>
+<path d="M539 122Q612 119 685 143Q687 149 679 150L541 141Z" fill="#f4ca76" stroke="#986e3c" stroke-width="2.5"/>
+<path d="M560 151Q603 175 650 157" fill="none" stroke="#d49448" stroke-width="2.5" stroke-linecap="round"/>
+<circle cx="531" cy="119" r="10" fill="#e6e7c9"/><circle cx="534" cy="119" r="4.5" fill="#253f37"/><circle cx="535.5" cy="117.5" r="1.4" fill="white"/>
+<path d="M489 99Q492 75 521 77Q542 80 546 102Z" fill="#427564" stroke="#315748" stroke-width="2.5"/><path d="M482 99Q522 92 558 104" fill="none" stroke="#315748" stroke-width="7" stroke-linecap="round"/><path d="M500 80L501 93M519 78L522 93" stroke="#729380" stroke-width="3"/>
+<path id="scarf-tail" d="M507 184Q467 183 439 166L454 188L434 197Q473 206 516 195Z" fill="#d97552" stroke="#b36044" stroke-width="2"/>
+<path d="M500 177Q518 188 540 180L544 191Q522 203 506 193Z" fill="#e58b61" stroke="#b36044" stroke-width="2"/>
+<g id="wing"><path d="M422 224Q461 214 493 247Q517 251 549 239Q539 271 503 277Q456 281 425 251Q416 241 422 224Z" fill="#e8ecdd" stroke="#648072" stroke-width="2.5"/><path d="M441 237Q466 261 502 263M440 248Q463 271 490 272" fill="none" stroke="#b3c1ac" stroke-width="2.5" stroke-linecap="round"/></g>
+<path d="M507 229Q548 247 586 229" fill="none" stroke="#f9f8e8" stroke-width="14" stroke-linecap="round"/><path d="M578 232L595 227" stroke="#516c61" stroke-width="3" stroke-linecap="round"/>
+</g>
+<circle cx="604" cy="222" r="8" fill="#e6ba60" stroke="#776e41" stroke-width="2"/>
+<text id="sound-text" x="637" y="218" transform="rotate(-10 637 218)">叮铃 ♪</text>
+</g>
+<g fill="none" stroke="#f7f8e9" stroke-width="3" stroke-linecap="round" id="wind"><path d="M238 245h45M220 268h37M273 195h31"/></g>
+</svg>
+</section>
+<div class="controls">
+<button type="button" id="pause" aria-pressed="false">暂停骑行</button>
+<button type="button" id="flap">拍一拍翅膀</button>
+<button type="button" id="bell">叮铃，出发</button>
+<button type="button" id="night" aria-pressed="false">切换夜色</button>
+<label class="speed" for="speed"><span>骑行速度</span><output id="speed-value" for="speed">1.0 ×</output><input id="speed" type="range" min="0.2" max="2.5" value="1" step="0.1"></label>
+</div>
+<footer><span>点击鹈鹕也能拍翅膀 · 空格暂停 / 继续</span><span id="status" role="status" aria-live="polite">海风轻轻，慢慢骑。</span></footer>
+</main>
+<script>
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let paused = reduced.matches, speed = 1, phase = 0, elapsed = 0, last = 0, flapStart = -10, bellStart = -10, audio;
+  const status = text => { $('status').textContent = text; };
+  function updatePause() { $('pause').textContent = paused ? '继续骑行' : '暂停骑行'; $('pause').setAttribute('aria-pressed', String(paused)); }
+  function togglePause() { paused = !paused; updatePause(); status(paused ? '停下来，听听海。' : '海风轻轻，慢慢骑。'); }
+  $('pause').addEventListener('click', togglePause);
+  $('speed').addEventListener('input', e => { speed = Number(e.target.value); $('speed-value').value = speed.toFixed(1) + ' ×'; });
+  function flap() { flapStart = elapsed; status(paused ? '继续骑行后，鹈鹕会向你挥翅。' : '鹈鹕向你挥了挥翅膀！'); }
+  $('flap').addEventListener('click', flap); $('pelican').addEventListener('click', flap);
+  $('night').addEventListener('click', () => { const night = document.querySelector('.scene').classList.toggle('night'); $('night').setAttribute('aria-pressed', String(night)); $('night').textContent = night ? '切换白昼' : '切换夜色'; status(night ? '月亮升起来了，沿着海岸慢慢骑。' : '阳光回来了，海风正好。'); });
+  $('bell').addEventListener('click', () => {
+    bellStart = elapsed; status('叮铃！请让快乐先行。');
+    try {
+      const Audio = window.AudioContext || window.webkitAudioContext;
+      if (!Audio) return;
+      audio = audio || new Audio(); audio.resume().catch(() => {});
+      [0, .17].forEach((delay, i) => { const osc = audio.createOscillator(), gain = audio.createGain(), t = audio.currentTime + delay; osc.type = 'sine'; osc.frequency.value = i ? 1580 : 2100; gain.gain.setValueAtTime(0, t); gain.gain.linearRampToValueAtTime(.12, t + .005); gain.gain.exponentialRampToValueAtTime(.0001, t + .65); osc.connect(gain); gain.connect(audio.destination); osc.start(t); osc.stop(t + .7); });
+    } catch (_) { /* The visual bell remains available when audio is unsupported. */ }
+  });
+  document.addEventListener('keydown', e => { if (e.code === 'Space' && !/INPUT|BUTTON|SELECT|TEXTAREA/.test(e.target.tagName)) { e.preventDefault(); togglePause(); } });
+  reduced.addEventListener('change', e => { if (e.matches) { paused = true; updatePause(); status('已减少动态效果；点击继续骑行可播放。'); } });
+  const transform = (id, value) => $(id).setAttribute('transform', value);
+  function draw() {
+    const angle = phase * 180 / Math.PI;
+    transform('rear', `rotate(${angle})`); transform('front', `rotate(${angle})`);
+    transform('crank', `rotate(${angle} 487 385)`);
+    const x = 487 + Math.cos(phase) * 26, y = 385 + Math.sin(phase) * 26;
+    const fx = 974 - x, fy = 770 - y;
+    $('near-leg').setAttribute('d', `M463 279 Q440 327 ${x} ${y}`);
+    $('far-leg').setAttribute('d', `M452 276 Q495 318 ${fx} ${fy}`);
+    transform('near-foot', `translate(${x} ${y})`); transform('far-foot', `translate(${fx} ${fy})`);
+    transform('rider', `translate(0 ${Math.sin(phase * 2) * 1.6})`);
+    transform('road', `translate(${-((phase * 76) % 200)} 0)`);
+    transform('plants', `translate(${-((phase * 76) % 1100)} 0)`);
+    transform('cloud1', `translate(${100-((phase * 3 + 100) % 1250)} 0)`);
+    transform('cloud2', `translate(${600-((phase * 2 + 600) % 1400)} 0) scale(.8)`);
+    const flapAge = elapsed - flapStart;
+    const wingAngle = flapAge < 1.5 ? -Math.sin(flapAge / 1.5 * Math.PI * 6) * 27 * Math.sin(flapAge / 1.5 * Math.PI) : Math.sin(phase) * 2;
+    transform('wing', `rotate(${wingAngle} 424 229)`);
+    transform('scarf-tail', `rotate(${Math.sin(phase * 3) * 5} 510 190)`);
+    $('sound-text').style.opacity = Math.max(0, 1 - (elapsed - bellStart) / 1.5);
+    $('wind').style.opacity = .35 + .3 * Math.sin(phase * 1.7);
+  }
+  function frame(now) { const dt = last ? Math.min((now - last) / 1000, .05) : 0; last = now; if (!paused && !document.hidden) { phase = (phase + dt * speed * 3); elapsed += dt; draw(); } requestAnimationFrame(frame); }
+  updatePause(); if (paused) status('已遵循减少动态效果设置；点击继续骑行可播放。'); draw(); requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

@@ -1,12 +1,14 @@
 # Claude / GPT 订阅建议与反代避坑
 
-> 半年来在 Claude 和 GPT 的 CLI 上累计消耗了约 30,000\$ 用量的 tokens（Claude : GPT = 2: 1，Fable 5 出来之后 GPT 用量为 0）。这期间关于模型对比体验的文章断断续续其实写了不少，但 Agent 相关技术和概念迭代太快，新技术的学习、业务的跟进，再加上拖更（罪魁祸首），最后很多稿子都拖成了废稿。“痛定思痛”，赶在 GPT 下个版本前把这篇小分享补上。
+> 半年来在 Claude 和 GPT 的 CLI 上累计消耗了约 30,000\$ 用量的 tokens（Claude : GPT = 2: 1，Fable 5 出来之后 GPT 用量为 0，GPT 6 Astra 扭转了这一点，最近我会进行尝试）。这期间关于模型对比体验的文章断断续续其实写了不少，但 Agent 相关技术和概念迭代太快，新技术的学习、业务的跟进，再加上拖更（罪魁祸首），最后很多稿子都拖成了废稿。“痛定思痛”，赶在 GPT 下个版本前把这篇小分享补上。
 >
-> **最近一次更新时间**：2026-09-04，此时国外最新的模型参考组为：Fable 5.1｜Opus 5｜GPT 6，主要针对 Claude 和 GPT 进行对比推荐。
+> **最近一次更新时间**：2026-09-08，此时国外最新的模型参考组为：Fable 5.1｜Opus 5｜GPT 6，主要针对 Claude 和 GPT 进行对比推荐。
 >
 > **Fable 5 的初体验**：给我的感觉非常惊艳，体感上 Fable 5 vs Opus 4.8 == Opus 4.8 vs Sonnet，很多年初的新概念都能快速上手并迅速出一个 Demo，而且完全正确。补充实测，2 天 Fable 5 推进的进度甚至赶得上过去 5 天我 + Opus 4.8 来回返修的进度（在多项目 + 多 Agents + 人工 review 的背景下），是不是可以推广上二休五制了 :)
 >
-> **2026-09-04 补充**：体感上 Fable 5 依旧大于 Opus 5，Opus 5 适用于需求明确的编程环境，如果额度非常充裕，可以全程选择 Fable 5。
+> **2026-09-04 补充**：体感上 Fable 5 依旧大于 Opus 5，Opus 5 适用于需求明确的编程环境，如果额度非常充裕，可以全程选择 Fable 5.1。
+>
+> **2026-09-08 更新**：「[如何快速辨认模型是否为 GPT 6 Astra](#如何快速辨认模型是否为-gpt-6-astra)」。
 >
 > **碎碎念**：最近 Claude 相关的文章在国内各平台被追着封，所以可能只能关注当前链接的更新。
 
@@ -17,6 +19,7 @@
     - [美区：花费 250$](#美区花费-250)
     - [尼日利亚区：花费 200000₦ ≈ 1005 RMB（实际开销约 1150 RMB）](#尼日利亚区花费-200000--1005-rmb实际开销约-1150-rmb)
 - [关于模型配额](#关于模型配额)
+- [如何快速辨认模型是否为 GPT 6 Astra](#如何快速辨认模型是否为-gpt-6-astra)
 - [关于中转站点（反代）](#关于中转站点反代)
   - [自部署](#自部署)
 
@@ -24,22 +27,21 @@
 
 > ~~从 2025-12-18 发布的 GPT 5.2 Codex 开始，可以明显感受到 GPT 在智商、知识广度和新鲜度上强于当时的 Claude Opus 4.5，同样一次对 Supabase 的从零部署开发，Opus 4.5 需要反复撤销校正，而 GPT 5.2 Codex 可以做到 Plan 后直接达成预期。2026-02-05，Opus 4.6 发布后，这种体感一度有所改观，但在 2026-03-05 GPT 5.4 发布之后，GPT 又重新给了我这样的感觉。~~ Claude Fable 5 已来，这些“流言蜚语”可以退避了。
 
-下表是我在实际体验后给出的订阅建议，可以根据自身实际情况参考，希望能够对你有所帮助（**2026-09-04 补充**：时至今日，GPT 6 已经足以应对学习期间所有的需求，所以下方标注「Claude / GPT」的场景，选择你最方便获取的订阅即可。Claude 目前订阅可能比较麻烦，仅建议有 iOS 设备或者国外信用卡的同学选它）：
+下表是我在实际体验后给出的订阅建议，可以根据自身实际情况参考，希望能够对你有所帮助（**2026-09-04 补充**：时至今日，GPT 6 已经足以应对学习期间所有的需求，所以下方标注「Claude / GPT」的场景，选择你最方便获取的订阅即可，如果预算为 20\$，请直接选择 GPT 而非 Claude。另外，Claude 目前订阅可能比较麻烦，仅建议有 iOS 设备或者国外信用卡的同学选它）：
 
 | 使用场景 | 推荐 | 备注 |
 | --- | --- | --- |
 | 熟悉业务，能看懂代码，追求开发响应速度，热衷于 review 代码 | Claude | Claude Code 就是目前最好的 CLI 产品设计，没有之一。<br />在你熟悉的业务领域里，项目推进速度上：你 + Claude >> 你 + GPT |
-| 熟悉业务，能看懂代码，经常在长上下文（>200k）的环境下工作 | Claude | 实际体验下来，Codex 在接近 200k 上下文后，指令遵循能力存在问题，需要反复确认（去年就已经存在）。而 5.6 早期也并不支持长上下文，所以对于 GPT 6，这一点依旧持保留意见 |
-| 科研论文 & 比赛 | Claude / GPT |  |
+| 熟悉业务，能看懂代码，经常在长上下文（>200k）的环境下工作 | Claude | 实际体验下来（GPT 6 之前），Codex 在接近 200k 上下文后，指令遵循能力存在问题，需要反复确认。而 5.6 早期也并不支持长上下文，所以对于 GPT 6，这一点依旧持保留意见。 |
+| 科研论文 & 比赛 | Claude / GPT | 考虑到 Claude 封号力度和 GPT 6 Astra 的能力提升，当前二选一的场景都更推荐 GPT |
 | 最近一年比较新的开源项目/协议的使用和开发 | Claude / GPT |  |
 | Vibe Coding，不太懂代码 | Claude / GPT |  |
 | 多人拼车/龙虾/Opencode/反代 | GPT | Claude 会封号 |
-| 非代码场景，通用的知识学习，文章撰写 | Claude / GPT |  |
+| 非代码场景，通用的知识学习，文章撰写 | GPT |  |
 | 习惯图形界面而非命令行界面 | GPT | [ChatGPT](https://chatgpt.com/zh-Hans-CN/download/) 确实不错 |
-| 预算有限（20\$）/ **新手** | GPT |  |
-| 对生图真实感有需求 | GPT | gpt-image-2 效果极其惊艳 |
-
-P.S. 在 Fable 5 面向 20\$ 订阅用户关闭后，准备修改文章在对应价位仅推荐 GPT，没想到 Anthropic 直接甩出 Opus 5，官方纸面宣传数据上来看，效果 > Fable 5（**2026-09-04 补充**：体感上并没有，详见文首）。
+| 预算有限（20\$）/ **新手** | GPT | GPT 6 Astra >> Opus5，Claude 20\$ 的订阅无法使用 Fable 系列模型，不推荐选择 |
+| 建模 | GPT | GPT 6 Astra 暂时杀死了比赛 |
+| 画图 | GPT | gpt-image-2 效果极其惊艳 |
 
 ~~顺带一提，个人今年完全不建议订阅 Cursor，除非你的用量不大。Cursor 已经越来越偏向按量计费，很多时候性价比甚至不如中转站。~~ Cursor 由于 Grok 的加入，不再是一个没有原生模型的 IDE，期待它后续的表现，但依旧不推荐为了使用多平台模型去订阅 Cursor。
 
@@ -47,7 +49,7 @@ P.S. 在 Fable 5 面向 20\$ 订阅用户关闭后，准备修改文章在对应
 
 ### 订阅流程分享（iOS）
 
-~~聊点可以聊的 :)，~~ 以 Claude Max 20x 为例[^1]：
+以 Claude Max 20x 为例[^1]：
 
 #### 美区：花费 250\$
 
@@ -133,6 +135,34 @@ GPT Pro 100\$ 目前不再拥有 10x Plus 的用量，不支持高强度并发�
 
 **补充**：如果使用 Fable 5，则完全不够用。另外，Max20x 在高强度多项目并行开发的背景下，仅一天就能耗完周限额。
 
+## 如何快速辨认模型是否为 GPT 6 Astra
+
+> 目前有个很有趣的现象，GPT 6 Astra 在画鹈鹕 SVG 的时候存在趋同性，几乎所有鹈鹕都是一个模子里刻出来的[^2]：随风飘动的围巾｜海边｜右上角的太阳｜还喜欢戴帽子。
+
+下面是不同 effort 下的结果，均为首次生成，1 turn，无关联文件夹，Fast 模式。费用按标准定价折算，输入 token 含缓存读取，思考占比 = 思考 token / 输出 token。
+
+**简单提示词** `生成一个骑自行车鹈鹕的 SVG 动画`：
+
+| Effort | 结果 | 思考时间 | Token 开销 | 思考占比 | 链接 |
+| --- | --- | --- | --- | --- | --- |
+| 轻量（Light / Low） | <img src="../assets/gpt6-astra-pelican/svg-low.svg" alt="Low" width="400" /> | 1 分 9 秒 | 输入&nbsp;56,441<br />输出&nbsp;3,501<br />0.50\$ | 0% | [查看会话](https://chatgpt.com/s/cx_6a9fb57178dc8191a8e3136853ddb173) |
+| 中等（Medium） | <img src="../assets/gpt6-astra-pelican/svg-medium.svg" alt="Medium" width="400" /> | 1 分 41 秒 | 输入&nbsp;57,224<br />输出&nbsp;4,346<br />0.38\$ | 1% | [查看会话](https://chatgpt.com/s/cx_6a9fab5f1bac819180f54f042d142d8b) |
+| 高（High） | <img src="../assets/gpt6-astra-pelican/svg-high.svg" alt="High" width="400" /> | 2 分 32 秒 | 输入&nbsp;150,173<br />输出&nbsp;5,524<br />0.56\$ | 6% | [查看会话](https://chatgpt.com/s/cx_6a9fae67b6ec8191ba3d236e224ec4f7) |
+| 极高（Xhigh / Extra high） | <img src="../assets/gpt6-astra-pelican/svg-xhigh.svg" alt="Xhigh" width="400" /> | 4 分 38 秒 | 输入&nbsp;381,712<br />输出&nbsp;8,896<br />1.24\$ | 18% | [查看会话](https://chatgpt.com/s/cx_6a9fb02191d081919a9ae7eb31605e7f) |
+| 最高（Max） | <img src="../assets/gpt6-astra-pelican/svg-max.svg" alt="Max" width="400" /> | 4 分 37 秒 | 输入&nbsp;411,170<br />输出&nbsp;11,794<br />1.32\$ | 32% | [查看会话](https://chatgpt.com/s/cx_6a9fb2b44d64819193f9fd5b4fc787b1) |
+
+**复杂提示词** `生成一个骑自行车鹈鹕的互动 SVG 动画，封装为 HTML 文件`，通过「互动」和「HTML」增加呈现差异：
+
+| Effort | 结果 | 思考时间 | Token 开销 | 思考占比 | 链接 |
+| --- | --- | --- | --- | --- | --- |
+| 轻量（Light / Low） | <img src="../assets/gpt6-astra-pelican/html-low.png" alt="Low" width="400" /> | 2 分 48 秒 | 输入&nbsp;306,875<br />输出&nbsp;6,549<br />0.83\$ | 1% | [查看会话](https://chatgpt.com/s/cx_6a9fb7bb74808191bf7a4d47b715cb7d)<br />[查看 HTML](../assets/gpt6-astra-pelican/html-low.html) |
+| 中等（Medium） | <img src="../assets/gpt6-astra-pelican/html-medium.png" alt="Medium" width="400" /> | 3 分 8 秒 | 输入&nbsp;495,541<br />输出&nbsp;7,139<br />1.12\$ | 1% | [查看会话](https://chatgpt.com/s/cx_6a9fb7c60ef48191a691934afa8be4de)<br />[查看 HTML](../assets/gpt6-astra-pelican/html-medium.html) |
+| 高（High） | <img src="../assets/gpt6-astra-pelican/html-high.png" alt="High" width="400" /> | 5 分 27 秒 | 输入&nbsp;720,406<br />输出&nbsp;12,428<br />1.68\$ | 10% | [查看会话](https://chatgpt.com/s/cx_6a9fb7d07d44819184082d1ed99bae7f)<br />[查看 HTML](../assets/gpt6-astra-pelican/html-high.html) |
+| 极高（Xhigh / Extra high） | <img src="../assets/gpt6-astra-pelican/html-xhigh.png" alt="Xhigh" width="400" /> | 10 分 46 秒 | 输入&nbsp;1,234,442<br />输出&nbsp;27,249<br />3.22\$ | 24% | [查看会话](https://chatgpt.com/s/cx_6a9fb7debd888191bbb71487f502bdc0)<br />[查看 HTML](../assets/gpt6-astra-pelican/html-xhigh.html) |
+| 最高（Max） | <img src="../assets/gpt6-astra-pelican/html-max.png" alt="Max" width="400" /> | 12 分 22 秒 | 输入&nbsp;1,369,447<br />输出&nbsp;29,414<br />3.46\$ | 36% | [查看会话](https://chatgpt.com/s/cx_6a9fb7e9675481919bbf9087497cce56)<br />[查看 HTML](../assets/gpt6-astra-pelican/html-max.html) |
+
+[^2]: [GPT 100% 检测是否降智（实测5.6sol 6 Astra都被路由到了神秘模型，疑似4o） - Linux DO](https://linux.do/t/topic/2858863)
+
 ## 关于中转站点（反代）
 
 除了官方订阅，中转站点也是使用国外模型的途径之一。这类服务本质上是把订阅账号或者官方免费配额封装成统一 API，再卖给下游用户。像 GPT 的 Business 账号、Google 的学生会员、亚马逊的 Kiro，这几年都被不少商家拿来做反代，这点无可厚非，毕竟谁不喜欢用上便宜的 API 呢，双赢。
@@ -145,9 +175,9 @@ GPT Pro 100\$ 目前不再拥有 10x Plus 的用量，不支持高强度并发�
 >
 > 请勿使用 [Antigravity-Manager](https://github.com/lbjlaq/Antigravity-Manager) 对你的 Google 账户进行反代，分别测试的两个号在第二天都被停用了 Gemini CLI 使用资格。
 
-目前比较热门的反代项目有：[Sub2API](https://github.com/Wei-Shaw/sub2api)（由原 [Claude Relay Service](https://github.com/Wei-Shaw/claude-relay-service) 的作者维护，旧项目 CRS 不再建议使用。如果 API 有日/周/月限额的需求，推荐部署。单账号自用的完整部署流程见[《Sub2API 自建中转：把 AI 订阅变成自己的 API Key》](./Sub2API%20自建中转：把%20AI%20订阅变成自己的%20API%20Key.md)）、[New API](https://github.com/QuantumNous/new-api)、[One API](https://github.com/songquanpeng/one-api) 等，大部分中转站点背后都基于它们提供服务。
+目前比较热门的反代项目有：[Sub2API](https://github.com/Wei-Shaw/sub2api)（由原 [Claude Relay Service](https://github.com/Wei-Shaw/claude-relay-service) 的作者维护，旧项目 CRS 不再建议使用。如果 API 有日/周/月限额的需求，推荐部署。自用部署流程可阅读[《Sub2API 自建中转：把 AI 订阅变成自己的 API Key》](./Sub2API%20自建中转：把%20AI%20订阅变成自己的%20API%20Key.md)）、[New API](https://github.com/QuantumNous/new-api)、[One API](https://github.com/songquanpeng/one-api) 等，大部分中转站点背后都基于它们提供服务。
 
-不管是哪一个项目，如果你是第一次部署并准备用来分发，建议订阅 GPT，它的风控相对松很多。这一点可以从中转站点的模型定价感知[^2]：
+不管是哪一个项目，如果你是第一次部署并准备用来分发，建议订阅 GPT，它的风控相对松很多。这一点可以从中转站点的模型定价感知[^3]：
 
 |        | 官方订阅账户 | Kiro     | Antigravity 逆向 | Team     |
 | ------ | ------------ | -------- | ---------------- | -------- |
@@ -161,7 +191,7 @@ Claude Max 账户的反代价格大概是 GPT Pro 的 3.5 倍，且服务有一�
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | ![Claude Max 反代延迟对比](../assets/claude-max-relay-latency.png) | ![GPT Pro 反代延迟对比](../assets/gpt-pro-relay-latency.png) |
 
-[^2]: Pincc 中转站点的模型定价和服务监控
+[^3]: Pincc 中转站点的模型定价和服务监控
 
 > [!tip]
 >

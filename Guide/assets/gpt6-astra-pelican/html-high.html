@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f4f1e7">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='20' fill='%23243f3c'/%3E%3Ctext x='12' y='28' font-family='serif' font-size='30' fill='%23f4f1e7'%3Ep%3C/text%3E%3C/svg%3E">
+<title>鹈鹕的海岸骑行 · Pelican Ride</title>
+<style>
+  :root{color-scheme:light;--paper:#f4f1e7;--ink:#243f3c;--muted:#657973;--line:#d6dcd0;--sky:#e6efe5;--sea:#a6cfc6;--sea-line:#d8ebe0;--hill:#c5d9c5;--sand:#e6d7ae;--road:#eee7d4;--cloud:#fffdf2;--sun:#efb75c;--accent:#d96b45;--panel:#fbf9f0}
+  *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;transition:background .7s,color .7s}button,input{-webkit-tap-highlight-color:transparent}button{font:inherit;color:inherit;cursor:pointer}button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:5px}main{max-width:1220px;margin:auto;padding:35px 48px 24px}.masthead{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:22px}.brand{display:flex;align-items:center;gap:12px;font-size:12px;font-weight:700;letter-spacing:2.2px}.brand-mark{width:27px;height:27px;border:1.5px solid currentColor;border-radius:50%;display:grid;place-items:center;font-size:18px;letter-spacing:0}.edition{font-size:11px;letter-spacing:2px;color:var(--muted)}.intro{display:flex;justify-content:space-between;align-items:end;padding:29px 0 21px}.eyebrow{font-size:10px;letter-spacing:3px;color:var(--accent);font-weight:700;margin:0 0 9px}h1{font-size:clamp(29px,4vw,43px);font-weight:600;letter-spacing:2px;margin:0}.intro p:last-child{margin:10px 0 0;font-size:13px;color:var(--muted);letter-spacing:1px}.theme{border:1px solid var(--line);background:transparent;padding:10px 15px;border-radius:25px;font-size:12px;min-height:42px}.scene-wrap{position:relative;border-radius:8px;overflow:hidden;background:var(--sky)}#scene{display:block;width:100%;height:auto;touch-action:manipulation;cursor:pointer}.scene-label{position:absolute;left:25px;top:22px;pointer-events:none;font-size:10px;letter-spacing:2px;color:var(--ink);opacity:.65}.live-tag{position:absolute;right:24px;top:21px;display:flex;align-items:center;gap:7px;font-size:11px;color:var(--ink)}.live-dot{height:6px;width:6px;background:var(--accent);border-radius:50%}.scene-bottom{position:absolute;left:25px;bottom:19px;font-size:11px;letter-spacing:1px;color:var(--ink);opacity:.65}.distance{position:absolute;right:24px;bottom:17px;font-size:11px;letter-spacing:1px;color:var(--ink);font-variant-numeric:tabular-nums}.distance b{font-size:19px;font-weight:500;margin-right:5px}.controls{display:flex;align-items:center;gap:25px;padding:24px 0;border-bottom:1px solid var(--line)}.actions{display:flex;gap:9px}.action{display:flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;border:1px solid var(--line);background:transparent;min-height:46px;border-radius:30px;padding:0 17px;font-size:13px;transition:background .2s,transform .2s}.action:hover,.theme:hover{background:var(--panel)}.action:active{transform:translateY(2px)}.action.primary{background:var(--ink);color:var(--paper);border-color:var(--ink);min-width:109px}.action svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}.speed-control{flex:1;max-width:360px;margin-left:auto}.speed-top{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px;font-size:12px;color:var(--muted)}.speed-top output{color:var(--ink);font-size:19px;font-variant-numeric:tabular-nums}.speed-top small{font-size:10px;color:var(--muted);margin-left:5px}input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;margin:0;height:21px}.footer{display:flex;justify-content:space-between;gap:20px;padding-top:17px;color:var(--muted);font-size:10px;letter-spacing:1px}.footer kbd{font:inherit;border-bottom:1px solid var(--line);padding:2px}#bird{cursor:pointer}.outlined{stroke:#294541;stroke-linecap:round;stroke-linejoin:round}.sky{fill:var(--sky)}.sea{fill:var(--sea)}.cloud{fill:var(--cloud)}.hill{fill:var(--hill)}.sea-line{stroke:var(--sea-line)}.sand{fill:var(--sand)}.road{fill:var(--road)}.stars{opacity:0;transition:opacity .7s}body.night{color-scheme:dark;--paper:#172c33;--ink:#e5e7d5;--muted:#a0b6b8;--line:#3e5457;--sky:#223c4a;--sea:#386571;--sea-line:#65888e;--hill:#335663;--sand:#718079;--road:#8a9588;--cloud:#587482;--sun:#f4e8b7;--panel:#233d43}body.night .stars{opacity:1}body.night #sun-rays{opacity:0}#scene .sky,#scene .sea,#scene .cloud,#scene .hill,#scene .sand,#scene .road{transition:fill .7s}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}@media(max-width:720px){main{padding:22px 20px}.edition{font-size:9px;letter-spacing:1px}.brand{font-size:10px;letter-spacing:1.4px}.intro{padding:23px 0 20px}.intro p:last-child{font-size:11px;letter-spacing:.4px}.theme{padding:8px 11px}.scene-wrap{margin:0 -5px}.controls{flex-wrap:wrap;gap:19px}.actions{width:100%;justify-content:center}.speed-control{max-width:none;width:100%;flex-basis:100%}.footer{font-size:9px;line-height:1.7}.scene-label{left:13px;top:12px;font-size:8px}.live-tag{top:11px;right:13px;font-size:9px}.scene-bottom{left:13px;bottom:12px;font-size:8px}.distance{right:13px;bottom:10px;font-size:8px}.distance b{font-size:14px}.action{padding:0 16px}.keyboard{display:none}#scene{min-height:310px;object-fit:cover}.footer span:last-child{text-align:right}}@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+  @media(max-width:400px){.edition{display:none}.brand{white-space:nowrap}.intro{display:block}h1{font-size:26px;letter-spacing:1px}.theme{margin-top:14px;white-space:nowrap}.action{padding:0 10px}.action.primary{min-width:96px}}
+</style>
+</head>
+<body>
+<main>
+  <header class="masthead"><div class="brand"><span class="brand-mark" aria-hidden="true">p</span> PELICAN CYCLING CLUB</div><span class="edition">海岸漫游 / NO. 001</span></header>
+  <section class="intro"><div><p class="eyebrow">A LITTLE RIDE, A LITTLE JOY</p><h1>跟着海风，慢慢骑。</h1><p>一只鹈鹕，一辆单车，和一条没有尽头的海岸线。</p></div><button class="theme" id="theme" type="button" aria-pressed="false">☾ 入夜</button></section>
+  <div class="scene-wrap">
+    <span class="scene-label">THE COAST IS CALLING.</span><span class="live-tag"><span class="live-dot"></span><span id="ride-state">自在骑行中</span></span>
+    <svg id="scene" viewBox="0 0 1100 620" preserveAspectRatio="xMidYMid slice" role="img" aria-labelledby="scene-title scene-desc">
+      <title id="scene-title">骑自行车的鹈鹕</title><desc id="scene-desc">戴着绿色头盔、系着红围巾的白色鹈鹕沿海骑着橙色自行车。车轮和脚踏同步转动，云朵与海岸向后移动。使用下方按钮调节骑行，点击画面也可以跳一下。</desc>
+      <defs>
+        <pattern id="road-pattern" width="180" height="80" patternUnits="userSpaceOnUse"><path d="M22 23h51 M139 52h18" stroke="#a8ae92" stroke-width="2" stroke-linecap="round" opacity=".48"/></pattern>
+        <g id="cloud-shape"><path d="M0 29C0 19 10 14 20 16C21-4 52-7 60 11C75 5 92 14 91 27C105 25 115 33 111 39H0Z"/></g>
+        <g id="coast-plant" stroke="#638978" stroke-width="3" fill="none" stroke-linecap="round"><path d="M0 0q3-26-7-37M0 0q8-22 19-29M0 0q-12-18-22-20"/><path d="M-7-37q-15 1-11 10q12 4 11-10M19-29q-13-6-14 6q9 5 14-6" fill="#638978" stroke="none"/></g>
+        <g id="wheel"><circle r="99" fill="#f8f3df" fill-opacity=".14" stroke="#294541" stroke-width="9"/><circle r="90" fill="none" stroke="#f9edd1" stroke-width="3"/><g stroke="#748a7d" stroke-width="1.8"><path d="M0-88V88M-88 0H88M-62-62L62 62M-62 62L62-62M-34-81L34 81M-81-34L81 34M-81 34L81-34M-34 81L34-81"/></g><circle r="10" fill="#f4e8cb" stroke="#294541" stroke-width="3"/><path d="M-22-88q18-5 33-2" fill="none" stroke="#e6aa66" stroke-width="5" stroke-linecap="round"/></g>
+      </defs>
+      <path class="sky" d="M0 0h1100v620H0z"/>
+      <g class="stars" fill="#e8e6cf"><circle cx="100" cy="96" r="2"/><circle cx="280" cy="57" r="2.5"/><circle cx="700" cy="66" r="2"/><circle cx="1020" cy="150" r="2.5"/><path d="M780 133v12m-6-6h12M356 108v10m-5-5h10" stroke="#e8e6cf" stroke-width="2"/></g>
+      <g id="sun"><circle cx="900" cy="126" r="43" fill="var(--sun)"/><g id="sun-rays" stroke="var(--sun)" stroke-width="2" stroke-linecap="round"><path d="M900 65v-7M900 190v7M838 126h-7M963 126h7M856 82l-5-5M944 170l5 5M944 82l5-5M856 170l-5 5"/></g></g>
+      <g id="clouds" class="cloud"><use href="#cloud-shape" x="100" y="106"/><use href="#cloud-shape" transform="translate(723 58) scale(.72)"/><use href="#cloud-shape" transform="translate(1030 190) scale(.9)"/><use href="#cloud-shape" x="1330" y="106"/></g>
+      <path class="hill" d="M0 306Q80 265 162 286T334 283Q418 273 473 311Q570 271 665 307T838 300Q997 278 1100 308V370H0Z"/>
+      <path class="sea" d="M0 320h1100v155H0z"/>
+      <g id="water" class="sea-line" stroke-width="2" fill="none" stroke-linecap="round"><path d="M20 343h140m45 25h74m51-27h130m186 16h172m94-15h180M-35 398H59m62 17h106m101-35h105m377 15h87m41 29h109m-460 5h75M1120 343h140m45 25h74m51-27h130m186 16h172m94-15h180"/></g>
+      <g id="distant"><g transform="translate(111 226)"><path d="M-11 99L-4 15H18L27 99" fill="#f8f2dc"/><path d="M-7 43h28l3 21H-9Z" fill="#d57653"/><path d="M-7 15h29V0H-7Z" fill="#597d76"/><path d="M-13 0L7-17 28 0Z" fill="#d57653"/><path d="M1 2v10m10-10v10" stroke="#f3d89f" stroke-width="5"/><path d="M-27 99q29-14 61 0" fill="#819c83"/></g><g transform="translate(962 325)"><path d="M0 24h53L41 33H13Z" fill="#617f76"/><path d="M26-30V21H-2Z" fill="#f9f4df"/><path d="M31-12V20h18Z" fill="#e9ba81"/></g></g>
+      <path class="sand" d="M0 450Q242 423 469 448T1100 438V520H0Z"/>
+      <path d="M0 457Q242 432 469 456T1100 447" fill="none" stroke="#f8efcf" stroke-width="5"/>
+      <path class="road" d="M0 497h1100v123H0z"/><path d="M0 497h1100" stroke="#a8b391" stroke-width="2"/>
+      <path d="M0 499h1100v121H0Z" fill="url(#road-pattern)"/>
+      <g id="plants"><use href="#coast-plant" x="67" y="489"/><use href="#coast-plant" x="981" y="483"/><use href="#coast-plant" x="1397" y="489"/><path d="M221 486h17m589 9h23" stroke="#b5b68d" stroke-width="3" stroke-linecap="round"/></g>
+      <ellipse id="shadow" cx="548" cy="568" rx="241" ry="13" fill="#66765f" opacity=".14"/>
+      <g id="rider">
+        <g id="far-leg" class="outlined" fill="none" stroke-width="12" stroke="#c88947"><path id="far-leg-path" d="M479 322L471 378L503 434"/><path id="far-foot" stroke-width="11" d="M500 435h28"/></g>
+        <g class="outlined" fill="none"><g transform="translate(380 462)"><g id="rear-wheel"><use href="#wheel"/></g></g><g transform="translate(710 462)"><g id="front-wheel"><use href="#wheel"/></g></g>
+          <path d="M279 443A104 104 0 0 1 464 395M623 403A104 104 0 0 1 805 418" stroke="#789b8a" stroke-width="7"/>
+          <path d="M380 462L459 337 527 462H380L648 337H459M527 462L648 337" stroke="#2c4640" stroke-width="13"/>
+          <path d="M380 462L459 337 527 462H380L648 337H459M527 462L648 337" stroke="#e27b4d" stroke-width="8"/>
+          <path d="M710 462L638 310 632 284Q630 270 646 269H671" stroke="#294541" stroke-width="10"/><path d="M710 462L643 321" stroke="#e27b4d" stroke-width="6"/>
+          <path d="M459 337L450 312" stroke="#526a5e" stroke-width="8"/><path d="M425 309Q448 302 475 310" stroke="#294541" stroke-width="14"/>
+          <path d="M646 269H672" stroke="#986a49" stroke-width="12"/><path d="M383 457L527 447Q549 449 549 462Q549 481 529 481L383 469Z" stroke="#475f54" stroke-width="2"/>
+          <circle cx="527" cy="462" r="23" fill="#d1d7bb" stroke="#294541" stroke-width="3"/><circle cx="527" cy="462" r="15" stroke="#8f9e83" stroke-width="3"/>
+          <g id="crank"><path d="M-31 0H31" stroke="#294541" stroke-width="5"/></g><circle cx="527" cy="462" r="5" fill="#294541"/>
+          <path d="M326 342h77l8 20H313Z" stroke="#657f6d" stroke-width="5"/><path d="M329 360L378 452" stroke="#657f6d" stroke-width="3"/>
+          <path d="M653 264q0-16 16-14q12 1 12 14Z" fill="#edbe67" stroke="#294541" stroke-width="2"/>
+        </g>
+        <g id="bird" class="outlined" stroke-width="3">
+          <path d="M439 270Q395 268 366 232Q380 278 420 298L404 276Z" fill="#f9f7e9"/>
+          <path d="M416 235Q458 214 504 236Q529 229 531 193L531 151Q530 111 565 107Q604 101 611 132Q614 159 590 173Q567 187 575 223Q586 270 548 305Q520 329 466 316Q414 305 409 273Q405 251 416 235Z" fill="#fffcf0"/>
+          <path d="M568 178Q550 211 564 242Q565 277 529 299Q496 319 454 297Q489 325 533 309Q579 292 575 247Q564 213 578 181" fill="#e0e6d4" stroke="none"/>
+          <path d="M594 145L764 153Q721 188 658 202Q609 195 594 145Z" fill="#edb961"/>
+          <path d="M608 155Q628 183 658 190Q711 181 755 158" fill="none" stroke="#d89547" stroke-width="2"/>
+          <path d="M593 133Q642 131 710 142L772 151Q778 155 768 158L604 153Z" fill="#efca7c"/>
+          <path d="M598 147L765 153" fill="none" stroke="#c58a42" stroke-width="1.5"/>
+          <circle cx="583" cy="132" r="6.7" fill="#294541" stroke="none"/><circle cx="585" cy="130" r="2" fill="#fff" stroke="none"/>
+          <path id="eye-lid" d="M576 132q7 5 14 0" stroke="#294541" stroke-width="3" fill="none" opacity="0"/>
+          <path d="M572 151q-8 2-12-3" fill="none" stroke="#d4c8a6" stroke-width="2"/>
+          <g id="helmet"><path d="M524 115Q518 74 557 69Q596 65 608 108L614 116Z" fill="#799985"/><path d="M532 98Q549 91 599 100M552 73q-12 15-9 24M571 74q10 8 13 24" stroke="#476c5b" stroke-width="4" fill="none"/><path d="M521 116q37-9 97 1" stroke="#294541" stroke-width="6" fill="none"/><path d="M538 119q9 40 26 42l18-11" fill="none" stroke-width="3"/></g>
+          <g id="scarf-tail"><path d="M542 204Q505 193 482 207Q456 213 431 193L442 215 428 224Q478 247 541 218Z" fill="#d86b4b"/><path d="M440 216Q475 231 523 210" fill="none" stroke="#ae503c" stroke-width="2"/></g>
+          <path d="M532 191q17 12 39 2l5 19q-20 15-42-3Z" fill="#df7651"/><path d="M540 198l3 13" stroke="#f0a276" stroke-width="3"/>
+          <path d="M451 249Q478 231 511 252Q542 274 600 271L650 267Q658 271 650 281Q605 299 556 293Q502 296 459 280" fill="#f3f3e4"/>
+          <path d="M466 259Q500 278 549 279M478 273q24 12 51 11" fill="none" stroke="#bacbb8" stroke-width="2.5"/>
+        </g>
+        <g class="outlined" fill="none"><path id="near-leg-path" d="M506 311L552 374L552 458" stroke="#294541" stroke-width="15"/><path id="near-leg-color" d="M506 311L552 374L552 458" stroke="#e8ac57" stroke-width="10"/><path id="near-foot" d="M548 458h32" stroke="#294541" stroke-width="14"/><path id="near-foot-color" d="M548 457h32" stroke="#edb65e" stroke-width="9"/><path id="pedal-front" d="M542 470h29" stroke="#294541" stroke-width="6"/><path id="pedal-back" d="M484 448h29" stroke="#294541" stroke-width="6"/></g>
+        <g id="bell-rings" fill="none" stroke="#c08237" stroke-width="3" stroke-linecap="round" opacity="0"><path d="M689 244q8 6 8 15M697 235q16 10 16 27M651 242q-7 6-7 14"/><text x="684" y="218" fill="#294541" stroke="none" font-family="system-ui,sans-serif" font-size="20">叮铃！</text></g>
+      </g>
+      <g id="speed-lines" stroke="#6b9080" stroke-width="3" stroke-linecap="round" opacity="0"><path d="M283 255h-65M274 275h-35M276 300h-90"/></g>
+    </svg>
+    <span class="scene-bottom">慢一点，也没关系。</span><span class="distance"><b id="distance">0.00</b> km</span>
+  </div>
+  <section class="controls" aria-label="骑行控制">
+    <div class="actions">
+      <button type="button" class="action primary" id="pause" aria-pressed="false"><svg viewBox="0 0 20 20" aria-hidden="true"><path id="pause-icon" d="M7 5v10M13 5v10"/></svg><span id="pause-text">暂停</span></button>
+      <button type="button" class="action" id="bell"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 14h12l-2-3V8a4 4 0 0 0-8 0v3zM8 17h4M10 2v2"/></svg>按铃</button>
+      <button type="button" class="action" id="jump"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 15q6-17 12 0M4 12v3H1M13 15h3v-3"/></svg>跳一下</button>
+    </div>
+    <label class="speed-control" for="speed"><span class="speed-top"><span>骑行速度</span><span><output id="speed-value" for="speed">18</output><small>km/h</small></span></span><input id="speed" type="range" min="0" max="40" step="1" value="18" aria-label="骑行速度，千米每小时"></label>
+  </section>
+  <footer class="footer"><span>点击画面，让快乐腾空。<span class="keyboard"> · <kbd>空格</kbd> 暂停 / <kbd>B</kbd> 按铃 / <kbd>J</kbd> 跳跃</span></span><span>去哪里不重要，骑着就很好。</span></footer>
+  <div id="announcement" class="sr-only" aria-live="polite"></div>
+</main>
+<script>
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const ui = Object.fromEntries(['rider','rear-wheel','front-wheel','crank','near-leg-path','near-leg-color','far-leg-path','near-foot','near-foot-color','far-foot','pedal-front','pedal-back','scarf-tail','clouds','water','distant','plants','road-pattern','shadow','speed-lines','bell-rings','eye-lid','distance','speed','speed-value','pause','pause-text','pause-icon','ride-state','theme','announcement'].map(id=>[id,$(id)]));
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  // Repeat each scenery strip so its wrap point stays outside the viewport.
+  for(const [id,width] of [['clouds',1230],['water',1100],['distant',1400],['plants',1330]]){
+    const copy=document.createElementNS('http://www.w3.org/2000/svg','g');
+    copy.setAttribute('transform',`translate(${width} 0)`);
+    for(const child of [...ui[id].children])copy.appendChild(child.cloneNode(true));
+    ui[id].appendChild(copy);
+  }
+  let speed=18, paused=reducedMotion.matches, distance=0, travel=0, elapsed=0, last=0, jumpTime=-1, bellTime=-1, night=false, audioContext;
+  function announce(text){ui.announcement.textContent=text;}
+  function updatePause(){ui.pause.setAttribute('aria-pressed',String(paused));ui['pause-text'].textContent=paused?'继续骑行':'暂停';ui['pause-icon'].setAttribute('d',paused?'M6 4l10 6-10 6Z':'M7 5v10M13 5v10');ui['ride-state'].textContent=paused?'停下来，看看海':speed===0?'海边小憩':'自在骑行中';}
+  function togglePause(){paused=!paused;updatePause();announce(paused?'骑行已暂停':'继续骑行');}
+  function jump(){if(jumpTime<0){jumpTime=0;announce('鹈鹕轻轻跳了起来！');}}
+  function bell(){
+    bellTime=0;announce('叮铃！借过一下。');
+    try{audioContext ||= new (window.AudioContext||window.webkitAudioContext)();audioContext.resume().then(()=>{const t=audioContext.currentTime;[0,.14].forEach(delay=>{[1397,2095].forEach((freq,index)=>{const oscillator=audioContext.createOscillator(),gain=audioContext.createGain();oscillator.type='sine';oscillator.frequency.value=freq;gain.gain.setValueAtTime(0,t+delay);gain.gain.linearRampToValueAtTime(index?.028:.08,t+delay+.006);gain.gain.exponentialRampToValueAtTime(.0001,t+delay+.85);oscillator.connect(gain);gain.connect(audioContext.destination);oscillator.start(t+delay);oscillator.stop(t+delay+.9);});});}).catch(()=>{});}catch(error){/* Visual feedback remains available without audio. */}
+  }
+  ui.pause.addEventListener('click',togglePause);$('jump').addEventListener('click',jump);$('scene').addEventListener('click',jump);$('bell').addEventListener('click',bell);
+  ui.speed.addEventListener('input',()=>{speed=Number(ui.speed.value);ui['speed-value'].value=speed;updatePause();});
+  ui.theme.addEventListener('click',()=>{night=!night;document.body.classList.toggle('night',night);ui.theme.textContent=night?'☀ 白昼':'☾ 入夜';ui.theme.setAttribute('aria-pressed',String(night));announce(night?'切换到月夜海岸':'切换到白昼海岸');});
+  document.addEventListener('keydown',event=>{if(event.repeat||event.ctrlKey||event.metaKey||event.altKey||/INPUT|BUTTON|TEXTAREA|SELECT/.test(event.target.tagName))return;if(event.code==='Space'){event.preventDefault();togglePause();}else if(event.key.toLowerCase()==='b')bell();else if(event.key.toLowerCase()==='j')jump();});
+  reducedMotion.addEventListener('change',event=>{if(event.matches){paused=true;updatePause();}});
+  document.addEventListener('visibilitychange',()=>{last=0;});
+  function attr(id,key,value){ui[id].setAttribute(key,value);}
+  function leg(hip,foot,bend){const dx=foot.x-hip.x,dy=foot.y-hip.y,d=Math.hypot(dx,dy),upper=83,lower=86,a=(upper*upper-lower*lower+d*d)/(2*d),h=Math.sqrt(Math.max(0,upper*upper-a*a));const knee={x:hip.x+a*dx/d+bend*h*dy/d,y:hip.y+a*dy/d-bend*h*dx/d};return `M${hip.x} ${hip.y}L${knee.x.toFixed(2)} ${knee.y.toFixed(2)}L${foot.x.toFixed(2)} ${foot.y.toFixed(2)}`;}
+  function render(dt){
+    const moving=!paused&&speed>0;
+    if(!paused){elapsed+=dt;const metres=speed/3.6*dt;distance+=metres/1000;travel+=metres*78;}
+    const wheelAngle=travel/99,phase=wheelAngle/2.35,deg=wheelAngle*180/Math.PI;
+    attr('rear-wheel','transform',`rotate(${deg%360})`);attr('front-wheel','transform',`rotate(${deg%360})`);attr('crank','transform',`translate(527 462) rotate(${phase*180/Math.PI%360})`);
+    const front={x:527+31*Math.cos(phase),y:462+31*Math.sin(phase)},back={x:527-31*Math.cos(phase),y:462-31*Math.sin(phase)};
+    const near=leg({x:508,y:315},{x:front.x-7,y:front.y-9},1);attr('near-leg-path','d',near);attr('near-leg-color','d',near);attr('far-leg-path','d',leg({x:478,y:313},{x:back.x-6,y:back.y-8},-1));
+    attr('near-foot','d',`M${front.x-10} ${front.y-7}h29`);attr('near-foot-color','d',`M${front.x-10} ${front.y-8}h29`);attr('far-foot','d',`M${back.x-10} ${back.y-7}h28`);attr('pedal-front','d',`M${front.x-10} ${front.y+2}h29`);attr('pedal-back','d',`M${back.x-10} ${back.y+2}h29`);
+    let lift=0;if(jumpTime>=0){jumpTime+=dt;const p=Math.min(1,jumpTime/.85);lift=Math.sin(p*Math.PI)*68;if(p===1)jumpTime=-1;}
+    const bob=moving?Math.sin(phase*2)*1.8:0;attr('rider','transform',`translate(0 ${bob-lift})`);attr('shadow','rx',241-lift*.7);attr('shadow','opacity',.14-lift*.0008);
+    attr('scarf-tail','transform',`rotate(${moving?Math.sin(elapsed*(5+speed*.15))*5:0} 539 208)`);
+    attr('clouds','transform',`translate(${-travel*.045%1230} 0)`);attr('water','transform',`translate(${-travel*.19%1100} 0)`);attr('distant','transform',`translate(${-travel*.06%1400} 0)`);attr('plants','transform',`translate(${-travel%1330} 0)`);attr('road-pattern','patternTransform',`translate(${-travel%180} 0)`);attr('speed-lines','opacity',moving?Math.max(0,(speed-23)/40):0);
+    attr('eye-lid','opacity',elapsed%4.8>4.6?1:0);
+    if(bellTime>=0){bellTime+=dt;attr('bell-rings','opacity',Math.max(0,1-bellTime/1.1));if(bellTime>1.1)bellTime=-1;}
+    ui.distance.textContent=distance.toFixed(2);
+  }
+  function frame(now){if(!last)last=now;const dt=Math.min((now-last)/1000,.05);last=now;if(!document.hidden)render(dt);requestAnimationFrame(frame);}
+  updatePause();render(0);requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
