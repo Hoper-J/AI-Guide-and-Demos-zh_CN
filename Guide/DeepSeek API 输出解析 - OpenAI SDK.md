@@ -33,7 +33,7 @@ client = OpenAI(
 
 # 单轮对话示例
 completion = client.chat.completions.create(
-    model="deepseek-v4-flash", # 3：模型标识（model_id）可能存在差异
+    model="deepseek-flash", # 3：模型标识（model_id）可能存在差异
     messages=[
         {'role': 'system', 'content': 'You are a helpful assistant.'},
         {'role': 'user', 'content': '你是谁？'}
@@ -53,7 +53,7 @@ completion = client.chat.completions.create(
 
 |              | base_url                                            | model_id                  |
 | ------------ | --------------------------------------------------- | ------------------------- |
-| DeepSeek     | "https://api.deepseek.com"                          | "deepseek-v4-flash"           |
+| DeepSeek     | "https://api.deepseek.com"                          | "deepseek-flash"              |
 | 硅基流动     | "https://api.siliconflow.cn/v1"                     | "deepseek-ai/DeepSeek-V4-Flash" |
 | 阿里云百炼   | "https://dashscope.aliyuncs.com/compatible-mode/v1" | "deepseek-v4-flash"             |
 | 百度智能云   | "https://qianfan.baidubce.com/v2"                   | "deepseek-v4-flash"             |
@@ -67,7 +67,7 @@ completion = client.chat.completions.create(
 -     base_url="https://api.deepseek.com", # 2
 - )
 - completion = client.chat.completions.create(
--     model="deepseek-v4-flash", # 3
+-     model="deepseek-flash", # 3
 
 + client = OpenAI(
 +     api_key="your-api-key", #1
@@ -114,6 +114,22 @@ pprint(completion.model_dump())
 # import json
 # print(json.dumps(completion.model_dump(), indent=4, ensure_ascii=False))
 ```
+
+> [!tip]
+>
+> `completion` 是 OpenAI SDK 返回的对象，字段可以通过属性访问，比如 `completion.choices[0].message.content`。而 `pprint` 只会逐层展开字典 / 列表这类内置容器，其他对象只按 `repr` 原样输出：
+>
+> ```python
+> pprint(completion)
+> ```
+>
+> **输出**：
+>
+> ```
+> ChatCompletion(id='a8a9e6e5-423f-407f-b06c-31d200530eaa', choices=[Choice(finish_reason='stop', index=0, logprobs=None, message=ChatCompletionMessage(content='你好！我是DeepSeek，由深度求索公司创造的AI助手。😊\n\n我是一个多模态模型，可以帮你解答问题、进行对话、处理文档等。我支持上传图像、PDF、Word、Excel等文件，并从中读取文字信息来帮助你。我还支持联网搜索功能（需要手动开启），上下文长度达到1M，可以一次性处理像《三体》三部曲那样体量的书籍。\n\n我的知识截止日期是2026年2月，而且我是完全免费的！你可以在官方应用商店下载App使用，App端还支持语音输入。\n\n有什么我可以帮你的吗？无论是学习、工作还是生活上的问题，都可以问我哦！', refusal=None, role='assistant', annotations=None, audio=None, function_call=None, tool_calls=None))], created=1791269646, model='deepseek-flash', object='chat.completion', service_tier=None, system_fingerprint='aeb56401ca74e127821c4f9126dcb669', usage=CompletionUsage(completion_tokens=139, prompt_tokens=13, total_tokens=152, completion_tokens_details=None, prompt_tokens_details=PromptTokensDetails(audio_tokens=None, cached_tokens=0), prompt_cache_hit_tokens=0, prompt_cache_miss_tokens=13))
+> ```
+>
+> 所以需要先用 `model_dump()` 转成字典再打印。
 
 下面以 DeepSeek API 的非思考和思考模式为例进行解读，涉及的知识对于使用了 OpenAI SDK 的平台是通用的：
 
@@ -183,12 +199,12 @@ pprint(completion.model_dump())
       print(f"输出: {stats.completion_tokens} tokens")
       print(f"总消耗: {stats.total_tokens} tokens")
       
-      # 按 DeepSeek v4-flash 定价计算成本（单位：元，思考/非思考同价）
+      # 按 DeepSeek deepseek-flash 谷时定价计算成本（单位：元，思考/非思考同价，峰时价格翻倍）
       # - 输入: 1元/百万 tokens（缓存命中 0.02元/百万 tokens）
-      # - 输出: 2元/百万 tokens
+      # - 输出: 4元/百万 tokens
       # 官方价格文档：https://api-docs.deepseek.com/zh-cn/quick_start/pricing/
       input_cost = (hit * 0.02 + miss * 1) / 1_000_000
-      output_cost = stats.completion_tokens * 2 / 1_000_000
+      output_cost = stats.completion_tokens * 4 / 1_000_000
       total_cost = input_cost + output_cost
       
       print(f"\n===== 成本明细 =====")
@@ -206,11 +222,11 @@ pprint(completion.model_dump())
   输入: 12 tokens [缓存命中: 0 | 未命中: 12]
   输出: 102 tokens
   总消耗: 114 tokens
-
+  
   ===== 成本明细 =====
   输入成本: ￥0.0000 元
-  输出成本: ￥0.0002 元
-  预估总成本: ￥0.0002 元
+  输出成本: ￥0.0004 元
+  预估总成本: ￥0.0004 元
   ```
   
   > [!important]
@@ -218,16 +234,16 @@ pprint(completion.model_dump())
   > 非 DeepSeek 官方平台不存在一些特殊字段（比如：`usage.prompt_cache_hit_tokens`），一个更兼容的版本：
   >
   > ```python
-  > def print_chat_usage(completion, input_cost=1.0, output_cost=2.0, cache_hit_cost=0.02):
+  > def print_chat_usage(completion, input_cost=1.0, output_cost=4.0, cache_hit_cost=0.02):
   >     """
   >      参数:
   >     - input_cost: 输入价格（元/百万 tokens）
   >     - output_cost: 输出价格（元/百万 tokens）
   >     - cache_hit_cost: 缓存命中价格（当平台不支持时自动退化到全价模式）
   > 
-  >     按 DeepSeek 聊天模型定价设定默认成本（单位：元）：
+  >     按 DeepSeek deepseek-flash 谷时定价设定默认成本（单位：元，峰时价格翻倍）：
   >     - 输入: 1元/百万 tokens（缓存命中 0.02元/百万 tokens）
-  >     - 输出: 2元/百万 tokens
+  >     - 输出: 4元/百万 tokens
   >     官方价格文档：https://api-docs.deepseek.com/zh-cn/quick_start/pricing/
   >     """
   >     stats = completion.usage
@@ -269,7 +285,7 @@ V4 起思考与非思考共用同一模型，删除关闭思考的 `extra_body` 
 
 ```diff
   completion = client.chat.completions.create(
-      model="deepseek-v4-flash", # 3
+      model="deepseek-flash", # 3
 -     extra_body={"thinking": {"type": "disabled"}},  # 关闭思考
 ```
 
@@ -277,7 +293,7 @@ V4 起思考与非思考共用同一模型，删除关闭思考的 `extra_body` 
 >
 > |              | base_url                                            | model_id                                                     |
 > | ------------ | --------------------------------------------------- | ------------------------------------------------------------ |
-> | DeepSeek     | "https://api.deepseek.com"                          | "deepseek-v4-flash"                                              |
+> | DeepSeek     | "https://api.deepseek.com"                          | "deepseek-flash"                                                 |
 > | 硅基流动     | "https://api.siliconflow.cn/v1"                     | "deepseek-ai/DeepSeek-V4-Flash"                                    |
 > | 阿里云百炼   | "https://dashscope.aliyuncs.com/compatible-mode/v1" | "deepseek-v4-flash"                                                |
 > | 百度智能云   | "https://qianfan.baidubce.com/v2"                   | "deepseek-v4-flash"                                                |
@@ -343,7 +359,7 @@ pprint(completion.model_dump())
 - **获取模型回复（choices）**
 
   ```python
-  # 获取推理思考过程（Reasoner特有字段）
+  # 获取推理思考过程（思考模式特有字段）
   reasoning_content = completion.choices[0].message.reasoning_content
   print(f"===== 模型推理过程 =====\n{reasoning_content}")
   
@@ -441,12 +457,12 @@ pprint(completion.model_dump())
       
       print(f"总消耗: {stats.total_tokens} tokens")
       
-      # 按 DeepSeek v4-flash 定价计算成本（单位：元，思考/非思考同价）
+      # 按 DeepSeek deepseek-flash 谷时定价计算成本（单位：元，思考/非思考同价，峰时价格翻倍）
       # - 输入: 1元/百万 tokens（缓存命中 0.02元/百万 tokens）
-      # - 输出: 2元/百万 tokens
+      # - 输出: 4元/百万 tokens
       # 官方价格文档：https://api-docs.deepseek.com/zh-cn/quick_start/pricing/
       input_cost = (hit * 0.02 + miss * 1) / 1_000_000
-      output_cost = stats.completion_tokens * 2 / 1_000_000
+      output_cost = stats.completion_tokens * 4 / 1_000_000
       total_cost = input_cost + output_cost
       
       print(f"\n===== 成本明细 =====")
@@ -466,11 +482,11 @@ pprint(completion.model_dump())
   ├─ 推理过程: 80 tokens
   └─ 最终回答: 77 tokens
   总消耗: 169 tokens
-
+  
   ===== 成本明细 =====
   输入成本: ￥0.0000 元
-  输出成本: ￥0.0003 元
-  预估总成本: ￥0.0003 元
+  输出成本: ￥0.0006 元
+  预估总成本: ￥0.0006 元
   ```
   
   > [!important]
@@ -478,16 +494,16 @@ pprint(completion.model_dump())
   > 非 DeepSeek 官方的部分平台（但百度智能云存在）不存在一些特殊字段（比如：`reasoning_tokens`），一个更兼容的版本：
   >
   > ```python
-  > def print_reasoner_usage(completion, input_cost=1.0, output_cost=2.0, cache_hit_cost=0.02):
+  > def print_reasoner_usage(completion, input_cost=1.0, output_cost=4.0, cache_hit_cost=0.02):
   >     """
   >     参数：
   >     - input_cost: 输入价格（元/百万 tokens）
   >     - output_cost: 输出价格（元/百万 tokens）
   >     - cache_hit_cost: 缓存命中价格（当平台不支持时自动退化到全价模式）
   > 
-  >     按 DeepSeek 推理模型定价设定默认成本（单位：元）：
+  >     按 DeepSeek deepseek-flash 谷时定价设定默认成本（单位：元，峰时价格翻倍）：
   >     - 输入: 1元/百万 tokens（缓存命中 0.02元/百万 tokens）
-  >     - 输出: 2元/百万 tokens
+  >     - 输出: 4元/百万 tokens
   >     官方价格文档：https://api-docs.deepseek.com/zh-cn/quick_start/pricing/
   >     """
   >     stats = completion.usage
@@ -509,20 +525,16 @@ pprint(completion.model_dump())
   >     
   >     print(f"输出: {stats.completion_tokens} tokens")
   > 
-  >     # 尝试获取推理过程详情
+  >     # 尝试获取推理过程详情（非思考模式下可能为 None）
   >     details = getattr(stats, 'completion_tokens_details', None)
-  >     reasoning = 0
-  >     if details:
-  >         if not isinstance(details, dict):
-  >             details = getattr(details, 'dict', lambda: {})()
-  >         # 尝试获取 reasoning_tokens
-  >         reasoning = details.get('reasoning_tokens', 0)
-  >         
-  >         # 仅在存在推理tokens数量字段时处理
-  >         if reasoning > 0:
-  >             final = stats.completion_tokens - reasoning
-  >             print(f"├─ 推理过程: {reasoning} tokens")
-  >             print(f"└─ 最终回答: {final} tokens")
+  >     # 尝试获取 reasoning_tokens（部分平台可能为 None）
+  >     reasoning = getattr(details, 'reasoning_tokens', 0) or 0
+  >     
+  >     # 仅在存在推理tokens数量字段时处理
+  >     if reasoning > 0:
+  >         final = stats.completion_tokens - reasoning
+  >         print(f"├─ 推理过程: {reasoning} tokens")
+  >         print(f"└─ 最终回答: {final} tokens")
   >     
   >     print(f"总消耗: {stats.total_tokens} tokens")
   >     

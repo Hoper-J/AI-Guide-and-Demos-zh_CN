@@ -15,9 +15,9 @@
     - [使用示例](#使用示例-1)
 - [📝 作业](#-作业)
 
-在[上一篇文章](./DeepSeek%20API%20多轮对话%20-%20OpenAI%20SDK.md)中，我们分别使用了 `ChatSession` 和 `ReasonerSession` 两个类来处理思考与非思考两种模式的对话逻辑（V3/R1 时代它们对应 `DeepSeek-Chat` 和 `DeepSeek-Reasoner` 两个独立模型）。回顾它们的 API 返回结果[^1]：
+在[上一篇文章](./DeepSeek%20API%20多轮对话%20-%20OpenAI%20SDK.md)中，我们分别使用了 `ChatSession` 和 `ReasonerSession` 两个类来处理非思考与思考两种模式，这种划分来自 V3/R1 时代（2025 年初），当时对话模型（V3）和推理模型（R1）是两个独立模型。现在 V4 出来后，思考变成了每次请求可以开关的选项，模型族也不再区分对话和推理，同一个模型两种返回都会遇到[^1]：
 
-- **非思考模式（DeepSeek-Chat）**
+- **非思考模式**
 
   ```yaml
   {'choices': [{'finish_reason': 'stop',
@@ -31,7 +31,7 @@
    ...}
   ```
 
-- **思考模式（DeepSeek-Reasoner）**
+- **思考模式**
 
   ```yaml
   {'choices': [{'finish_reason': 'stop',
@@ -50,7 +50,7 @@
 
 可以观察到：思考模式的 `message` 部分比非思考模式**仅**多了一个 `reasoning_content` 字段，用于记录模型的推理思考过程。
 
-**那么，能不能统一使用 `ChatSession` 类来兼容两种模式的对话逻辑呢？**
+**那么，能不能用一个 `ChatSession` 类同时处理两种模式呢？**
 
 当然可以，只需要额外取一下 `reasoning_content` 字段：
 
@@ -59,17 +59,17 @@ from openai import OpenAI
 import os
 
 class ChatSession:
-    def __init__(self, client, model="deepseek-v4-flash", system_message="You are a helpful assistant.", thinking=None):
+    def __init__(self, client, model="deepseek-flash", system_message="You are a helpful assistant.", thinking=None):
         """
         参数:
         - client (openai.OpenAI): OpenAI 客户端实例
-        - model (str): 模型名称，默认为 'deepseek-v4-flash'（更强的 'deepseek-v4-pro' 用法相同）
+        - model (str): 模型名称，默认为 'deepseek-flash'（其他官方模型如 'deepseek-v4-pro' 用法相同）
         - system_message (str): 系统消息，用于设定对话背景，默认为 'You are a helpful assistant.'
         - thinking (bool|None): 思考模式开关，None 使用平台默认，True/False 显式开/关
         """
         self.client = client
         self.model = model
-        self.thinking = thinking  # None=平台默认；True/False=显式开/关思考（V4 生效）
+        self.thinking = thinking  # None=平台默认，True/False=显式开/关思考（V4 生效）
         self.messages = [{'role': 'system', 'content': system_message}]
 
     def append_message(self, role, content):
@@ -118,12 +118,12 @@ from openai import OpenAI
 import os
 
 class ChatSession:
-    def __init__(self, api_key=None, base_url="https://api.deepseek.com", model="deepseek-v4-flash", system_message="You are a helpful assistant.", thinking=None):
+    def __init__(self, api_key=None, base_url="https://api.deepseek.com", model="deepseek-flash", system_message="You are a helpful assistant.", thinking=None):
         """
         参数:
         - api_key (str): 平台的 API Key，默认从环境变量 `DEEPSEEK_API_KEY` 读取
         - base_url (str): API 请求地址，默认为 DeepSeek 官方平台
-        - model (str): 模型名称，默认为 'deepseek-v4-flash'（更强的 'deepseek-v4-pro' 用法相同）
+        - model (str): 模型名称，默认为 'deepseek-flash'（其他官方模型如 'deepseek-v4-pro' 用法相同）
         - system_message (str): 系统消息，用于设定对话背景，默认为 'You are a helpful assistant.'
         - thinking (bool|None): 思考模式开关，None 使用平台默认，True/False 显式开/关
         """
@@ -140,7 +140,7 @@ class ChatSession:
         )
         
         self.model = model
-        self.thinking = thinking  # None=平台默认；True/False=显式开/关思考（V4 生效）
+        self.thinking = thinking  # None=平台默认，True/False=显式开/关思考（V4 生效）
         self.messages = [{'role': 'system', 'content': system_message}]
 
     def append_message(self, role, content):
@@ -188,8 +188,8 @@ class ChatSession:
 config = {
     "api_key": "your-api-key",
     "base_url": "https://api.deepseek.com",
-    "model": "deepseek-v4-flash",
-    "thinking": False,  # 关闭思考；True 开启，None 使用平台默认
+    "model": "deepseek-flash",
+    "thinking": False,  # 关闭思考，True 开启，None 使用平台默认
     "system_message": "You are a helpful assistant."
 }
 
@@ -204,7 +204,7 @@ session = ChatSession(**config)
 > ChatSession(
 >        api_key="your-api-key",
 >        base_url="https://api.deepseek.com",
->        model="deepseek-v4-flash",
+>        model="deepseek-flash",
 >        thinking=False,  # 关闭思考（None 则用平台默认）
 >        system_message="You are a helpful assistant."
 > )
@@ -253,9 +253,10 @@ def _process_stream(self, completion):
 
         # 如果是最后一个数据块（finish_reason 不为 None）
         if chunk.choices[0].finish_reason is not None:
-            # 记录完整的模型回复 content
-            self.append_message('assistant', content)
             break
+
+    # 生成完毕，记录完整的模型回复
+    self.append_message('assistant', content)
 ```
 
 ### 引入生成器
@@ -278,25 +279,53 @@ def _process_stream(self, completion):
 
         # 如果是最后一个数据块（finish_reason 不为 None）
         if chunk.choices[0].finish_reason is not None:
-            # 记录完整的模型回复 content
-            self.append_message('assistant', content)
             break
+
+    # 生成完毕，记录完整的模型回复
+    self.append_message('assistant', content)
 ```
 
 > [!tip]
 >
 > 这里的 `yield` 语句返回一个生成器对象，可以直接使用 `for` 循环处理（见下文示例）。
 
+不过生成器把控制权交给了调用方：调用方可以在任意一次 `yield` 之后 `break`，这时循环后面的代码不会执行，历史里会留下一条没有回复的 user 消息。而生成器被提前关闭时 `finally` 一定会执行，所以把写入历史的操作放进 `finally`：
+
+```python
+def _process_stream(self, completion):
+    content = ""  # 用于存储完整回复
+
+    try:
+        for chunk in completion:
+            delta = chunk.choices[0].delta
+            # 处理推理过程（仅思考模式有）
+            if getattr(delta, 'reasoning_content', None):
+                yield delta.reasoning_content, None
+            # 处理回复内容
+            elif delta.content:
+                content += delta.content  # 需要记录 content 维护对话历史
+                yield None, delta.content
+
+            # 如果是最后一个数据块（finish_reason 不为 None）
+            if chunk.choices[0].finish_reason is not None:
+                break
+    finally:
+        # 正常结束或中途 break 都会执行，保留已收到的回复
+        self.append_message('assistant', content)
+```
+
 ### 代码实现
+
+还剩两个问题。一是流式输出中途出错时，`finally` 同样会把不完整的回复写进历史，重试同一句就会出现两条相邻的 user 消息。二是前面的版本都是先写入 user 消息再发请求，请求失败后这条消息会留在历史里。解决办法是把写入历史推迟到这一轮成功之后：历史最终仍然是文章 4 表格中的 `[system, user, assistant]`，只是写入时机从调用前变成了成功后。代码中用 `failed` 区分请求出错和用户主动停止：
 
 ```python
 class ChatSession:
-    def __init__(self, api_key=None, base_url="https://api.deepseek.com", model="deepseek-v4-flash", system_message="You are a helpful assistant.", thinking=None):
+    def __init__(self, api_key=None, base_url="https://api.deepseek.com", model="deepseek-flash", system_message="You are a helpful assistant.", thinking=None):
         """
         参数：
         - api_key (str): 平台的 API Key，默认从环境变量 `DEEPSEEK_API_KEY` 读取
         - base_url (str): API 请求地址，默认为 DeepSeek 官方平台
-        - model (str): 模型名称，默认为 'deepseek-v4-flash'（更强的 'deepseek-v4-pro' 用法相同）
+        - model (str): 模型名称，默认为 'deepseek-flash'（其他官方模型如 'deepseek-v4-pro' 用法相同）
         - system_message (str): 系统消息，用于设定对话背景，默认为 'You are a helpful assistant.'
         - thinking (bool|None): 思考模式开关，None 使用平台默认，True/False 显式开/关
         """
@@ -305,15 +334,15 @@ class ChatSession:
         if not self.api_key:
             raise ValueError("API Key 未提供，请通过参数传入或设置环境变量 DEEPSEEK_API_KEY")
         self.base_url = base_url
-        
+
         # 初始化 OpenAI 客户端
         self.client = OpenAI(
             api_key=self.api_key,
             base_url=self.base_url,
         )
-        
+
         self.model = model
-        self.thinking = thinking  # None=平台默认；True/False=显式开/关思考（V4 生效）
+        self.thinking = thinking  # None=平台默认，True/False=显式开/关思考（V4 生效）
         self.messages = [{'role': 'system', 'content': system_message}]
 
     def append_message(self, role, content):
@@ -326,9 +355,18 @@ class ChatSession:
         """
         self.messages.append({'role': role, 'content': content})
 
+    def _create(self, messages, stream):
+        """调用 API，思考开关按 self.thinking 决定是否传入"""
+        return self.client.chat.completions.create(
+            model=self.model,
+            **({"extra_body": {"thinking": {"type": "enabled" if self.thinking else "disabled"}}} if self.thinking is not None else {}),
+            messages=messages,
+            stream=stream
+        )
+
     def get_response(self, user_input, stream=False):
         """
-        添加用户消息，调用 API 获取回复，并返回推理过程和回复内容
+        调用 API 获取回复，成功后再把用户消息和模型回复写入历史
 
         参数：
         - user_input (str): 用户输入的消息
@@ -346,60 +384,64 @@ class ChatSession:
             - 对于回复内容: (None, content)
             其中必定有一个值为 None，另一个包含当前数据块的实际内容
         """
-        # 记录用户输入
-        self.append_message('user', user_input)
-        
-        # 调用 API
-        completion = self.client.chat.completions.create(
-            model=self.model,
-            **({"extra_body": {"thinking": {"type": "enabled" if self.thinking else "disabled"}}} if self.thinking is not None else {}),
-            messages=self.messages,
-            stream=stream
-        )
-        
-        if not stream:
-            # 非流式输出
-            content = completion.choices[0].message.content
-            reasoning_content = getattr(completion.choices[0].message, 'reasoning_content', None)
-            
-            # 记录模型回复
-            self.append_message('assistant', content)
-            
-            return reasoning_content, content
-        else:
+        if stream:
             # 流式输出，返回生成器
-            return self._process_stream(completion)
-    
-    def _process_stream(self, completion):
+            return self._stream_response(user_input)
+
+        # 用户消息先只加入本次请求
+        completion = self._create(self.messages + [{'role': 'user', 'content': user_input}], stream=False)
+        content = completion.choices[0].message.content
+        reasoning_content = getattr(completion.choices[0].message, 'reasoning_content', None)
+
+        # 请求成功，写入历史
+        self.append_message('user', user_input)
+        self.append_message('assistant', content)
+        return reasoning_content, content
+
+    def _stream_response(self, user_input):
         """
-        处理流式输出的数据块
+        处理流式输出的生成器，开始迭代时才发出请求
 
         参数：
-        - completion: API 返回的流式输出对象
+        - user_input (str): 用户输入的消息
 
         返回：
         generator: 生成器对象，每次返回 (reasoning_content, content) 元组
         - 当收到推理过程时: yield (reasoning_content, None)
         - 当收到回复内容时: yield (None, content)
         """
+        completion = self._create(self.messages + [{'role': 'user', 'content': user_input}], stream=True)
         content = ""  # 用于存储完整回复
-        
-        for chunk in completion:
-            delta = chunk.choices[0].delta
-            # 处理推理过程（仅思考模式有）
-            if getattr(delta, 'reasoning_content', None):
-                yield delta.reasoning_content, None
-            # 处理回复内容
-            elif delta.content:
-                content += delta.content  # 需要记录 content 维护对话历史
-                yield None, delta.content
-                
-            # 如果是最后一个数据块（finish_reason 不为 None）
-            if chunk.choices[0].finish_reason is not None:
-                # 记录完整的模型回复 content
+        failed = False
+
+        try:
+            for chunk in completion:
+                delta = chunk.choices[0].delta
+                # 处理推理过程（仅思考模式有）
+                if getattr(delta, 'reasoning_content', None):
+                    yield delta.reasoning_content, None
+                # 处理回复内容
+                elif delta.content:
+                    content += delta.content  # 需要记录 content 维护对话历史
+                    yield None, delta.content
+
+                # 如果是最后一个数据块（finish_reason 不为 None）
+                if chunk.choices[0].finish_reason is not None:
+                    break
+        except Exception:
+            failed = True  # 流中途出错
+            raise
+        finally:
+            completion.close()  # 释放连接
+            # 正常结束或被中断：写入历史。出错或空回复：不写入
+            if not failed and content:
+                self.append_message('user', user_input)
                 self.append_message('assistant', content)
-                break
 ```
+
+> [!note]
+>
+> `append_message` 目前只保存 `role` 和 `content`，对纯对话来说已经足够。但随着工具调用的兴起和发展，assistant 消息还需要保留 `tool_calls` 字段，这也是后续 Agent 篇要解决的第一个问题。
 
 #### 使用示例
 
@@ -412,8 +454,8 @@ class ChatSession:
   config = {
       "api_key": "your-api-key",
       "base_url": "https://api.deepseek.com",
-      "model": "deepseek-v4-flash",
-      "thinking": False,  # 关闭思考；True 开启，None 使用平台默认
+      "model": "deepseek-flash",
+      "thinking": False,  # 关闭思考，True 开启，None 使用平台默认
       "system_message": "You are a helpful assistant."
   }
   session = ChatSession(**config)
@@ -434,7 +476,7 @@ class ChatSession:
   config = {
       "api_key": "your-api-key",
       "base_url": "https://api.deepseek.com",
-      "model": "deepseek-v4-flash",
+      "model": "deepseek-flash",
       "thinking": True,  # 开启思考以观察推理过程
       "system_message": "You are a helpful assistant."
   }

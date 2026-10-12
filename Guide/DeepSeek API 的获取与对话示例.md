@@ -27,7 +27,7 @@ pip install openai
 
 |              | api_key_name          | base_url                                            | model_id                        |
 | ------------ | --------------------- | --------------------------------------------------- | ------------------------------- |
-| DeepSeek     | "DEEPSEEK_API_KEY"    | "https://api.deepseek.com"                          | "deepseek-v4-flash"             |
+| DeepSeek     | "DEEPSEEK_API_KEY"    | "https://api.deepseek.com"                          | "deepseek-flash"                |
 | 硅基流动     | "SILICONFLOW_API_KEY" | "https://api.siliconflow.cn/v1"                     | "deepseek-ai/DeepSeek-V4-Flash" |
 | 阿里云百炼   | "DASHSCOPE_API_KEY"   | "https://dashscope.aliyuncs.com/compatible-mode/v1" | "deepseek-v4-flash"             |
 | 百度智能云   | "BAIDU_API_KEY"       | "https://qianfan.baidubce.com/v2"                   | "deepseek-v4-flash"             |
@@ -78,7 +78,7 @@ client = OpenAI(
 
 # 单轮对话示例
 response = client.chat.completions.create(
-    model="deepseek-v4-flash", # 3
+    model="deepseek-flash", # 3
     messages=[
         {'role': 'system', 'content': 'You are a helpful assistant.'},
         {'role': 'user', 'content': '你是谁？'}
@@ -95,10 +95,12 @@ print(response.choices[0].message.content)
 ```python
 # 切换到思考模式：删除 extra_body 参数即可（V4 默认开启思考）
 response = client.chat.completions.create(
-    model="deepseek-v4-flash",
+    model="deepseek-flash",
     # ...其他参数保持不变...
 )
 ```
+
+> 思考强度可以通过 `reasoning_effort` 参数调节，可选 `"low"`、`"high"`（默认）、`"max"`，设置为 `"none"` 等价于关闭思考。
 
 观察 `reasoning_content` 可以捕捉到思考过程。
 

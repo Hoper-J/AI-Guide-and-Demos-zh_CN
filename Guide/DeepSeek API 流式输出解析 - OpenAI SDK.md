@@ -26,12 +26,12 @@ import os
 
 client = OpenAI(
     api_key="your-api-key",
-    base_url="https://api.deepseek.com/v1",
+    base_url="https://api.deepseek.com",
 )
 
 # 单轮对话示例
 completion = client.chat.completions.create(
-    model="deepseek-v4-flash",
+    model="deepseek-flash",
     extra_body={"thinking": {"type": "disabled"}},  # 关闭思考
     messages=[
         {'role': 'system', 'content': 'You are a helpful assistant.'},
@@ -74,7 +74,7 @@ for chunk in completion:
               'logprobs': None}],
  'created': 1783305526,
  'id': '4e9f748e-eb38-47a2-b94b-1703275ad950',
- 'model': 'deepseek-v4-flash',
+ 'model': 'deepseek-flash',
  'object': 'chat.completion.chunk',
  'service_tier': None,
  'system_fingerprint': 'fp_8b330d02d0_prod0820_fp8_kvcache_20260402',
@@ -90,7 +90,7 @@ for chunk in completion:
               'logprobs': None}],
  'created': 1783305526,
  'id': '4e9f748e-eb38-47a2-b94b-1703275ad950',
- 'model': 'deepseek-v4-flash',
+ 'model': 'deepseek-flash',
  'object': 'chat.completion.chunk',
  'service_tier': None,
  'system_fingerprint': 'fp_8b330d02d0_prod0820_fp8_kvcache_20260402',
@@ -109,7 +109,7 @@ for chunk in completion:
               'logprobs': None}],
  'created': 1783305526,
  'id': '4e9f748e-eb38-47a2-b94b-1703275ad950',
- 'model': 'deepseek-v4-flash',
+ 'model': 'deepseek-flash',
  'object': 'chat.completion.chunk',
  'service_tier': None,
  'system_fingerprint': 'fp_8b330d02d0_prod0820_fp8_kvcache_20260402',
@@ -190,7 +190,7 @@ V4 起思考与非思考共用同一模型，删除关闭思考的 `extra_body` 
 
 ```diff
   completion = client.chat.completions.create(
-      model="deepseek-v4-flash",
+      model="deepseek-flash",
 -     extra_body={"thinking": {"type": "disabled"}},  # 关闭思考
 ```
 
@@ -198,7 +198,7 @@ V4 起思考与非思考共用同一模型，删除关闭思考的 `extra_body` 
 >
 > |              | base_url                                            | model_id                  |
 > | ------------ | --------------------------------------------------- | ------------------------- |
-> | DeepSeek     | "https://api.deepseek.com"                          | "deepseek-v4-flash"           |
+> | DeepSeek     | "https://api.deepseek.com"                          | "deepseek-flash"              |
 > | 硅基流动     | "https://api.siliconflow.cn/v1"                     | "deepseek-ai/DeepSeek-V4-Flash" |
 > | 阿里云百炼   | "https://dashscope.aliyuncs.com/compatible-mode/v1" | "deepseek-v4-flash"             |
 > | 百度智能云   | "https://qianfan.baidubce.com/v2"                   | "deepseek-v4-flash"             |
@@ -214,12 +214,12 @@ import os
 
 client = OpenAI(
     api_key="your-api-key",
-    base_url="https://api.deepseek.com/v1",
+    base_url="https://api.deepseek.com",
 )
 
 # 单轮对话示例
 completion = client.chat.completions.create(
-    model="deepseek-v4-flash",
+    model="deepseek-flash",
     messages=[
         {'role': 'system', 'content': 'You are a helpful assistant.'},
         {'role': 'user', 'content': '你是谁？'}
@@ -248,7 +248,7 @@ for chunk in completion:
               'logprobs': None}],
  'created': 1783305533,
  'id': 'e79351c2-b51b-4cdb-b0f8-f598b7da0f3c',
- 'model': 'deepseek-v4-flash',
+ 'model': 'deepseek-flash',
  'object': 'chat.completion.chunk',
  'service_tier': None,
  'system_fingerprint': 'fp_8b330d02d0_prod0820_fp8_kvcache_20260402',
@@ -265,7 +265,7 @@ for chunk in completion:
               'logprobs': None}],
  'created': 1783305533,
  'id': 'e79351c2-b51b-4cdb-b0f8-f598b7da0f3c',
- 'model': 'deepseek-v4-flash',
+ 'model': 'deepseek-flash',
  'object': 'chat.completion.chunk',
  'service_tier': None,
  'system_fingerprint': 'fp_8b330d02d0_prod0820_fp8_kvcache_20260402',
@@ -285,7 +285,7 @@ for chunk in completion:
               'logprobs': None}],
  'created': 1783305533,
  'id': 'e79351c2-b51b-4cdb-b0f8-f598b7da0f3c',
- 'model': 'deepseek-v4-flash',
+ 'model': 'deepseek-flash',
  'object': 'chat.completion.chunk',
  'service_tier': None,
  'system_fingerprint': 'fp_8b330d02d0_prod0820_fp8_kvcache_20260402',
@@ -305,7 +305,7 @@ for chunk in completion:
               'logprobs': None}],
  'created': 1783305533,
  'id': 'e79351c2-b51b-4cdb-b0f8-f598b7da0f3c',
- 'model': 'deepseek-v4-flash',
+ 'model': 'deepseek-flash',
  'object': 'chat.completion.chunk',
  'service_tier': None,
  'system_fingerprint': 'fp_8b330d02d0_prod0820_fp8_kvcache_20260402',
@@ -325,7 +325,7 @@ for chunk in completion:
               'logprobs': None}],
  'created': 1783305533,
  'id': 'e79351c2-b51b-4cdb-b0f8-f598b7da0f3c',
- 'model': 'deepseek-v4-flash',
+ 'model': 'deepseek-flash',
  'object': 'chat.completion.chunk',
  'service_tier': None,
  'system_fingerprint': 'fp_8b330d02d0_prod0820_fp8_kvcache_20260402',
