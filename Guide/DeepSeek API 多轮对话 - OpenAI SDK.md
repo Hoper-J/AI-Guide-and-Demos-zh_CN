@@ -55,11 +55,11 @@ client = OpenAI(
 
 # 单轮对话示例
 completion = client.chat.completions.create(
-    model="deepseek-v4-flash",
+    model="deepseek-flash",
     extra_body={"thinking": {"type": "disabled"}},  # 关闭思考
     messages=[
         {'role': 'system', 'content': 'You are a helpful assistant.'}, 
-        {'role': 'user', 'content': '你是谁？'}
+        {'role': 'user', 'content': '请用一句话介绍你自己'}
     ]
 )
 
@@ -91,7 +91,7 @@ messages = [{'role': 'system', 'content': 'You are a helpful assistant.'}]
 # 第一轮对话
 messages.append({'role': 'user', 'content': '9.11 和 9.8 哪个更大？'})
 completion = client.chat.completions.create(
-    model="deepseek-v4-flash",
+    model="deepseek-flash",
     extra_body={"thinking": {"type": "disabled"}},  # 关闭思考
     messages=messages
 )
@@ -104,7 +104,7 @@ messages.append({'role': 'assistant', 'content': content})
 # 第二轮对话
 messages.append({'role': 'user', 'content': '刚刚针对哪两个数值进行了比较？'})
 completion = client.chat.completions.create(
-    model="deepseek-v4-flash",
+    model="deepseek-flash",
     extra_body={"thinking": {"type": "disabled"}},  # 关闭思考
     messages=messages
 )
@@ -115,20 +115,12 @@ print("AI:", content)
 **输出**：
 
 ```
-AI: 这个问题其实是个常见的“陷阱题”，很容易被人误解。
+AI: 9.11 和 9.8 比较大小：
 
-**如果单纯比较数值大小：**  
-9.11 和 9.8，9.11 更大。因为 9.11 = 9 + 0.11，而 9.8 = 9 + 0.8，但注意 0.8 = 0.80，而 0.11 < 0.80，所以实际上 **9.8 > 9.11**。
+9.11 < 9.8
 
-所以正确答案是：**9.8 更大**。
-
-但很多人会误以为 9.11 更大，因为觉得“11 > 8”，其实这是忽略了小数点后的位数不同。比较小数时，要从左到右逐位比较：  
-- 个位：9 = 9  
-- 十分位：1 < 8  
-所以 9.8 更大。
-AI: 我刚才针对的是 **9.11 和 9.8** 这两个数值进行了比较。
-
-所以回答是：**9.8 更大**，因为 9.8 的十分位是 8，而 9.11 的十分位是 1，所以 9.8 > 9.11。
+所以 **9.8 更大**。
+AI: 刚刚比较的两个数值是 **9.11** 和 **9.8**。
 ```
 
 在这个例子中，我们对 `messages` 进行了三次 `append` 操作，其变化如下：
@@ -218,7 +210,7 @@ while True:
     
     # 调用 API 获取模型回复
     completion = client.chat.completions.create(
-        model="deepseek-v4-flash",
+        model="deepseek-flash",
         extra_body={"thinking": {"type": "disabled"}},  # 关闭思考
         messages=messages
     )
@@ -237,7 +229,7 @@ while True:
 >
 > 1. **Token 计费问题**
 >
->    用户的输入是计费的，以 DeepSeek V4 为例：输入 1 元/百万 tokens。如果简单地无限制保留历史记录，随着对话轮次增加，token 消耗会迅速攀升。
+>    用户的输入是计费的，以 DeepSeek `deepseek-flash` 为例：谷时输入 1 元/百万 tokens，峰时 2 元。如果简单地无限制保留历史记录，随着对话轮次增加，token 消耗会迅速攀升。
 >
 > 2. **模型的最大上下文长度有限**
 >
@@ -292,7 +284,7 @@ class ChatSession:
         """
         self.append_message('user', user_input)
         completion = self.client.chat.completions.create(
-            model="deepseek-v4-flash",
+            model="deepseek-flash",
             extra_body={"thinking": {"type": "disabled"}},  # 关闭思考
             messages=self.messages
         )
@@ -327,7 +319,7 @@ V4 起思考与非思考共用同一模型，删除关闭思考的 `extra_body` 
 
 ```diff
   completion = client.chat.completions.create(
-      model="deepseek-v4-flash", # 3
+      model="deepseek-flash", # 3
 -     extra_body={"thinking": {"type": "disabled"}},  # 关闭思考
 ```
 
@@ -335,18 +327,18 @@ V4 起思考与非思考共用同一模型，删除关闭思考的 `extra_body` 
 >
 > |              | base_url                                            | model_id                  |
 > | ------------ | --------------------------------------------------- | ------------------------- |
-> | DeepSeek     | "https://api.deepseek.com"                          | "deepseek-v4-flash"           |
-> | 硅基流动     | "https://api.siliconflow.cn/v1"                     | "deepseek-ai/DeepSeek-V4-Flash" |
-> | 阿里云百炼   | "https://dashscope.aliyuncs.com/compatible-mode/v1" | "deepseek-v4-flash"             |
-> | 百度智能云   | "https://qianfan.baidubce.com/v2"                   | "deepseek-v4-flash"             |
-> | 字节火山引擎 | https://ark.cn-beijing.volces.com/api/v3/           | "deepseek-v4-flash-260425"      |
+> | DeepSeek     | "https://api.deepseek.com"                          | "deepseek-flash"              |
+> | 硅基流动     | "https://api.siliconflow.cn/v1"                     | "deepseek-ai/DeepSeek-V4.1-Flash" |
+> | 阿里云百炼   | "https://dashscope.aliyuncs.com/compatible-mode/v1" | "deepseek-v4.1-flash"             |
+> | 百度智能云   | "https://qianfan.baidubce.com/v2"                   | "deepseek-v4.1-flash"             |
+> | 字节火山引擎 | https://ark.cn-beijing.volces.com/api/v3/           | "deepseek-v4-1-flash-261017"      |
 >
 > [^1]: [DeepSeek API 的获取与对话示例](./DeepSeek%20API%20的获取与对话示例.md).
 
 推理模型需要先处理 `message.reasoning_content` 字段：
 
 ```python
-# 获取推理思考过程（Reasoner特有字段）
+# 获取推理思考过程（思考模式特有字段）
 reasoning_content = getattr(completion.choices[0].message, 'reasoning_content', None)
 # 获取模型回复内容（与之前相同）
 content = completion.choices[0].message.content
@@ -370,10 +362,10 @@ client = OpenAI(
 
 # 单轮对话示例
 completion = client.chat.completions.create(
-    model="deepseek-v4-flash",
+    model="deepseek-flash",
     messages=[
         {'role': 'system', 'content': 'You are a helpful assistant.'}, 
-        {'role': 'user', 'content': '你是谁？'}
+        {'role': 'user', 'content': '请用一句话介绍你自己'}
     ]
 )
 
@@ -391,9 +383,9 @@ print(f"===== 模型回复 =====\n{content}")
 
 > ![deepseek_r1_multiround_example_cn](./assets/deepseek_r1_multiround_example_cn.png)
 >
-> 如果在输入的 messages 序列中传入 `reasoning_content` 字段会报 400 错误[^2]。
+> 不带 `tools` 参数的请求不需要回传 `reasoning_content`，即使传入也会被忽略[^2]。带 `tools` 的情况将在后续文章中说明。
 >
-> [^2]: [推理模型 (`deepseek-reasoner`) - DeepSeek API 文档](https://api-docs.deepseek.com/zh-cn/guides/reasoning_model)
+> [^2]: [思考模式 - DeepSeek API 文档](https://api-docs.deepseek.com/zh-cn/guides/thinking_mode)
 
 **代码示例**
 
@@ -415,7 +407,7 @@ messages = [{'role': 'system', 'content': 'You are a helpful assistant.'}]
 # 第一轮对话
 messages.append({'role': 'user', 'content': '9.11 和 9.8 哪个更大？'})
 completion = client.chat.completions.create(
-    model="deepseek-v4-flash",
+    model="deepseek-flash",
     messages=messages
 )
 # 获取推理思考过程和模型回复
@@ -431,7 +423,7 @@ messages.append({'role': 'assistant', 'content': content})
 # 第二轮对话
 messages.append({'role': 'user', 'content': '刚刚针对哪两个数值进行了比较？'})
 completion = client.chat.completions.create(
-    model="deepseek-v4-flash",
+    model="deepseek-flash",
     messages=messages
 )
 # 获取推理思考过程和模型回复
@@ -446,7 +438,7 @@ print(f"===== 模型回复 =====\nAI: {content}\n")
 
 > [!tip]
 >
-> 通过 `reasoning_content` 可以实现非常有意思的“嫁接”操作，即用 R1 的思维链引导其他模型输出，感兴趣可以尝试：[DeepClaude](https://deepclaude.com/chat)（需要 Claude 的 API）。
+> 通过 `reasoning_content` 可以实现非常有意思的“嫁接”操作，即用 R1 的思维链引导其他模型输出，感兴趣可以尝试：[DeepClaude](https://github.com/winfunc/deepreasoning)（需要 Claude 的 API）。
 
 #### 多轮对话
 
@@ -483,7 +475,7 @@ while True:
 
     # 2. 调用 API
     completion = client.chat.completions.create(
-        model="deepseek-v4-flash",
+        model="deepseek-flash",
         messages=messages
     )
     reasoning_content = getattr(completion.choices[0].message, 'reasoning_content', None)
@@ -535,7 +527,7 @@ class ReasonerSession:
 
         # 2. 调用 API
         completion = self.client.chat.completions.create(
-            model="deepseek-v4-flash",
+            model="deepseek-flash",
             messages=self.messages
         )
 

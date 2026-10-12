@@ -2,11 +2,11 @@
 
 > **基于 Cherry Studio / Chatbox 进行配置，绕开 DeepSeek 网页对话的卡顿**。
 >
-> 需要特别说明的是，本文不涉及本地显卡部署方案，因为本地部署完整版 DeepSeek 对于个人使用者来说是一个伪需求，671B 的模型即便是 1-Bit 量化加载也需要约 84GB 的显存（模型参数量×量化位数/8），按显卡租赁的费用来算，每小时大概需要 8 块钱，而 1-Bit 量化模型基本不可用，满血版 DeepSeek（BF16）仅加载就需要 1342GB 显存，这意味着更高的租赁费用，对于个人来说投入和回报完全不成正比，所以使用 API 将是性价比最高的方案（各平台注册时都会赠送大量的 tokens：阿里 1000 万，百度 2000 万，硅基流动 2000 万）。
+> 需要特别说明的是，本文不涉及本地显卡部署方案，因为本地部署完整版 DeepSeek 对于个人使用者来说是一个伪需求，当时 671B 的模型即便是 1-Bit 量化加载也需要约 84GB 的显存（模型参数量×量化位数/8），按显卡租赁的费用来算，每小时大概需要 8 块钱，而 1-Bit 量化模型基本不可用，满血版 DeepSeek（BF16）仅加载就需要 1342GB 显存，这意味着更高的租赁费用，对于个人来说投入和回报完全不成正比，所以使用 API 将是性价比最高的方案（2025 年初各平台注册时都会赠送大量的 tokens：阿里 1000 万，百度 2000 万，硅基流动 2000 万，现在的赠送额度以各平台页面为准）。
 >
 > **注意**：当前说法不适用于需要数据隔离的场景（比如金融/医疗），仅针对日常需求。
 >
-> （文章写自 2025 年初 DeepSeek “自部署”文章贩卖焦虑横行的那段时期，当时网页版的 DeepSeek 非常卡顿，故有此文进行解决方案的分享。目前因为各家模型分流等原因，已不会出现过去思考半天失败的现象）
+> （文章写自 2025 年初 DeepSeek “自部署”文章贩卖焦虑横行的那段时期，当时网页版的 DeepSeek 非常卡顿，故有此文进行解决方案的分享。目前因为各家模型分流等原因，已不会出现过去思考半天失败的现象。V4 起对话与思考合并到了同一个模型，文中的模型名已同步更新，截图仍为当时的界面）
 
 ## ▌目录
 
@@ -35,10 +35,10 @@
 
 主要原因有五点：
 
-1. 网页版（深度思考 - R1）由于访问过多经常服务器繁忙导致对话卡顿。
+1. 网页版（当时的深度思考由 R1 提供）由于访问过多经常服务器繁忙导致对话卡顿。
 2. 可以在多个平台间进行无缝切换（聊天记录会“同步”），这意味着当前服务瘫痪时可以直接更换平台，从而减少等待时间。
 3. 注册平台所赠送的 tokens 足以覆盖个人长期使用需求。
-4. 可以自定义系统消息（System message），拥有更多的定制空间（注意，官方并不建议在使用推理模型的时候添加系统消息，对于该点需谨慎使用）。
+4. 可以自定义系统消息（System message），拥有更多的定制空间（早期的 R1 官方不建议添加系统消息，现在的模型已经没有这个限制）。
 5. 本地存储完整对话历史。
 
 ## ▌Cherry Studio 配置【推荐】
@@ -71,7 +71,7 @@
 
 ![切换模型](./assets/image-20250210133343815.png)
 
-至此已经可以和 DeepSeek-R1 进行对话。
+至此已经可以和 DeepSeek 进行对话，选择 `deepseek-flash` 即可。V4 起思考默认开启，不再需要单独切换推理模型。
 
 ### 添加自定义提供方
 
@@ -83,12 +83,14 @@
 
 参照下表填写对应平台信息，最终呈现如右图：
 
-|                       | 获取步骤                                                     | API 域名                                           | 模型 - 聊天             | 模型 - 推理             | 设置 - 推理                                              |
-| --------------------- | ------------------------------------------------------------ | -------------------------------------------------- | ----------------------- | ----------------------- | -------------------------------------------------------- |
-| 硅基流动              | [图文](./DeepSeek%20API%20的获取与对话示例.md#-硅基流动-)    | https://api.siliconflow.cn                         | deepseek-ai/DeepSeek-V3 | deepseek-ai/DeepSeek-R1 | ![设置 - 硅基流动](./assets/image-20250210134851206.png) |
-| 阿里云百炼            | [图文](./DeepSeek%20API%20的获取与对话示例.md#-阿里云百炼-)  | https://dashscope.aliyuncs.com/compatible-mode/v1/ | deepseek-v3             | deepseek-r1             | ![设置 - 阿里云](./assets/image-20250210135415680.png)   |
-| 百度智能云/百度云千帆 | [图文](./DeepSeek%20API%20的获取与对话示例.md#-百度智能云-)  | https://qianfan.baidubce.com/v2/                   | deepseek-v3             | deepseek-r1             | ![设置 - 百度](./assets/image-20250210140222077.png)     |
-| 字节火山引擎          | [图文](./DeepSeek%20API%20的获取与对话示例.md#-字节火山引擎-) | https://ark.cn-beijing.volces.com/api/v3/          | "deepseek-v3-241226"    | "deepseek-r1-250120"    | ![设置 - 字节](./assets/image-20250210141105629.png)     |
+|                       | 获取步骤                                                     | API 域名                                           | 模型                          | 设置                                                     |
+| --------------------- | ------------------------------------------------------------ | -------------------------------------------------- | ----------------------------- | -------------------------------------------------------- |
+| 硅基流动              | [图文](./DeepSeek%20API%20的获取与对话示例.md#-硅基流动-)    | https://api.siliconflow.cn                         | deepseek-ai/DeepSeek-V4.1-Flash | ![设置 - 硅基流动](./assets/image-20250210134851206.png) |
+| 阿里云百炼            | [图文](./DeepSeek%20API%20的获取与对话示例.md#-阿里云百炼-)  | https://dashscope.aliyuncs.com/compatible-mode/v1/ | deepseek-v4.1-flash             | ![设置 - 阿里云](./assets/image-20250210135415680.png)   |
+| 百度智能云/百度云千帆 | [图文](./DeepSeek%20API%20的获取与对话示例.md#-百度智能云-)  | https://qianfan.baidubce.com/v2/                   | deepseek-v4.1-flash             | ![设置 - 百度](./assets/image-20250210140222077.png)     |
+| 字节火山引擎          | [图文](./DeepSeek%20API%20的获取与对话示例.md#-字节火山引擎-) | https://ark.cn-beijing.volces.com/api/v3/          | deepseek-v4-1-flash-261017      | ![设置 - 字节](./assets/image-20250210141105629.png)     |
+
+> **注**：右侧截图拍摄于 V3/R1 时期，当时对话与推理是两个模型，所以界面里添加了两个模型 ID。V4 起只需填写表中的一个模型，思考默认开启。如果需要在 API 层面显式开关思考，参见《[DeepSeek API 的获取与对话示例](./DeepSeek%20API%20的获取与对话示例.md)》各平台的“模式切换”小节。
 
 ### QA
 
@@ -110,13 +112,9 @@
 
 > [!caution]
 >
-> 对于 V3/R1 时代的推理模型 `deepseek-reasoner`，传入参数 `temperature`、`top_p`、`presence_penalty`、`frequency_penalty`、`logprobs`、`top_logprobs` 均不会生效[^1]，故无需纠结温度设置。
->
-> 也可以遵循官方的部署建议[^2]，将思考模式的 `temperature` 默认设置为 0.6，以应对未来可能被允许的参数修改。
+> 思考模式下 `temperature`、`presence_penalty`、`frequency_penalty` 不会生效，为了兼容已有软件，设置这些参数不会报错[^1]。`deepseek-flash` 的 `top_p` 只在思考模式下生效，有效范围为 0.95 到 1.0，低于 0.95 的值会按 0.95 处理，`deepseek-v4-pro` 则相反，思考模式下会忽略该参数。所以开启思考时无需纠结温度设置，温度只影响非思考模式。
 
-[^1]: [DeepSeek 官方文档](https://api-docs.deepseek.com/zh-cn/quick_start/parameter_settings).
-
-[^2]: [Usage Recommendations - DeepSeek R1](https://github.com/deepseek-ai/DeepSeek-R1#usage-recommendations).
+[^1]: [思考模式 - DeepSeek API 文档](https://api-docs.deepseek.com/zh-cn/guides/thinking_mode).
 
 #### Q3：如何备份数据？
 
@@ -142,7 +140,7 @@
 
 ## ▌Chatbox 配置
 
-根据系统下载对应版本的 APP[^3]：
+根据系统下载对应版本的 APP[^2]：
 
 - **电脑**
   - [Windows](https://chatboxai.app/?c=download-windows)
@@ -154,7 +152,7 @@
   - [苹果 / iOS](https://apps.apple.com/app/chatbox-ai/id6471368056)
   - [安卓/ Android](https://chatboxai.app/install?download=android_apk)
 
-[^3]: [https://github.com/Bin-Huang/chatbox](https://github.com/Bin-Huang/chatbox).
+[^2]: [https://github.com/Bin-Huang/chatbox](https://github.com/Bin-Huang/chatbox).
 
 下面以电脑端进行演示，打开 Chatbox，点击 `使用自己的 API Key 或本地模型`：
 
@@ -166,7 +164,7 @@
 
 ![设置 DeepSeek API](./assets/image-20250206114220266.png)
 
-至此已经可以和 DeepSeek-R1 进行对话。
+至此已经可以和 DeepSeek 进行对话，选择 `deepseek-flash` 即可。V4 起思考默认开启，不再需要单独切换推理模型。
 
 ### 添加自定义提供方
 
@@ -180,16 +178,18 @@
 
 参照下表填写对应平台信息，完成后点击保存，最终呈现如右图：
 
-|              | 获取步骤                                                     | API 域名                                          | 模型 - 聊天             | 模型 - 推理             | 设置 - 推理                                              |
-| ------------ | ------------------------------------------------------------ | ------------------------------------------------- | ----------------------- | ----------------------- | -------------------------------------------------------- |
-| 硅基流动     | [图文](./DeepSeek%20API%20的获取与对话示例.md#-硅基流动-)    | https://api.siliconflow.cn/v1                     | deepseek-ai/DeepSeek-V3 | deepseek-ai/DeepSeek-R1 | ![设置 - 硅基流动](./assets/image-20250206113805132.png) |
-| 阿里云百炼   | [图文](./DeepSeek%20API%20的获取与对话示例.md#-阿里云百炼-)  | https://dashscope.aliyuncs.com/compatible-mode/v1 | deepseek-v3             | deepseek-r1             | ![设置 - 阿里云](./assets/image-20250206115713516.png)   |
-| 百度智能云   | [图文](./DeepSeek%20API%20的获取与对话示例.md#-百度智能云-)  | https://qianfan.baidubce.com/v2                   | deepseek-v3             | deepseek-r1             | ![设置 - 百度](./assets/image-20250206120017418.png)     |
-| 字节火山引擎 | [图文](./DeepSeek%20API%20的获取与对话示例.md#-字节火山引擎-) | https://ark.cn-beijing.volces.com/api/v3          | "deepseek-v3-241226"    | "deepseek-r1-250120"    | ![设置 - 字节](./assets/image-20250208215034817.png)     |
+|              | 获取步骤                                                     | API 域名                                          | 模型                          | 设置                                                     |
+| ------------ | ------------------------------------------------------------ | ------------------------------------------------- | ----------------------------- | -------------------------------------------------------- |
+| 硅基流动     | [图文](./DeepSeek%20API%20的获取与对话示例.md#-硅基流动-)    | https://api.siliconflow.cn/v1                     | deepseek-ai/DeepSeek-V4.1-Flash | ![设置 - 硅基流动](./assets/image-20250206113805132.png) |
+| 阿里云百炼   | [图文](./DeepSeek%20API%20的获取与对话示例.md#-阿里云百炼-)  | https://dashscope.aliyuncs.com/compatible-mode/v1 | deepseek-v4.1-flash             | ![设置 - 阿里云](./assets/image-20250206115713516.png)   |
+| 百度智能云   | [图文](./DeepSeek%20API%20的获取与对话示例.md#-百度智能云-)  | https://qianfan.baidubce.com/v2                   | deepseek-v4.1-flash             | ![设置 - 百度](./assets/image-20250206120017418.png)     |
+| 字节火山引擎 | [图文](./DeepSeek%20API%20的获取与对话示例.md#-字节火山引擎-) | https://ark.cn-beijing.volces.com/api/v3          | deepseek-v4-1-flash-261017      | ![设置 - 字节](./assets/image-20250208215034817.png)     |
 
 > [!note]
 >
 > 上表中的图例将 `上下文消息数量上限` 设置成了无限，这意味着每次都会传入完整的对话历史，并且消耗大量的输入 tokens，你需要根据自己的实际需求去调节它。
+>
+> 图例同样拍摄于 V3/R1 时期，所以填写了两个模型 ID。V4 起只需填写表中的一个模型，思考默认开启。
 
 ### QA
 
@@ -232,8 +232,6 @@
 
 > [!CAUTION]
 >
-> 对于 V3/R1 时代的推理模型 `deepseek-reasoner`，传入参数 `temperature`、`top_p`、`presence_penalty`、`frequency_penalty`、`logprobs`、`top_logprobs` 均不会生效[^1]，故无需纠结。
->
-> 可以遵循官方的部署建议[^2]，将思考模式的 `temperature` 默认设置为 0.6，以应对未来可能被允许的参数修改。
+> 上表只对非思考模式有意义。思考模式下 `temperature`、`presence_penalty`、`frequency_penalty` 不会生效，设置了也不报错[^1]，而 `deepseek-flash` 的 `top_p` 只在思考模式下生效，范围为 0.95 到 1.0，`deepseek-v4-pro` 则相反。
 
 **下一章**：[DeepSeek API 输出解析 - OpenAI SDK](./DeepSeek%20API%20输出解析%20-%20OpenAI%20SDK.md)

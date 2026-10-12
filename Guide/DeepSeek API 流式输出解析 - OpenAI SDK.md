@@ -26,16 +26,16 @@ import os
 
 client = OpenAI(
     api_key="your-api-key",
-    base_url="https://api.deepseek.com/v1",
+    base_url="https://api.deepseek.com",
 )
 
 # 单轮对话示例
 completion = client.chat.completions.create(
-    model="deepseek-v4-flash",
+    model="deepseek-flash",
     extra_body={"thinking": {"type": "disabled"}},  # 关闭思考
     messages=[
         {'role': 'system', 'content': 'You are a helpful assistant.'},
-        {'role': 'user', 'content': '你是谁？'}
+        {'role': 'user', 'content': '请用一句话介绍你自己'}
     ],
     stream=True, # 开启流式输出
 )
@@ -72,15 +72,16 @@ for chunk in completion:
               'finish_reason': None,
               'index': 0,
               'logprobs': None}],
- 'created': 1783305526,
- 'id': '4e9f748e-eb38-47a2-b94b-1703275ad950',
- 'model': 'deepseek-v4-flash',
+ 'created': 1792916248,
+ 'id': 'f9ee4597-6ead-4d32-85a5-612d99ad7948',
+ 'model': 'deepseek-flash',
  'object': 'chat.completion.chunk',
  'service_tier': None,
- 'system_fingerprint': 'fp_8b330d02d0_prod0820_fp8_kvcache_20260402',
+ 'system_fingerprint': 'e72d3c7f663d3e1383b00b3884cb4501',
  'usage': None}
+
 # ===== 第二个数据块 =====
-{'choices': [{'delta': {'content': '你好',
+{'choices': [{'delta': {'content': '我是',
                         'function_call': None,
                         'refusal': None,
                         'role': None,
@@ -88,12 +89,12 @@ for chunk in completion:
               'finish_reason': None,
               'index': 0,
               'logprobs': None}],
- 'created': 1783305526,
- 'id': '4e9f748e-eb38-47a2-b94b-1703275ad950',
- 'model': 'deepseek-v4-flash',
+ 'created': 1792916248,
+ 'id': 'f9ee4597-6ead-4d32-85a5-612d99ad7948',
+ 'model': 'deepseek-flash',
  'object': 'chat.completion.chunk',
  'service_tier': None,
- 'system_fingerprint': 'fp_8b330d02d0_prod0820_fp8_kvcache_20260402',
+ 'system_fingerprint': 'e72d3c7f663d3e1383b00b3884cb4501',
  'usage': None}
 
 # ===== ...（中间数据块）=====
@@ -107,19 +108,19 @@ for chunk in completion:
               'finish_reason': 'stop',
               'index': 0,
               'logprobs': None}],
- 'created': 1783305526,
- 'id': '4e9f748e-eb38-47a2-b94b-1703275ad950',
- 'model': 'deepseek-v4-flash',
+ 'created': 1792916248,
+ 'id': 'f9ee4597-6ead-4d32-85a5-612d99ad7948',
+ 'model': 'deepseek-flash',
  'object': 'chat.completion.chunk',
  'service_tier': None,
- 'system_fingerprint': 'fp_8b330d02d0_prod0820_fp8_kvcache_20260402',
- 'usage': {'completion_tokens': 69,
+ 'system_fingerprint': 'e72d3c7f663d3e1383b00b3884cb4501',
+ 'usage': {'completion_tokens': 22,
            'completion_tokens_details': None,
            'prompt_cache_hit_tokens': 0,
-           'prompt_cache_miss_tokens': 12,
-           'prompt_tokens': 12,
+           'prompt_cache_miss_tokens': 16,
+           'prompt_tokens': 16,
            'prompt_tokens_details': {'audio_tokens': None, 'cached_tokens': 0},
-           'total_tokens': 81}}
+           'total_tokens': 38}}
 ```
 
 观察数据块的 `delta`, `usage` 和 `finish_reason` 字段：
@@ -137,7 +138,7 @@ for chunk in completion:
      `delta.content` 表示本次数据块中新增加的消息内容。
 
     - 第一个数据块中，`content` 为空，但标记了角色信息。
-    - 随后的数据块中，`content` 分别返回 `"你好"` 和 `"！"`，这些数据块的 `content` 拼接起来就构成了完整的回复 “你好！...”。
+    - 后续数据块逐段返回文本，按接收顺序拼接各块的 `content` 就能得到完整回复。
   
   > 在没有启动流式输出时（`stream=False`），`delta` 对应的字段是 `message`，此时完整回复位于 `message.content`。
   
@@ -157,7 +158,7 @@ for chunk in completion:
 | 特征              | 首块        | 中间块                  | 尾块                    |
 | ----------------- | ----------- | ----------------------- | ----------------------- |
 | **delta.role**    | `assistant` | `None`                  | `None`                  |
-| **delta.content** | `""`        | 增量文本（如 `"你好"`） | `""`                    |
+| **delta.content** | `""`        | 增量文本 | `""`                    |
 | **finish_reason** | `None`      | `None`                  | `"stop"` / 其它结束标记 |
 | **usage**         | `None`      | `None`                  | Token 统计              |
 
@@ -184,13 +185,19 @@ for chunk in completion:
 print(content)
 ```
 
+**输出**：
+
+```
+我是DeepSeek，由深度求索公司创造的AI助手，致力于为你提供热情、细腻的帮助！
+```
+
 ### 思考模式
 
 V4 起思考与非思考共用同一模型，删除关闭思考的 `extra_body` 参数即可切换到思考模式（以 DeepSeek 官方平台为例）：
 
 ```diff
   completion = client.chat.completions.create(
-      model="deepseek-v4-flash",
+      model="deepseek-flash",
 -     extra_body={"thinking": {"type": "disabled"}},  # 关闭思考
 ```
 
@@ -198,11 +205,11 @@ V4 起思考与非思考共用同一模型，删除关闭思考的 `extra_body` 
 >
 > |              | base_url                                            | model_id                  |
 > | ------------ | --------------------------------------------------- | ------------------------- |
-> | DeepSeek     | "https://api.deepseek.com"                          | "deepseek-v4-flash"           |
-> | 硅基流动     | "https://api.siliconflow.cn/v1"                     | "deepseek-ai/DeepSeek-V4-Flash" |
-> | 阿里云百炼   | "https://dashscope.aliyuncs.com/compatible-mode/v1" | "deepseek-v4-flash"             |
-> | 百度智能云   | "https://qianfan.baidubce.com/v2"                   | "deepseek-v4-flash"             |
-> | 字节火山引擎 | https://ark.cn-beijing.volces.com/api/v3/           | "deepseek-v4-flash-260425"      |
+> | DeepSeek     | "https://api.deepseek.com"                          | "deepseek-flash"              |
+> | 硅基流动     | "https://api.siliconflow.cn/v1"                     | "deepseek-ai/DeepSeek-V4.1-Flash" |
+> | 阿里云百炼   | "https://dashscope.aliyuncs.com/compatible-mode/v1" | "deepseek-v4.1-flash"             |
+> | 百度智能云   | "https://qianfan.baidubce.com/v2"                   | "deepseek-v4.1-flash"             |
+> | 字节火山引擎 | https://ark.cn-beijing.volces.com/api/v3/           | "deepseek-v4-1-flash-261017"      |
 > 
 > [^1]: [DeepSeek API 的获取与对话示例](./DeepSeek%20API%20的获取与对话示例.md).
 
@@ -214,15 +221,15 @@ import os
 
 client = OpenAI(
     api_key="your-api-key",
-    base_url="https://api.deepseek.com/v1",
+    base_url="https://api.deepseek.com",
 )
 
 # 单轮对话示例
 completion = client.chat.completions.create(
-    model="deepseek-v4-flash",
+    model="deepseek-flash",
     messages=[
         {'role': 'system', 'content': 'You are a helpful assistant.'},
-        {'role': 'user', 'content': '你是谁？'}
+        {'role': 'user', 'content': '请用一句话介绍你自己'}
     ],
     stream=True, # 开启流式输出
 )
@@ -246,55 +253,54 @@ for chunk in completion:
               'finish_reason': None,
               'index': 0,
               'logprobs': None}],
- 'created': 1783305533,
- 'id': 'e79351c2-b51b-4cdb-b0f8-f598b7da0f3c',
- 'model': 'deepseek-v4-flash',
+ 'created': 1792916250,
+ 'id': '8a25b09b-741b-47af-ae47-6ec9805aa1a5',
+ 'model': 'deepseek-flash',
  'object': 'chat.completion.chunk',
  'service_tier': None,
- 'system_fingerprint': 'fp_8b330d02d0_prod0820_fp8_kvcache_20260402',
+ 'system_fingerprint': 'e72d3c7f663d3e1383b00b3884cb4501',
  'usage': None}
+
 # ===== 第二个数据块 =====
 {'choices': [{'delta': {'content': None,
                         'function_call': None,
-                        'reasoning_content': '嗯',
+                        'reasoning_content': 'The',
                         'refusal': None,
                         'role': None,
                         'tool_calls': None},
               'finish_reason': None,
               'index': 0,
               'logprobs': None}],
- 'created': 1783305533,
- 'id': 'e79351c2-b51b-4cdb-b0f8-f598b7da0f3c',
- 'model': 'deepseek-v4-flash',
+ 'created': 1792916250,
+ 'id': '8a25b09b-741b-47af-ae47-6ec9805aa1a5',
+ 'model': 'deepseek-flash',
  'object': 'chat.completion.chunk',
  'service_tier': None,
- 'system_fingerprint': 'fp_8b330d02d0_prod0820_fp8_kvcache_20260402',
+ 'system_fingerprint': 'e72d3c7f663d3e1383b00b3884cb4501',
  'usage': None}
 
 # ===== ...（中间数据块）=====
 
-# ===== “最后”一个数据块 - 思考部分 =====
+# ===== 最后一个含思考文本的数据块 =====
 {'choices': [{'delta': {'content': None,
                         'function_call': None,
-                        'reasoning_content': '。',
+                        'reasoning_content': '.',
                         'refusal': None,
                         'role': None,
                         'tool_calls': None},
               'finish_reason': None,
               'index': 0,
               'logprobs': None}],
- 'created': 1783305533,
- 'id': 'e79351c2-b51b-4cdb-b0f8-f598b7da0f3c',
- 'model': 'deepseek-v4-flash',
+ 'created': 1792916250,
+ 'id': '8a25b09b-741b-47af-ae47-6ec9805aa1a5',
+ 'model': 'deepseek-flash',
  'object': 'chat.completion.chunk',
  'service_tier': None,
- 'system_fingerprint': 'fp_8b330d02d0_prod0820_fp8_kvcache_20260402',
+ 'system_fingerprint': 'e72d3c7f663d3e1383b00b3884cb4501',
  'usage': None}
 
-# ===== ...（中间数据块）=====
-
-# ===== “第一个”数据块 - 内容部分 =====
-{'choices': [{'delta': {'content': '你好',
+# ===== 第一个含回复文本的数据块 =====
+{'choices': [{'delta': {'content': '我是',
                         'function_call': None,
                         'reasoning_content': None,
                         'refusal': None,
@@ -303,12 +309,12 @@ for chunk in completion:
               'finish_reason': None,
               'index': 0,
               'logprobs': None}],
- 'created': 1783305533,
- 'id': 'e79351c2-b51b-4cdb-b0f8-f598b7da0f3c',
- 'model': 'deepseek-v4-flash',
+ 'created': 1792916250,
+ 'id': '8a25b09b-741b-47af-ae47-6ec9805aa1a5',
+ 'model': 'deepseek-flash',
  'object': 'chat.completion.chunk',
  'service_tier': None,
- 'system_fingerprint': 'fp_8b330d02d0_prod0820_fp8_kvcache_20260402',
+ 'system_fingerprint': 'e72d3c7f663d3e1383b00b3884cb4501',
  'usage': None}
 
 # ===== ...（中间数据块）=====
@@ -323,86 +329,82 @@ for chunk in completion:
               'finish_reason': 'stop',
               'index': 0,
               'logprobs': None}],
- 'created': 1783305533,
- 'id': 'e79351c2-b51b-4cdb-b0f8-f598b7da0f3c',
- 'model': 'deepseek-v4-flash',
+ 'created': 1792916250,
+ 'id': '8a25b09b-741b-47af-ae47-6ec9805aa1a5',
+ 'model': 'deepseek-flash',
  'object': 'chat.completion.chunk',
  'service_tier': None,
- 'system_fingerprint': 'fp_8b330d02d0_prod0820_fp8_kvcache_20260402',
- 'usage': {'completion_tokens': 220,
+ 'system_fingerprint': 'e72d3c7f663d3e1383b00b3884cb4501',
+ 'usage': {'completion_tokens': 50,
            'completion_tokens_details': {'accepted_prediction_tokens': None,
                                          'audio_tokens': None,
-                                         'reasoning_tokens': 105,
+                                         'reasoning_tokens': 26,
                                          'rejected_prediction_tokens': None},
            'prompt_cache_hit_tokens': 0,
-           'prompt_cache_miss_tokens': 12,
-           'prompt_tokens': 12,
+           'prompt_cache_miss_tokens': 41,
+           'prompt_tokens': 41,
            'prompt_tokens_details': {'audio_tokens': None, 'cached_tokens': 0},
-           'total_tokens': 232}}
+           'total_tokens': 91}}
 ```
 
-从非思考模式切换到思考模式后，数据块中除 `delta.content` 外，还会出现 `delta.reasoning_content` 字段，用于记录模型在生成回复前的思考过程。整个阶段回复的生成可以分为两个部分：
+从非思考模式切换到思考模式后，数据块中除 `delta.content` 外，还会出现 `delta.reasoning_content` 字段。读取时需要分别处理这两种内容：
 
 1. **思考/推理部分**
-   当数据块中 `delta.reasoning_content` 不为 `None`（此时 `delta.content` 为 `None`）时，说明该数据块记录的是模型的思考/推理过程。
+   当 `delta.reasoning_content` 有文本时，将它追加到推理过程。
 2. **回复部分**
-   当思考结束后，数据块中的 `delta.content` 开始返回实际回答文本，此时 `delta.reasoning_content` 为 `None`。
+   当 `delta.content` 有文本时，将它追加到最终回复。
 
-可以据此来打印和拼接回复。
+通常先收到推理内容，再收到正文，但同一个数据块也可能同时包含推理末尾和正文开头。因此两个字段需要独立判断，不能用 `if/elif` 将它们当成互斥选项，没有文本的字段则跳过。
+
+> [!note]
+>
+> 以阿里云百炼的 `deepseek-v4.1-flash` 为例，同样的代码多次运行，有时会收到下面这样的数据块，推理的最后几个字符和正文的开头落在了同一块里：
+>
+> ```yaml
+> {'choices': [{'delta': {'content': '我是由',
+>                         'function_call': None,
+>                         'reasoning_content': ' Chinese.',
+>                         'refusal': None,
+>                         'role': None,
+>                         'tool_calls': None},
+>               'finish_reason': None,
+>               'index': 0,
+>               'logprobs': None}],
+>  'created': 1793025279,
+>  'id': 'chatcmpl-6c2e409d-f575-9d15-b23b-f217891bc772',
+>  'model': 'deepseek-v4.1-flash',
+>  'object': 'chat.completion.chunk',
+>  'service_tier': None,
+>  'system_fingerprint': None,
+>  'usage': None}
+> ```
+>
+> 如果沿用 `if/elif` 的写法，这一块的 `content` 会被跳过，拼出来的回复就少了开头的几个字。
 
 **实时打印回复示例**：
 
 ```python
 for chunk in completion:
-    # 如果 chunk 中的 reasoning_content 不为 None，说明这是思考部分
-    if chunk.choices[0].delta.reasoning_content:
-        print(chunk.choices[0].delta.reasoning_content, end='')  # 设置 end=''：不换行输出
-    # reasoning_content 为 None 则说明到了回复部分，只要 content 不是 None，就打印
-    # 这一判断是因为首个 chunk 的 reasoning_content 可能为 ""，直接使用 else 会打印出 content 的值 None
-    elif chunk.choices[0].delta.content:
-        print(chunk.choices[0].delta.content, end='')
+    if not chunk.choices:
+        continue
+    delta = chunk.choices[0].delta
+    if delta is None:
+        continue
+    reasoning = getattr(delta, 'reasoning_content', None)
+
+    # 两个字段独立处理，同一块可能同时含有推理和正文
+    if reasoning:
+        print(reasoning, end='')
+    if delta.content:
+        print(delta.content, end='')
 ```
 
 > [!important]
 >
-> [DeepSeek 官方文档](https://api-docs.deepseek.com/zh-cn/guides/reasoning_model)给出的流式示例为：
->
-> ```python
-> if chunk.choices[0].delta.reasoning_content:
->  ...
-> else:
->  ...
-> ```
->
-> 这在其他平台使用时可能会导致打印预期外输出 `None` 和拼接报错：`TypeError: can only concatenate str (not "NoneType") to str`。
->
-> 正确用法是：
->
-> ```python
-> if chunk.choices[0].delta.reasoning_content:
->  ...
-> elif chunk.choices[0].delta.content:
->  ...
-> ```
->
-> 因为第一个 chunk 中的 reasoning_content 可能为`""`。
->
-> **注意**，百度智能云、硅基流动与字节火山引擎的 V4 系列 API 在完成思考过程后，返回的数据块会移除 `reasoning_content` 字段。直接访问 `chunk.choices[0].delta.reasoning_content` 会导致错误：
->
-> ```
-> AttributeError: 'ChoiceDelta' object has no attribute 'reasoning_content'
-> ```
->
-> 为避免此问题，进一步修改代码为：
->
-> ```python
-> if getattr(chunk.choices[0].delta, 'reasoning_content', None):
->  ...
-> elif chunk.choices[0].delta.content:
->  ...
-> ```
->
-> 可以将此修改应用至其他平台。
+> - `reasoning_content` 是扩展字段，部分平台会在正文阶段省略它，使用 `getattr(delta, 'reasoning_content', None)` 读取。
+> - 两个字段都可能是 `None` 或空字符串，先判断是否有文本，再打印或拼接。
+> - 同一块可能同时包含两种文本，使用两个独立的 `if`，避免漏掉正文。
+> - 没有 `choices` 或 `delta` 的数据块不参与文本拼接，例如某些平台单独返回的用量统计块。
 
 **拼接回复示例**：
 
@@ -410,15 +412,29 @@ for chunk in completion:
 reasoning_content = ""
 content = ""
 for chunk in completion:
-    # 如果 chunk 中的 reasoning_content 不为 None，说明这是思考部分
-    if chunk.choices[0].delta.reasoning_content:
-        reasoning_content += chunk.choices[0].delta.reasoning_content
-    # reasoning_content 为 None 则说明到了回复部分，只要 content 不是 None，就打印
-    # 这一判断是因为首个 chunk 的 reasoning_content 可能为 ""，不做限制会报错：TypeError: can only concatenate str (not "NoneType") to str
-    elif chunk.choices[0].delta.content:
-        content += chunk.choices[0].delta.content
+    if not chunk.choices:
+        continue
+    delta = chunk.choices[0].delta
+    if delta is None:
+        continue
+    reasoning = getattr(delta, 'reasoning_content', None)
+
+    # 两个字段独立处理，同一块可能同时含有推理和正文
+    if reasoning:
+        reasoning_content += reasoning
+    if delta.content:
+        content += delta.content
 print(f"===== 模型推理过程 =====\n{reasoning_content}")
 print(f"===== 模型回复 =====\n{content}")
+```
+
+**输出**：
+
+```
+===== 模型推理过程 =====
+我们需要回答中文一句话介绍自己。需要简洁。用户问“请用一句话介绍你自己”。我们作为助手，一句话即可。要符合身份。例如：“我是由深度求索公司开发的AI助手，乐于为你提供信息与帮助。” 注意不要声称？ 我是 DeepSeek? 系统没给具体身份，但通常可以答AI助手。一句话。保持自然。用中文。
+===== 模型回复 =====
+我是一个乐于助人的AI助手，愿意为你解答问题、提供信息与帮助。
 ```
 
 ## 📝 作业

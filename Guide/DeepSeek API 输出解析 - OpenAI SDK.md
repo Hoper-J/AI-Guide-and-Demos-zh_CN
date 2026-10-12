@@ -33,10 +33,10 @@ client = OpenAI(
 
 # 单轮对话示例
 completion = client.chat.completions.create(
-    model="deepseek-v4-flash", # 3：模型标识（model_id）可能存在差异
+    model="deepseek-flash", # 3：模型标识（model_id）可能存在差异
     messages=[
         {'role': 'system', 'content': 'You are a helpful assistant.'},
-        {'role': 'user', 'content': '你是谁？'}
+        {'role': 'user', 'content': '请用一句话介绍你自己'}
     ],
     extra_body={"thinking": {"type": "disabled"}},  # 关闭思考
 )
@@ -53,11 +53,11 @@ completion = client.chat.completions.create(
 
 |              | base_url                                            | model_id                  |
 | ------------ | --------------------------------------------------- | ------------------------- |
-| DeepSeek     | "https://api.deepseek.com"                          | "deepseek-v4-flash"           |
-| 硅基流动     | "https://api.siliconflow.cn/v1"                     | "deepseek-ai/DeepSeek-V4-Flash" |
-| 阿里云百炼   | "https://dashscope.aliyuncs.com/compatible-mode/v1" | "deepseek-v4-flash"             |
-| 百度智能云   | "https://qianfan.baidubce.com/v2"                   | "deepseek-v4-flash"             |
-| 字节火山引擎 | https://ark.cn-beijing.volces.com/api/v3            | "deepseek-v4-flash-260425" |
+| DeepSeek     | "https://api.deepseek.com"                          | "deepseek-flash"              |
+| 硅基流动     | "https://api.siliconflow.cn/v1"                     | "deepseek-ai/DeepSeek-V4.1-Flash" |
+| 阿里云百炼   | "https://dashscope.aliyuncs.com/compatible-mode/v1" | "deepseek-v4.1-flash"             |
+| 百度智能云   | "https://qianfan.baidubce.com/v2"                   | "deepseek-v4.1-flash"             |
+| 字节火山引擎 | https://ark.cn-beijing.volces.com/api/v3            | "deepseek-v4-1-flash-261017" |
 
 以硅基流动平台为例，使用 chat 模型，修改如下：
 
@@ -67,14 +67,14 @@ completion = client.chat.completions.create(
 -     base_url="https://api.deepseek.com", # 2
 - )
 - completion = client.chat.completions.create(
--     model="deepseek-v4-flash", # 3
+-     model="deepseek-flash", # 3
 
 + client = OpenAI(
 +     api_key="your-api-key", #1
 +     base_url="https://api.siliconflow.cn/v1", # 2
 + )
 + completion = client.chat.completions.create(
-+     model="deepseek-ai/DeepSeek-V4-Flash", # 3
++     model="deepseek-ai/DeepSeek-V4.1-Flash", # 3
 ```
 
 最终：
@@ -90,10 +90,10 @@ client = OpenAI(
 
 # 单轮对话示例
 completion = client.chat.completions.create(
-    model="deepseek-ai/DeepSeek-V4-Flash", # 3
+    model="deepseek-ai/DeepSeek-V4.1-Flash", # 3
     messages=[
         {'role': 'system', 'content': 'You are a helpful assistant.'},
-        {'role': 'user', 'content': '你是谁？'}
+        {'role': 'user', 'content': '请用一句话介绍你自己'}
     ],
     extra_body={"thinking": {"type": "disabled"}},  # 关闭思考
 )
@@ -115,6 +115,22 @@ pprint(completion.model_dump())
 # print(json.dumps(completion.model_dump(), indent=4, ensure_ascii=False))
 ```
 
+> [!tip]
+>
+> `completion` 是 OpenAI SDK 返回的对象，字段可以通过属性访问，比如 `completion.choices[0].message.content`。而 `pprint` 只会逐层展开字典 / 列表这类内置容器，其他对象只按 `repr` 原样输出：
+>
+> ```python
+> pprint(completion)
+> ```
+>
+> **输出**：
+>
+> ```
+> ChatCompletion(id='01a171dc6dc576b13118909680575125', choices=[Choice(finish_reason='stop', index=0, logprobs=None, message=ChatCompletionMessage(content='我是由深度求索公司创造的AI助手DeepSeek，随时乐意为你解答问题、提供帮助！', refusal=None, role='assistant', annotations=None, audio=None, function_call=None, tool_calls=None))], created=1792911633, model='deepseek-ai/DeepSeek-V4.1-Flash', object='chat.completion', service_tier=None, system_fingerprint='', usage=CompletionUsage(completion_tokens=22, prompt_tokens=16, total_tokens=38, completion_tokens_details=CompletionTokensDetails(accepted_prediction_tokens=None, audio_tokens=None, reasoning_tokens=0, rejected_prediction_tokens=None), prompt_tokens_details=PromptTokensDetails(audio_tokens=None, cached_tokens=0), prompt_cache_hit_tokens=0, prompt_cache_miss_tokens=16))
+> ```
+>
+> 所以需要先用 `model_dump()` 转成字典再打印。
+
 下面以 DeepSeek API 的非思考和思考模式为例进行解读，涉及的知识对于使用了 OpenAI SDK 的平台是通用的：
 
 > 现在 V4 默认开启思考，下文以非思考开头是因为早期 DeepSeek 分为对话模型 V3 和思考模型 R1，所以这里保留顺序演示。
@@ -129,29 +145,27 @@ pprint(completion.model_dump())
               'logprobs': None,
               'message': {'annotations': None,
                           'audio': None,
-                          'content': '你好！我是DeepSeek，由深度求索公司创造的AI助手。我是一个纯文本模型，能够帮你解答问题、提供信息、进行对话等。我支持中文、英文等多种语言，并且可以处理长文本（上下文高达1M）。虽然我不支持多模态识别，但你可以上传图片、PDF、Word等文件，我会从中读取文字信息来帮助你。\n'
-                                     '\n'
-                                     '我的知识截止日期是2025年5月，目前是免费使用的。有什么我可以帮你的吗？😊',
+                          'content': '我是由深度求索公司创造的AI助手DeepSeek，随时乐意为你解答问题、提供帮助！',
                           'function_call': None,
                           'refusal': None,
                           'role': 'assistant',
                           'tool_calls': None}}],
- 'created': 1783351586,
- 'id': '019f3809ad3d1bd505e366096e788369',
- 'model': 'deepseek-ai/DeepSeek-V4-Flash',
+ 'created': 1792911633,
+ 'id': '01a171dc6dc576b13118909680575125',
+ 'model': 'deepseek-ai/DeepSeek-V4.1-Flash',
  'object': 'chat.completion',
  'service_tier': None,
  'system_fingerprint': '',
- 'usage': {'completion_tokens': 102,
+ 'usage': {'completion_tokens': 22,
            'completion_tokens_details': {'accepted_prediction_tokens': None,
                                          'audio_tokens': None,
                                          'reasoning_tokens': 0,
                                          'rejected_prediction_tokens': None},
            'prompt_cache_hit_tokens': 0,
-           'prompt_cache_miss_tokens': 12,
-           'prompt_tokens': 12,
+           'prompt_cache_miss_tokens': 16,
+           'prompt_tokens': 16,
            'prompt_tokens_details': {'audio_tokens': None, 'cached_tokens': 0},
-           'total_tokens': 114}}
+           'total_tokens': 38}}
 ```
 
 **通过输出的字段我们能做些什么？**（详细说明见[附录](#附录)）：
@@ -165,9 +179,7 @@ pprint(completion.model_dump())
   **输出**：
 
   ```
-  你好！我是DeepSeek，由深度求索公司创造的AI助手。我是一个纯文本模型，能够帮你解答问题、提供信息、进行对话等。我支持中文、英文等多种语言，并且可以处理长文本（上下文高达1M）。虽然我不支持多模态识别，但你可以上传图片、PDF、Word等文件，我会从中读取文字信息来帮助你。
-
-  我的知识截止日期是2025年5月，目前是免费使用的。有什么我可以帮你的吗？😊
+  我是由深度求索公司创造的AI助手DeepSeek，随时乐意为你解答问题、提供帮助！
   ```
 
 - **获取用量信息（usage）**
@@ -183,12 +195,12 @@ pprint(completion.model_dump())
       print(f"输出: {stats.completion_tokens} tokens")
       print(f"总消耗: {stats.total_tokens} tokens")
       
-      # 按 DeepSeek v4-flash 定价计算成本（单位：元，思考/非思考同价）
+      # 按 DeepSeek deepseek-flash 谷时定价计算成本（单位：元，思考/非思考同价，峰时价格翻倍）
       # - 输入: 1元/百万 tokens（缓存命中 0.02元/百万 tokens）
-      # - 输出: 2元/百万 tokens
+      # - 输出: 4元/百万 tokens
       # 官方价格文档：https://api-docs.deepseek.com/zh-cn/quick_start/pricing/
       input_cost = (hit * 0.02 + miss * 1) / 1_000_000
-      output_cost = stats.completion_tokens * 2 / 1_000_000
+      output_cost = stats.completion_tokens * 4 / 1_000_000
       total_cost = input_cost + output_cost
       
       print(f"\n===== 成本明细 =====")
@@ -203,37 +215,37 @@ pprint(completion.model_dump())
   
   ```
   ===== TOKEN 消耗明细 =====
-  输入: 12 tokens [缓存命中: 0 | 未命中: 12]
-  输出: 102 tokens
-  总消耗: 114 tokens
+  输入: 16 tokens [缓存命中: 0 | 未命中: 16]
+  输出: 22 tokens
+  总消耗: 38 tokens
 
   ===== 成本明细 =====
   输入成本: ￥0.0000 元
-  输出成本: ￥0.0002 元
-  预估总成本: ￥0.0002 元
+  输出成本: ￥0.0001 元
+  预估总成本: ￥0.0001 元
   ```
   
   > [!important]
   >
-  > 非 DeepSeek 官方平台不存在一些特殊字段（比如：`usage.prompt_cache_hit_tokens`），一个更兼容的版本：
+  > 部分兼容平台可能不返回缓存统计字段（比如：`usage.prompt_cache_hit_tokens`），应按实际响应判断。下面是兼容这些差异的版本：
   >
   > ```python
-  > def print_chat_usage(completion, input_cost=1.0, output_cost=2.0, cache_hit_cost=0.02):
+  > def print_chat_usage(completion, input_cost=1.0, output_cost=4.0, cache_hit_cost=0.02):
   >     """
   >      参数:
   >     - input_cost: 输入价格（元/百万 tokens）
   >     - output_cost: 输出价格（元/百万 tokens）
-  >     - cache_hit_cost: 缓存命中价格（当平台不支持时自动退化到全价模式）
+  >     - cache_hit_cost: 缓存命中价格（未返回缓存用量时按未命中估算）
   > 
-  >     按 DeepSeek 聊天模型定价设定默认成本（单位：元）：
+  >     按 DeepSeek deepseek-flash 谷时定价设定默认成本（单位：元，峰时价格翻倍）：
   >     - 输入: 1元/百万 tokens（缓存命中 0.02元/百万 tokens）
-  >     - 输出: 2元/百万 tokens
+  >     - 输出: 4元/百万 tokens
   >     官方价格文档：https://api-docs.deepseek.com/zh-cn/quick_start/pricing/
   >     """
   >     stats = completion.usage
   > 
   >     # 尝试获取字段（兼容其他平台）
-  >     hit = getattr(stats, 'prompt_cache_hit_tokens', None)  # 无缓存机制的平台没有该字段
+  >     hit = getattr(stats, 'prompt_cache_hit_tokens', None)  # 部分平台不返回该字段
   >     has_cache = hit is not None  # 注意：命中 0 个时字段仍存在，值为 0
   >     if not has_cache:
   >         hit = 0  # 后续统一按数字处理
@@ -269,7 +281,7 @@ V4 起思考与非思考共用同一模型，删除关闭思考的 `extra_body` 
 
 ```diff
   completion = client.chat.completions.create(
-      model="deepseek-v4-flash", # 3
+      model="deepseek-flash", # 3
 -     extra_body={"thinking": {"type": "disabled"}},  # 关闭思考
 ```
 
@@ -277,11 +289,11 @@ V4 起思考与非思考共用同一模型，删除关闭思考的 `extra_body` 
 >
 > |              | base_url                                            | model_id                                                     |
 > | ------------ | --------------------------------------------------- | ------------------------------------------------------------ |
-> | DeepSeek     | "https://api.deepseek.com"                          | "deepseek-v4-flash"                                              |
-> | 硅基流动     | "https://api.siliconflow.cn/v1"                     | "deepseek-ai/DeepSeek-V4-Flash"                                    |
-> | 阿里云百炼   | "https://dashscope.aliyuncs.com/compatible-mode/v1" | "deepseek-v4-flash"                                                |
-> | 百度智能云   | "https://qianfan.baidubce.com/v2"                   | "deepseek-v4-flash"                                                |
-> | 字节火山引擎 | https://ark.cn-beijing.volces.com/api/v3/           | "deepseek-v4-flash-260425" |
+> | DeepSeek     | "https://api.deepseek.com"                          | "deepseek-flash"                                                 |
+> | 硅基流动     | "https://api.siliconflow.cn/v1"                     | "deepseek-ai/DeepSeek-V4.1-Flash"                                    |
+> | 阿里云百炼   | "https://dashscope.aliyuncs.com/compatible-mode/v1" | "deepseek-v4.1-flash"                                                |
+> | 百度智能云   | "https://qianfan.baidubce.com/v2"                   | "deepseek-v4.1-flash"                                                |
+> | 字节火山引擎 | https://ark.cn-beijing.volces.com/api/v3/           | "deepseek-v4-1-flash-261017" |
 
 修改后运行代码：
 
@@ -296,11 +308,11 @@ client = OpenAI(
 
 # 单轮对话示例
 completion = client.chat.completions.create(
-    model="deepseek-ai/DeepSeek-V4-Flash", # 3：无需更换模型
+    model="deepseek-ai/DeepSeek-V4.1-Flash", # 3：无需更换模型
     extra_body={"thinking": {"type": "enabled"}},  # 硅基流动上偶尔不默认思考，所以这里显式开启
     messages=[
         {'role': 'system', 'content': 'You are a helpful assistant.'},
-        {'role': 'user', 'content': '你是谁？'}
+        {'role': 'user', 'content': '请用一句话介绍你自己'}
     ]
 )
 
@@ -316,35 +328,38 @@ pprint(completion.model_dump())
               'logprobs': None,
               'message': {'annotations': None,
                           'audio': None,
-                          'content': '你好！我是DeepSeek，由深度求索公司创造的AI助手。我可以帮你解答问题、提供信息、进行对话交流等。我的知识截止于2025年5月，支持处理文本、阅读链接和上传的文件（如图片、PDF、Word、Excel等）。目前我是免费使用的，欢迎随时向我提问！有什么我可以帮你的吗？😊',
+                          'content': '我是一个由深度求索公司开发的AI助手，乐于为你解答问题、提供信息与帮助。',
                           'function_call': None,
-                          'reasoning_content': '嗯，用户问“你是谁”，这是一个简单的自我介绍问题。用户可能是初次接触，需要了解我的身份和功能。我可以直接、清晰地说明我是DeepSeek，由深度求索公司创造，并简要介绍我的核心能力，比如知识范围、文件处理、长上下文和免费使用。最后用友好的语气询问是否需要帮助，这样既回答了问题，也开启了进一步对话。',
+                          'reasoning_content': 'The user asks me to introduce '
+                                               'myself in one sentence, in '
+                                               'Chinese. Keep it concise, one '
+                                               'sentence.',
                           'refusal': None,
                           'role': 'assistant',
                           'tool_calls': None}}],
- 'created': 1783351630,
- 'id': '019f380a56932f25b566a2f9ff08862a',
- 'model': 'deepseek-ai/DeepSeek-V4-Flash',
+ 'created': 1792912429,
+ 'id': '01a171e89003dd49c7b03bba509fdef1',
+ 'model': 'deepseek-ai/DeepSeek-V4.1-Flash',
  'object': 'chat.completion',
  'service_tier': None,
  'system_fingerprint': '',
- 'usage': {'completion_tokens': 157,
+ 'usage': {'completion_tokens': 42,
            'completion_tokens_details': {'accepted_prediction_tokens': None,
                                          'audio_tokens': None,
-                                         'reasoning_tokens': 80,
+                                         'reasoning_tokens': 22,
                                          'rejected_prediction_tokens': None},
            'prompt_cache_hit_tokens': 0,
-           'prompt_cache_miss_tokens': 12,
-           'prompt_tokens': 12,
+           'prompt_cache_miss_tokens': 41,
+           'prompt_tokens': 41,
            'prompt_tokens_details': {'audio_tokens': None, 'cached_tokens': 0},
-           'total_tokens': 169}}
+           'total_tokens': 83}}
 ```
 
 - **获取模型回复（choices）**
 
   ```python
-  # 获取推理思考过程（Reasoner特有字段）
-  reasoning_content = completion.choices[0].message.reasoning_content
+  # 获取推理思考过程（思考模式特有字段）
+  reasoning_content = getattr(completion.choices[0].message, 'reasoning_content', None)
   print(f"===== 模型推理过程 =====\n{reasoning_content}")
   
   # 获取模型回复内容（与之前相同）
@@ -356,9 +371,9 @@ pprint(completion.model_dump())
   
   ```
   ===== 模型推理过程 =====
-  嗯，用户问“你是谁”，这是一个简单的自我介绍问题。用户可能是初次接触，需要了解我的身份和功能。我可以直接、清晰地说明我是DeepSeek，由深度求索公司创造，并简要介绍我的核心能力，比如知识范围、文件处理、长上下文和免费使用。最后用友好的语气询问是否需要帮助，这样既回答了问题，也开启了进一步对话。
+  The user asks me to introduce myself in one sentence, in Chinese. Keep it concise, one sentence.
   ===== 模型回复 =====
-  你好！我是DeepSeek，由深度求索公司创造的AI助手。我可以帮你解答问题、提供信息、进行对话交流等。我的知识截止于2025年5月，支持处理文本、阅读链接和上传的文件（如图片、PDF、Word、Excel等）。目前我是免费使用的，欢迎随时向我提问！有什么我可以帮你的吗？😊
+  我是一个由深度求索公司开发的AI助手，乐于为你解答问题、提供信息与帮助。
   ```
   
   > [!important]
@@ -441,12 +456,12 @@ pprint(completion.model_dump())
       
       print(f"总消耗: {stats.total_tokens} tokens")
       
-      # 按 DeepSeek v4-flash 定价计算成本（单位：元，思考/非思考同价）
+      # 按 DeepSeek deepseek-flash 谷时定价计算成本（单位：元，思考/非思考同价，峰时价格翻倍）
       # - 输入: 1元/百万 tokens（缓存命中 0.02元/百万 tokens）
-      # - 输出: 2元/百万 tokens
+      # - 输出: 4元/百万 tokens
       # 官方价格文档：https://api-docs.deepseek.com/zh-cn/quick_start/pricing/
       input_cost = (hit * 0.02 + miss * 1) / 1_000_000
-      output_cost = stats.completion_tokens * 2 / 1_000_000
+      output_cost = stats.completion_tokens * 4 / 1_000_000
       total_cost = input_cost + output_cost
       
       print(f"\n===== 成本明细 =====")
@@ -461,16 +476,16 @@ pprint(completion.model_dump())
   
   ```
   ===== TOKEN 消耗明细 =====
-  输入: 12 tokens [缓存命中: 0 | 未命中: 12]
-  输出: 157 tokens
-  ├─ 推理过程: 80 tokens
-  └─ 最终回答: 77 tokens
-  总消耗: 169 tokens
+  输入: 41 tokens [缓存命中: 0 | 未命中: 41]
+  输出: 42 tokens
+  ├─ 推理过程: 22 tokens
+  └─ 最终回答: 20 tokens
+  总消耗: 83 tokens
 
   ===== 成本明细 =====
   输入成本: ￥0.0000 元
-  输出成本: ￥0.0003 元
-  预估总成本: ￥0.0003 元
+  输出成本: ￥0.0002 元
+  预估总成本: ￥0.0002 元
   ```
   
   > [!important]
@@ -478,22 +493,22 @@ pprint(completion.model_dump())
   > 非 DeepSeek 官方的部分平台（但百度智能云存在）不存在一些特殊字段（比如：`reasoning_tokens`），一个更兼容的版本：
   >
   > ```python
-  > def print_reasoner_usage(completion, input_cost=1.0, output_cost=2.0, cache_hit_cost=0.02):
+  > def print_reasoner_usage(completion, input_cost=1.0, output_cost=4.0, cache_hit_cost=0.02):
   >     """
   >     参数：
   >     - input_cost: 输入价格（元/百万 tokens）
   >     - output_cost: 输出价格（元/百万 tokens）
-  >     - cache_hit_cost: 缓存命中价格（当平台不支持时自动退化到全价模式）
+  >     - cache_hit_cost: 缓存命中价格（未返回缓存用量时按未命中估算）
   > 
-  >     按 DeepSeek 推理模型定价设定默认成本（单位：元）：
+  >     按 DeepSeek deepseek-flash 谷时定价设定默认成本（单位：元，峰时价格翻倍）：
   >     - 输入: 1元/百万 tokens（缓存命中 0.02元/百万 tokens）
-  >     - 输出: 2元/百万 tokens
+  >     - 输出: 4元/百万 tokens
   >     官方价格文档：https://api-docs.deepseek.com/zh-cn/quick_start/pricing/
   >     """
   >     stats = completion.usage
   >     
   >     # 尝试获取字段（兼容其他平台）
-  >     hit = getattr(stats, 'prompt_cache_hit_tokens', None)  # 无缓存机制的平台没有该字段
+  >     hit = getattr(stats, 'prompt_cache_hit_tokens', None)  # 部分平台不返回该字段
   >     has_cache = hit is not None  # 注意：命中 0 个时字段仍存在，值为 0
   >     if not has_cache:
   >         hit = 0  # 后续统一按数字处理
@@ -509,20 +524,16 @@ pprint(completion.model_dump())
   >     
   >     print(f"输出: {stats.completion_tokens} tokens")
   > 
-  >     # 尝试获取推理过程详情
+  >     # 尝试获取推理过程详情（非思考模式下可能为 None）
   >     details = getattr(stats, 'completion_tokens_details', None)
-  >     reasoning = 0
-  >     if details:
-  >         if not isinstance(details, dict):
-  >             details = getattr(details, 'dict', lambda: {})()
-  >         # 尝试获取 reasoning_tokens
-  >         reasoning = details.get('reasoning_tokens', 0)
-  >         
-  >         # 仅在存在推理tokens数量字段时处理
-  >         if reasoning > 0:
-  >             final = stats.completion_tokens - reasoning
-  >             print(f"├─ 推理过程: {reasoning} tokens")
-  >             print(f"└─ 最终回答: {final} tokens")
+  >     # 尝试获取 reasoning_tokens（部分平台可能为 None）
+  >     reasoning = getattr(details, 'reasoning_tokens', 0) or 0
+  >     
+  >     # 仅在存在推理tokens数量字段时处理
+  >     if reasoning > 0:
+  >         final = stats.completion_tokens - reasoning
+  >         print(f"├─ 推理过程: {reasoning} tokens")
+  >         print(f"└─ 最终回答: {final} tokens")
   >     
   >     print(f"总消耗: {stats.total_tokens} tokens")
   >     
@@ -548,7 +559,7 @@ pprint(completion.model_dump())
 > - **usage.prompt_cache_hit_tokens**：用户 prompt 中，命中上下文缓存的 token 数。
 > - **usage.prompt_cache_miss_tokens**：用户 prompt 中，未命中上下文缓存的 token 数。
 >
-> 注意，字段 `usage.prompt_cache_hit_tokens` 和 `usage.prompt_cache_miss_tokens` 仅存在于 DeepSeek API，故代码部分做了特殊处理。
+> 这些缓存统计字段属于平台扩展。DeepSeek 官方和部分兼容平台（例如上面的硅基流动）会返回它们，但并非所有平台都提供，因此代码按实际字段处理。没有返回缓存用量时，示例按输入全部未命中进行估算。
 
 [^2]: [对话补全 - DeepSeek API 文档](https://api-docs.deepseek.com/zh-cn/api/create-chat-completion)
 

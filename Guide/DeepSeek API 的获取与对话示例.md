@@ -27,11 +27,11 @@ pip install openai
 
 |              | api_key_name          | base_url                                            | model_id                        |
 | ------------ | --------------------- | --------------------------------------------------- | ------------------------------- |
-| DeepSeek     | "DEEPSEEK_API_KEY"    | "https://api.deepseek.com"                          | "deepseek-v4-flash"             |
-| 硅基流动     | "SILICONFLOW_API_KEY" | "https://api.siliconflow.cn/v1"                     | "deepseek-ai/DeepSeek-V4-Flash" |
-| 阿里云百炼   | "DASHSCOPE_API_KEY"   | "https://dashscope.aliyuncs.com/compatible-mode/v1" | "deepseek-v4-flash"             |
-| 百度智能云   | "BAIDU_API_KEY"       | "https://qianfan.baidubce.com/v2"                   | "deepseek-v4-flash"             |
-| 字节火山引擎 | "ARK_API_KEY"         | "https://ark.cn-beijing.volces.com/api/v3"          | "deepseek-v4-flash-260425"      |
+| DeepSeek     | "DEEPSEEK_API_KEY"    | "https://api.deepseek.com"                          | "deepseek-flash"                |
+| 硅基流动     | "SILICONFLOW_API_KEY" | "https://api.siliconflow.cn/v1"                     | "deepseek-ai/DeepSeek-V4.1-Flash" |
+| 阿里云百炼   | "DASHSCOPE_API_KEY"   | "https://dashscope.aliyuncs.com/compatible-mode/v1" | "deepseek-v4.1-flash"             |
+| 百度智能云   | "BAIDU_API_KEY"       | "https://qianfan.baidubce.com/v2"                   | "deepseek-v4.1-flash"             |
+| 字节火山引擎 | "ARK_API_KEY"         | "https://ark.cn-beijing.volces.com/api/v3"          | "deepseek-v4-1-flash-261017"      |
 
 参数说明：
 
@@ -78,10 +78,10 @@ client = OpenAI(
 
 # 单轮对话示例
 response = client.chat.completions.create(
-    model="deepseek-v4-flash", # 3
+    model="deepseek-flash", # 3
     messages=[
         {'role': 'system', 'content': 'You are a helpful assistant.'},
-        {'role': 'user', 'content': '你是谁？'}
+        {'role': 'user', 'content': '请用一句话介绍你自己'}
     ],
     extra_body={"thinking": {"type": "disabled"}},  # 关闭思考
 )
@@ -90,15 +90,43 @@ response = client.chat.completions.create(
 print(response.choices[0].message.content)
 ```
 
+**输出**：
+
+```
+我是DeepSeek，由深度求索公司创造的AI助手，致力于用热情细腻的方式为你提供帮助。
+```
+
 #### 模式切换
 
 ```python
-# 切换到思考模式：删除 extra_body 参数即可（V4 默认开启思考）
+# 复用上方的 client，显式开启思考模式
 response = client.chat.completions.create(
-    model="deepseek-v4-flash",
-    # ...其他参数保持不变...
+    model="deepseek-flash",
+    messages=[
+        {'role': 'system', 'content': 'You are a helpful assistant.'},
+        {'role': 'user', 'content': '请用一句话介绍你自己'}
+    ],
+    extra_body={"thinking": {"type": "enabled"}},
 )
+
+reasoning_content = getattr(response.choices[0].message, 'reasoning_content', None)
+if reasoning_content:
+    print(f"===== 模型推理过程 =====\n{reasoning_content}")
+print(f"===== 模型回复 =====\n{response.choices[0].message.content}")
 ```
+
+**输出**：
+
+```
+===== 模型推理过程 =====
+The user asks in Chinese: "请用一句话介绍你自己" — "Please introduce yourself in one sentence."
+
+I should respond in Chinese, one sentence. Keep it simple and helpful.
+===== 模型回复 =====
+我是由深度求索（DeepSeek）公司开发的AI助手，可以回答问题、处理文档、协助写作与分析，并支持长上下文和文件上传，随时乐意为你提供帮助。
+```
+
+> 思考强度可以通过 `reasoning_effort` 参数调节，可选 `"low"`、`"high"`（默认）、`"max"`，设置为 `"none"` 等价于关闭思考。
 
 观察 `reasoning_content` 可以捕捉到思考过程。
 
@@ -145,10 +173,10 @@ client = OpenAI(
 
 # 单轮对话示例
 response = client.chat.completions.create(
-    model="deepseek-ai/DeepSeek-V4-Flash", # 3
+    model="deepseek-ai/DeepSeek-V4.1-Flash", # 3
     messages=[
         {'role': 'system', 'content': 'You are a helpful assistant.'},
-        {'role': 'user', 'content': '你是谁？'}
+        {'role': 'user', 'content': '请用一句话介绍你自己'}
     ],
     extra_body={"thinking": {"type": "disabled"}},  # 关闭思考
 )
@@ -157,15 +185,38 @@ response = client.chat.completions.create(
 print(response.choices[0].message.content)
 ```
 
+**输出**：
+
+```
+我是由深度求索公司创造的AI助手，随时准备为你解答问题和提供帮助。
+```
+
 #### 模式切换
 
 ```python
-# 切换到思考模式
+# 复用上方的 client，显式开启思考模式
 response = client.chat.completions.create(
-    model="deepseek-ai/DeepSeek-V4-Flash",
-    extra_body={"thinking": {"type": "enabled"}},  # 硅基流动上偶尔不默认思考，所以这里显式开启
-    # ...其他参数保持不变...
+    model="deepseek-ai/DeepSeek-V4.1-Flash",
+    messages=[
+        {'role': 'system', 'content': 'You are a helpful assistant.'},
+        {'role': 'user', 'content': '请用一句话介绍你自己'}
+    ],
+    extra_body={"thinking": {"type": "enabled"}},
 )
+
+reasoning_content = getattr(response.choices[0].message, 'reasoning_content', None)
+if reasoning_content:
+    print(f"===== 模型推理过程 =====\n{reasoning_content}")
+print(f"===== 模型回复 =====\n{response.choices[0].message.content}")
+```
+
+**输出**：
+
+```
+===== 模型推理过程 =====
+The user is asking me to introduce myself in one sentence, in Chinese. I should respond in Chinese with one sentence. Keep it simple and honest, mention I'm an AI assistant.
+===== 模型回复 =====
+我是一个由深度求索（DeepSeek）开发的AI助手，可以帮你回答问题、分析信息并协助完成各种任务。
 ```
 
 > [!note]
@@ -229,10 +280,10 @@ client = OpenAI(
 
 # 单轮对话示例
 response = client.chat.completions.create(
-    model="deepseek-v4-flash", # 3
+    model="deepseek-v4.1-flash", # 3
     messages=[
         {'role': 'system', 'content': 'You are a helpful assistant.'},
-        {'role': 'user', 'content': '你是谁？'}
+        {'role': 'user', 'content': '请用一句话介绍你自己'}
     ],
     extra_body={"thinking": {"type": "disabled"}},  # 关闭思考
 )
@@ -241,14 +292,42 @@ response = client.chat.completions.create(
 print(response.choices[0].message.content)
 ```
 
+**输出**：
+
+```
+你好！我是DeepSeek，一个由深度求索公司创造的AI助手，很高兴为你提供帮助！
+```
+
 #### 模式切换
 
 ```python
-# 切换到思考模式：删除 extra_body 参数即可（V4 默认开启思考）
+# 复用上方的 client，显式开启思考模式
 response = client.chat.completions.create(
-    model="deepseek-v4-flash",
-    # ...其他参数保持不变...
+    model="deepseek-v4.1-flash",
+    messages=[
+        {'role': 'system', 'content': 'You are a helpful assistant.'},
+        {'role': 'user', 'content': '请用一句话介绍你自己'}
+    ],
+    extra_body={"thinking": {"type": "enabled"}},
 )
+
+reasoning_content = getattr(response.choices[0].message, 'reasoning_content', None)
+if reasoning_content:
+    print(f"===== 模型推理过程 =====\n{reasoning_content}")
+print(f"===== 模型回复 =====\n{response.choices[0].message.content}")
+```
+
+**输出**：
+
+```
+===== 模型推理过程 =====
+The user is asking me to introduce myself in one sentence. This is a simple request in Chinese. I should respond in Chinese since the user wrote in Chinese.
+
+I need to introduce myself in one sentence. I'm a helpful AI assistant created by DeepSeek. Let me craft a concise one-sentence introduction.
+
+I should keep it simple and natural - just one sentence introducing who I am and what I can do.
+===== 模型回复 =====
+你好！我是DeepSeek，一个由深度求索公司开发的AI助手，随时准备为你解答问题、提供帮助。
 ```
 
 </details>
@@ -296,10 +375,10 @@ client = OpenAI(
 
 # 单轮对话示例
 response = client.chat.completions.create(
-    model="deepseek-v4-flash", # 3
+    model="deepseek-v4.1-flash", # 3
     messages=[
         {'role': 'system', 'content': 'You are a helpful assistant.'},
-        {'role': 'user', 'content': '你是谁？'}
+        {'role': 'user', 'content': '请用一句话介绍你自己'}
     ],
     extra_body={"thinking": {"type": "disabled"}},  # 关闭思考
 )
@@ -308,14 +387,40 @@ response = client.chat.completions.create(
 print(response.choices[0].message.content)
 ```
 
+**输出**：
+
+```
+我是由深度求索公司创造的AI助手，致力于为你提供热情、细腻的帮助，解答各种问题！
+```
+
 #### 模式切换
 
 ```python
-# 切换到思考模式：删除 extra_body 参数即可（V4 默认开启思考）
+# 复用上方的 client，显式开启思考模式
 response = client.chat.completions.create(
-    model="deepseek-v4-flash",
-    # ...其他参数保持不变...
+    model="deepseek-v4.1-flash",
+    messages=[
+        {'role': 'system', 'content': 'You are a helpful assistant.'},
+        {'role': 'user', 'content': '请用一句话介绍你自己'}
+    ],
+    extra_body={"thinking": {"type": "enabled"}},
 )
+
+reasoning_content = getattr(response.choices[0].message, 'reasoning_content', None)
+if reasoning_content:
+    print(f"===== 模型推理过程 =====\n{reasoning_content}")
+print(f"===== 模型回复 =====\n{response.choices[0].message.content}")
+```
+
+**输出**：
+
+```
+===== 模型推理过程 =====
+The user asks me to introduce myself in one sentence. The request is in Chinese, so I should respond in Chinese. Keep it to one sentence as requested.
+
+I am a helpful assistant. I should introduce myself concisely in one sentence, mentioning I'm a helpful assistant perhaps with knowledge cutoff and capabilities. Let me keep it simple and one sentence.
+===== 模型回复 =====
+你好！我是DeepSeek，一个乐于助人的AI助手，可以帮你解答问题、提供建议、处理文字任务等，随时欢迎向我提问！
 ```
 
 </details>
@@ -362,7 +467,7 @@ response = client.chat.completions.create(
 
 ![自动创建模型接入点](./assets/image-20250307113923851.png)
 
-- 模型：`deepseek-v4-flash-260425`（思考/非思考双模式，切换见下方代码）
+- 模型：`deepseek-v4-1-flash-261017`（思考/非思考双模式，切换见下方代码）
 
 现在可以跳过下面的「自定义推理接入点」部分。
 
@@ -414,10 +519,10 @@ client = OpenAI(
 
 # 单轮对话示例
 response = client.chat.completions.create(
-    model="deepseek-v4-flash-260425", # 3
+    model="deepseek-v4-1-flash-261017", # 3
     messages=[
         {'role': 'system', 'content': 'You are a helpful assistant.'},
-        {'role': 'user', 'content': '你是谁？'}
+        {'role': 'user', 'content': '请用一句话介绍你自己'}
     ],
     extra_body={"thinking": {"type": "disabled"}},  # 关闭思考
 )
@@ -426,14 +531,38 @@ response = client.chat.completions.create(
 print(response.choices[0].message.content)
 ```
 
+**输出**：
+
+```
+我是一个由DeepSeek开发的AI助手，乐于为你解答问题、提供信息和帮助。
+```
+
 #### 模式切换
 
 ```python
-# 切换到思考模式：删除 extra_body 参数即可（V4 默认开启思考）
+# 复用上方的 client，显式开启思考模式
 response = client.chat.completions.create(
-    model="deepseek-v4-flash-260425",
-    # ...其他参数保持不变...
+    model="deepseek-v4-1-flash-261017",
+    messages=[
+        {'role': 'system', 'content': 'You are a helpful assistant.'},
+        {'role': 'user', 'content': '请用一句话介绍你自己'}
+    ],
+    extra_body={"thinking": {"type": "enabled"}},
 )
+
+reasoning_content = getattr(response.choices[0].message, 'reasoning_content', None)
+if reasoning_content:
+    print(f"===== 模型推理过程 =====\n{reasoning_content}")
+print(f"===== 模型回复 =====\n{response.choices[0].message.content}")
+```
+
+**输出**：
+
+```
+===== 模型推理过程 =====
+The user asks in Chinese: "请用一句话介绍你自己" — "Please introduce yourself in one sentence." I should respond in Chinese with one sentence. Keep it simple and accurate.
+===== 模型回复 =====
+我是由深度求索公司研发的AI助手，可以回答问题、处理文本、分析文件，也能看图、识图和读图，随时为你提供帮助。
 ```
 
 </details>
